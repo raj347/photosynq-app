@@ -28,4 +28,5 @@ appcompat_v7/
 /.idea/workspace.xml
 /.idea/libraries
 .DS_Store
-
+photosynq-app.iml
+app/app.iml
