@@ -5,12 +5,39 @@ package com.photosynq.app;
  */
 public class SelectedOptions {
 
-    private String selectedValue;
-    private String urlValue;
 
     private String questionId;
-    private int questionType;
     private String projectId;
+    private int questionType;
+    private boolean remember;
+    private String rangeFrom;
+    private String rangeTo;
+    private String rangeRepeat;
+    private int currentRangeValue;
+    private int optionType;
+    private String selectedValue;
+    private String urlValue;
+    private boolean reset;
+
+    public int getAutoIncIndex() {
+        return autoIncIndex;
+    }
+
+    public void setAutoIncIndex(int autoIncIndex) {
+        this.autoIncIndex = autoIncIndex;
+    }
+
+    private int autoIncIndex;
+
+
+
+    public int getOptionType() {
+        return optionType;
+    }
+
+    public void setOptionType(int optionType) {
+        this.optionType = optionType;
+    }
 
     public boolean isReset() {
         return reset;
@@ -19,8 +46,6 @@ public class SelectedOptions {
     public void setReset(boolean reset) {
         this.reset = reset;
     }
-
-    private boolean reset;
 
     public String getSelectedValue() {
         return selectedValue;
@@ -70,22 +95,6 @@ public class SelectedOptions {
         this.remember = remember;
     }
 
-    public int getStartRange() {
-        return startRange;
-    }
-
-    public void setStartRange(int startRange) {
-        this.startRange = startRange;
-    }
-
-    public int getRangeStep() {
-        return rangeStep;
-    }
-
-    public void setRangeStep(int rangeStep) {
-        this.rangeStep = rangeStep;
-    }
-
     public int getCurrentRangeValue() {
         return currentRangeValue;
     }
@@ -94,10 +103,27 @@ public class SelectedOptions {
         this.currentRangeValue = currentRangeValue;
     }
 
-    private boolean remember;
+    public String getRangeFrom() {
+        return rangeFrom;
+    }
 
-    private int startRange;
-    private int rangeStep;
-    private int currentRangeValue;
+    public void setRangeFrom(String rangeFrom) {
+        this.rangeFrom = rangeFrom;
+    }
 
+    public String getRangeTo() {
+        return rangeTo;
+    }
+
+    public void setRangeTo(String rangeTo) {
+        this.rangeTo = rangeTo;
+    }
+
+    public String getRangeRepeat() {
+        return rangeRepeat;
+    }
+
+    public void setRangeRepeat(String rangeRepeat) {
+        this.rangeRepeat = rangeRepeat;
+    }
 }

@@ -18,6 +18,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.photosynq.app.R;
@@ -81,13 +82,148 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 case Question.USER_DEFINED:
 
                     //if (convertView == null) {
-                        LayoutInflater user_def_infalInflater = (LayoutInflater) this._context
-                                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                        convertView = user_def_infalInflater.inflate(R.layout.user_entered_option, null);
+                    LayoutInflater user_def_infalInflater = (LayoutInflater) this._context
+                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = user_def_infalInflater.inflate(R.layout.user_selected_main_layout, null);
                     //}
-                    EditText txtListChild = (EditText) convertView
-                            .findViewById(R.id.user_input_edit_text);
+
+                    Spinner optionType = (Spinner) convertView.findViewById(R.id.option_type);
+                    optionType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            final LinearLayout mainLayout = (LinearLayout)(parent.getParent().getParent());
+
+                            LinearLayout userEnteredLayout = (LinearLayout)mainLayout.findViewById(R.id.layout_user_entered);
+                            LinearLayout scanLayout = (LinearLayout)mainLayout.findViewById(R.id.layout_scan_code);
+                            LinearLayout autoIncLayout = (LinearLayout)mainLayout.findViewById(R.id.layout_auto_inc);
+                            SelectedOptions so = selectedOptions.get(groupPosition);
+                            switch (position) {
+                                case 0:
+                                    userEnteredLayout.setVisibility(View.VISIBLE);
+                                    scanLayout.setVisibility(View.GONE);
+                                    autoIncLayout.setVisibility(View.GONE);
+                                    so.setOptionType(0);
+                                    selectedOptions.set(groupPosition, so);
+                                    EditText txtListChild = (EditText) userEnteredLayout
+                                            .findViewById(R.id.user_input_edit_text);
+                                    CheckBox remember = (CheckBox)mainLayout.findViewById(R.id.remember_check_box);
+                                    remember.setVisibility(View.VISIBLE);
+                                    txtListChild.addTextChangedListener(new TextWatcher() {
+                                        @Override
+                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                                        @Override
+                                        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                                        @Override
+                                        public void afterTextChanged(Editable s) {
+                                            SelectedOptions so = selectedOptions.get(groupPosition);
+                                            so.setSelectedValue(s.toString());
+                                            selectedOptions.set(groupPosition, so);
+
+                                            ExpandableListView explist = (ExpandableListView) mainLayout.getParent();
+                                            LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(groupPosition);
+                                            TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                            selectedAnswer.setText(s.toString());
+                                            checkMeasurementButton();
+
+                                            final int sdk = android.os.Build.VERSION.SDK_INT;
+                                            if(s.length() > 0)
+                                            {
+                                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
+                                                } else {
+                                                    ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.gray_light));
+                                                } else {
+                                                    ll2.setBackground(_context.getResources().getDrawable(R.color.gray_light));
+                                                }
+                                            }
+
+
+                                        }
+                                    });
+                                    if(so.isReset())
+                                    {
+                                        txtListChild.setText("");
+                                        so.setReset(false);
+                                        selectedOptions.set(groupPosition, so);
+                                    }else {
+                                        if (null != selectedOptions.get(groupPosition) && !selectedOptions.get(groupPosition).getSelectedValue().equals("Tap To Select Answer")) {
+                                            txtListChild.setText(selectedOptions.get(groupPosition).getSelectedValue());
+                                        }
+                                    }
+                                    break;
+                                case 1:
+                                    userEnteredLayout.setVisibility(View.GONE);
+                                    scanLayout.setVisibility(View.GONE);
+                                    autoIncLayout.setVisibility(View.VISIBLE);
+                                    so.setOptionType(1);
+                                    so.setRemember(true);
+                                    CheckBox remember1 = (CheckBox)mainLayout.findViewById(R.id.remember_check_box);
+                                    remember1.setVisibility(View.GONE);
+                                    EditText fromNumber = (EditText) autoIncLayout
+                                            .findViewById(R.id.auto_inc_from);
+                                    EditText toNumber = (EditText) autoIncLayout
+                                            .findViewById(R.id.auto_inc_to);
+                                    EditText repeatNumber = (EditText) autoIncLayout
+                                            .findViewById(R.id.auto_inc_repeat);
+
+                                    fromNumber.addTextChangedListener(new GenericTextWatcher(fromNumber, groupPosition));
+                                    toNumber.addTextChangedListener(new GenericTextWatcher(toNumber, groupPosition));
+                                    repeatNumber.addTextChangedListener(new GenericTextWatcher(repeatNumber, groupPosition));
+
+                                    if (null != selectedOptions.get(groupPosition) && !selectedOptions.get(groupPosition).getSelectedValue().equals("Tap To Select Answer")) {
+                                        fromNumber.setTag("Wait");
+                                        toNumber.setTag("Wait");
+                                        repeatNumber.setTag("Wait");
+                                        fromNumber.setText(selectedOptions.get(groupPosition).getRangeFrom());
+                                        toNumber.setText(selectedOptions.get(groupPosition).getRangeTo());
+                                        repeatNumber.setText(selectedOptions.get(groupPosition).getRangeRepeat());
+                                        fromNumber.setTag(null);
+                                        toNumber.setTag(null);
+                                        repeatNumber.setTag(null);
+                                    }
+                                    checkMeasurementButton();
+                                    selectedOptions.set(groupPosition, so);
+                                    break;
+                                case 2
+                                        :
+                                    userEnteredLayout.setVisibility(View.GONE);
+                                    scanLayout.setVisibility(View.VISIBLE);
+                                    autoIncLayout.setVisibility(View.GONE);
+                                    so.setOptionType(2);
+                                    CheckBox remember2 = (CheckBox)mainLayout.findViewById(R.id.remember_check_box);
+                                    remember2.setVisibility(View.VISIBLE);
+                                    selectedOptions.set(groupPosition, so);
+                                    break;
+                                    default:
+                                        userEnteredLayout.setVisibility(View.VISIBLE);
+                                        scanLayout.setVisibility(View.GONE);
+                                        autoIncLayout.setVisibility(View.GONE);
+                                        so.setOptionType(0);
+                                        selectedOptions.set(groupPosition,so);
+                                        break;
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+
+
+
                     CheckBox remember = (CheckBox)convertView.findViewById(R.id.remember_check_box);
+
                     SelectedOptions so = selectedOptions.get(groupPosition);
 
                     if(so.isRemember())
@@ -97,6 +233,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                         remember.setChecked(false);
                     }
 
+                    optionType.setSelection(so.getOptionType());
 
                     remember.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -105,7 +242,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                 SelectedOptions so = selectedOptions.get(groupPosition);
                                 so.setRemember(true);
                                 selectedOptions.set(groupPosition, so);
-                            }else {
+                            } else {
                                 SelectedOptions so = selectedOptions.get(groupPosition);
                                 so.setRemember(false);
                                 selectedOptions.set(groupPosition, so);
@@ -113,61 +250,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
                         }
                     });
-                    txtListChild.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            SelectedOptions so = selectedOptions.get(groupPosition);
-                            so.setSelectedValue(s.toString());
-                            selectedOptions.set(groupPosition, so);
-
-                            ExpandableListView explist = (ExpandableListView) parent;
-
-                            LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(groupPosition);
-                            TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
-                            selectedAnswer.setText(s.toString());
-                            checkMeasurementButton();
-
-                            final int sdk = android.os.Build.VERSION.SDK_INT;
-                            if(s.length() > 0)
-                            {
-                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
-                                } else {
-                                    ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
-                                }
-                            }
-                            else
-                            {
-                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.gray_light));
-                                } else {
-                                    ll2.setBackground(_context.getResources().getDrawable(R.color.gray_light));
-                                }
-                            }
-
-
-                        }
-                    });
-                    if(so.isReset())
-                    {
-                        txtListChild.setText("");
-                        so.setReset(false);
-                        selectedOptions.set(groupPosition, so);
-                    }else {
-                        if (null != selectedOptions.get(groupPosition) && !selectedOptions.get(groupPosition).getSelectedValue().equals("Tap To Select Answer")) {
-                            txtListChild.setText(selectedOptions.get(groupPosition).getSelectedValue());
-                        }
-                    }
 
 
                     return convertView;
@@ -596,5 +679,98 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     public void setSelectedOptions(ArrayList<SelectedOptions> selectedOptions) {
         this.selectedOptions = selectedOptions;
+    }
+
+
+    private class GenericTextWatcher implements TextWatcher {
+
+        private View view;
+        private int groupPosition;
+
+        private GenericTextWatcher(View view, int groupPosition) {
+            this.view = view;
+            this.groupPosition = groupPosition;
+        }
+
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void afterTextChanged(Editable editable) {
+            ExpandableListView exp = (ExpandableListView) (view.getParent().getParent().getParent().getParent());
+            View headerView = exp.findViewWithTag(groupPosition);
+            String s = editable.toString();
+            SelectedOptions so = selectedOptions.get(groupPosition);
+            if (!s.isEmpty()) {
+
+                switch (view.getId()) {
+                    case R.id.auto_inc_from:
+
+                        so.setRangeFrom(s);
+
+                        selectedOptions.set(groupPosition, so);
+                        break;
+                    case R.id.auto_inc_to:
+                        so.setRangeTo(s);
+                        selectedOptions.set(groupPosition, so);
+                        break;
+                    case R.id.auto_inc_repeat:
+                        so.setRangeRepeat(s);
+                        selectedOptions.set(groupPosition, so);
+                        break;
+                }
+            } else {
+                switch (view.getId()) {
+                    case R.id.auto_inc_from:
+                        so.setRangeFrom("");
+                        selectedOptions.set(groupPosition, so);
+                        break;
+                    case R.id.auto_inc_to:
+                        so.setRangeTo("");
+                        selectedOptions.set(groupPosition, so);
+                        break;
+                    case R.id.auto_inc_repeat:
+                        so.setRangeRepeat("");
+                        selectedOptions.set(groupPosition, so);
+                        break;
+
+                }
+
+            }
+            TextView selectedAnswer = (TextView) headerView.findViewById(R.id.selectedAnswer);
+            if (!so.getRangeFrom().isEmpty() && !so.getRangeTo().isEmpty() && !so.getRangeRepeat().isEmpty()) {
+                if( view.getTag() == null )
+                {
+                    so.setSelectedValue(so.getRangeFrom());
+                    selectedAnswer.setText(so.getRangeFrom());
+                    so.setAutoIncIndex(0);
+                }
+            }
+            else {
+                so.setSelectedValue("");
+                selectedAnswer.setText("");
+
+            }
+            selectedOptions.set(groupPosition, so);
+            checkMeasurementButton();
+
+
+            final int sdk = android.os.Build.VERSION.SDK_INT;
+            if (!so.getRangeFrom().isEmpty() && !so.getRangeTo().isEmpty() && !so.getRangeRepeat().isEmpty()) {
+                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                    headerView.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
+                } else {
+                    headerView.setBackground(_context.getResources().getDrawable(R.color.green_light));
+                }
+            } else {
+                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                    headerView.setBackgroundDrawable(_context.getResources().getDrawable(R.color.gray_light));
+                } else {
+                    headerView.setBackground(_context.getResources().getDrawable(R.color.gray_light));
+                }
+            }
+        }
     }
 }

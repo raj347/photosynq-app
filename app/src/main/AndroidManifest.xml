@@ -104,6 +104,7 @@
         <activity
             android:name=".questions.QuestionsList"
             android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_questions_list" >
         </activity>
     </application>

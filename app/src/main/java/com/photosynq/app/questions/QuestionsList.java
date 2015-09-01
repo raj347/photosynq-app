@@ -569,6 +569,36 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 option.setSelectedValue("Tap To Select Answer");
                 option.setReset(true);
             }
+
+            if(option.getQuestionType() == Question.USER_DEFINED)
+            {
+                if(option.getOptionType() == 1)
+                {
+                    option.setReset(false);
+                    int from = Integer.parseInt(option.getRangeFrom());
+                    int to = Integer.parseInt(option.getRangeTo());
+                    int repeat = Integer.parseInt(option.getRangeRepeat());
+                    ArrayList<Integer> populatedValues = new ArrayList<Integer>();
+                    for(int i=from;i<=to;i++){
+                        for(int j=0;j<repeat;j++){
+                            populatedValues.add(i);
+
+                        }
+                    }
+                    int currentIndex = option.getAutoIncIndex();
+                    currentIndex++;
+                    if(currentIndex > populatedValues.size()-1)
+                    {
+                        option.setSelectedValue("Loop completed");
+                    }
+                    else
+                    {
+                        option.setSelectedValue(populatedValues.get(currentIndex).toString());
+                        option.setAutoIncIndex(currentIndex);
+                    }
+
+                }
+            }
         }
         listAdapter.setSelectedOptions(options);
         listAdapter.notifyDataSetChanged();

@@ -55,4 +55,9 @@
     <string name="title_activity_review_questions">Review Questions</string>
     <string name="title_activity_questions_list">Questions</string>
     <string name="pleaseselectanswer">Please Select Answer</string>
+    <string-array name = "option_type">
+        <item>Enter Answer</item>
+        <item>Auto Increment</item>
+        <item>Scan Code</item>
+    </string-array>
 </resources>
