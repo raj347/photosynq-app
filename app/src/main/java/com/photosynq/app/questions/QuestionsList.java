@@ -1,5 +1,6 @@
 package com.photosynq.app.questions;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -33,6 +34,7 @@ import com.photosynq.app.model.BluetoothMessage;
 import com.photosynq.app.model.Macro;
 import com.photosynq.app.model.Protocol;
 import com.photosynq.app.model.Question;
+import com.photosynq.app.model.RememberAnswers;
 import com.photosynq.app.model.ResearchProject;
 import com.photosynq.app.utils.BluetoothService;
 import com.photosynq.app.utils.CommonUtils;
@@ -550,61 +552,59 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     @Override
     public void onResume() {
         super.onResume();
-        TextView mtvStatusMessage = (TextView) findViewById(R.id.tv_status_message);
-        mtvStatusMessage.setText(R.string.start_measurement);
-        ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mProgressBar.setProgress(0);
+        if(!scanMode) {
+            TextView mtvStatusMessage = (TextView) findViewById(R.id.tv_status_message);
+            mtvStatusMessage.setText(R.string.start_measurement);
+            ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+            mProgressBar.setProgress(0);
 
-        final Button btnTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
-        btnTakeMeasurement.setText("+ Take Measurement");
-        btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
+            final Button btnTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
+            btnTakeMeasurement.setText("+ Take Measurement");
+            btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
 
-        ArrayList<SelectedOptions> options = listAdapter.getSelectedOptions();
-        for (SelectedOptions option:options
-             ) {
-            if(option.isRemember()) {
+            ArrayList<SelectedOptions> options = listAdapter.getSelectedOptions();
+            for (SelectedOptions option : options
+                    ) {
+                if (option.isRemember()) {
 
-                option.setReset(false);
-            }else {
-                option.setSelectedValue("Tap To Select Answer");
-                option.setReset(true);
-            }
-
-            if(option.getQuestionType() == Question.USER_DEFINED)
-            {
-                if(option.getOptionType() == 1)
-                {
                     option.setReset(false);
-                    int from = Integer.parseInt(option.getRangeFrom());
-                    int to = Integer.parseInt(option.getRangeTo());
-                    int repeat = Integer.parseInt(option.getRangeRepeat());
-                    ArrayList<Integer> populatedValues = new ArrayList<Integer>();
-                    for(int i=from;i<=to;i++){
-                        for(int j=0;j<repeat;j++){
-                            populatedValues.add(i);
+                } else {
+                    option.setSelectedValue("Tap To Select Answer");
+                    option.setReset(true);
+                }
 
+                if (option.getQuestionType() == Question.USER_DEFINED) {
+                    if (option.getOptionType() == 1) {
+                        option.setReset(false);
+                        int from = Integer.parseInt(option.getRangeFrom());
+                        int to = Integer.parseInt(option.getRangeTo());
+                        int repeat = Integer.parseInt(option.getRangeRepeat());
+                        ArrayList<Integer> populatedValues = new ArrayList<Integer>();
+                        for (int i = from; i <= to; i++) {
+                            for (int j = 0; j < repeat; j++) {
+                                populatedValues.add(i);
+
+                            }
                         }
-                    }
-                    int currentIndex = option.getAutoIncIndex();
-                    currentIndex++;
-                    if(currentIndex > populatedValues.size()-1)
-                    {
-                        option.setSelectedValue("Loop completed");
-                    }
-                    else
-                    {
-                        option.setSelectedValue(populatedValues.get(currentIndex).toString());
-                        option.setAutoIncIndex(currentIndex);
+                        int currentIndex = option.getAutoIncIndex();
+                        currentIndex++;
+                        if (currentIndex > populatedValues.size() - 1) {
+                            option.setSelectedValue("Loop completed");
+                        } else {
+                            option.setSelectedValue(populatedValues.get(currentIndex).toString());
+                            option.setAutoIncIndex(currentIndex);
+                        }
+
                     }
 
                 }
             }
+            listAdapter.setSelectedOptions(options);
+            listAdapter.notifyDataSetChanged();
+            mIsMeasureBtnClicked = false;
+            mIsCancelMeasureBtnClicked = false;
         }
-        listAdapter.setSelectedOptions(options);
-        listAdapter.notifyDataSetChanged();
-        scanMode = false;
-        mIsMeasureBtnClicked = false;
-        mIsCancelMeasureBtnClicked = false;
+        scanMode=false;
     }
     void setDeviceTimeOut(){
 
@@ -689,5 +689,27 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (resultCode == Activity.RESULT_OK) {
+            if (null != intent) {
+                String contents = intent.getStringExtra("SCAN_RESULT");
 
+                Toast.makeText(this, contents+" "+requestCode, Toast.LENGTH_SHORT).show();
+                ArrayList<SelectedOptions> options = listAdapter.getSelectedOptions();
+                SelectedOptions so = options.get(requestCode);
+                so.setSelectedValue(contents);
+                options.set(requestCode, so);
+                listAdapter.setSelectedOptions(options);
+                listAdapter.notifyDataSetChanged();
+                scanMode = true;
+            }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            // Handle cancel
+            Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
 }

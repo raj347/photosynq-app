@@ -91,7 +91,7 @@ public class UpdateProtocol implements PhotosynqResponse {
                         String id = obj.getString("id");
                         Protocol protocol = new Protocol(id,
                                 obj.getString("name"),
-                                obj.getString("protocol_json"),
+                                    obj.getString("protocol_json"),
                                 obj.getString("description"),
                                 obj.getString("macro_id"), "slug",
                                 obj.getString("pre_selected"));

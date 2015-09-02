@@ -1,6 +1,7 @@
 package com.photosynq.app.questions;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.zxing.client.android.CaptureActivity;
 import com.photosynq.app.R;
 import com.photosynq.app.SelectedOptions;
 import com.photosynq.app.model.Question;
@@ -192,15 +194,77 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                     checkMeasurementButton();
                                     selectedOptions.set(groupPosition, so);
                                     break;
-                                case 2
-                                        :
+                                case 2:
+                                    EditText scannedValue = (EditText) scanLayout
+                                            .findViewById(R.id.scanned_input_edit_text);
+                                    Button scanButton = (Button)scanLayout.findViewById(R.id.scan_button);
+                                    scanButton.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent = new Intent(_context, CaptureActivity.class);
+                                            intent.setAction("com.google.zxing.client.android.SCAN");
+                                            // this stops saving ur barcode in barcode scanner app's history
+                                            intent.putExtra("SAVE_HISTORY", false);
+                                            ((QuestionsList) _context).startActivityForResult(intent, groupPosition);
+                                        }
+                                    });
                                     userEnteredLayout.setVisibility(View.GONE);
                                     scanLayout.setVisibility(View.VISIBLE);
                                     autoIncLayout.setVisibility(View.GONE);
                                     so.setOptionType(2);
                                     CheckBox remember2 = (CheckBox)mainLayout.findViewById(R.id.remember_check_box);
                                     remember2.setVisibility(View.VISIBLE);
+                                    scannedValue.addTextChangedListener(new TextWatcher() {
+                                        @Override
+                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                                        @Override
+                                        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                                        @Override
+                                        public void afterTextChanged(Editable s) {
+                                            SelectedOptions so = selectedOptions.get(groupPosition);
+                                            so.setSelectedValue(s.toString());
+                                            selectedOptions.set(groupPosition, so);
+
+                                            ExpandableListView explist = (ExpandableListView) mainLayout.getParent();
+                                            LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(groupPosition);
+                                            TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                            selectedAnswer.setText(s.toString());
+                                            checkMeasurementButton();
+
+                                            final int sdk = android.os.Build.VERSION.SDK_INT;
+                                            if(s.length() > 0)
+                                            {
+                                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
+                                                } else {
+                                                    ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.gray_light));
+                                                } else {
+                                                    ll2.setBackground(_context.getResources().getDrawable(R.color.gray_light));
+                                                }
+                                            }
+
+
+                                        }
+                                    });
                                     selectedOptions.set(groupPosition, so);
+                                    if(so.isReset())
+                                    {
+                                        scannedValue.setText("");
+                                        so.setReset(false);
+                                        selectedOptions.set(groupPosition, so);
+                                    }else {
+                                        if (null != selectedOptions.get(groupPosition) && !selectedOptions.get(groupPosition).getSelectedValue().equals("Tap To Select Answer")) {
+                                            scannedValue.setText(selectedOptions.get(groupPosition).getSelectedValue());
+                                        }
+                                    }
                                     break;
                                     default:
                                         userEnteredLayout.setVisibility(View.VISIBLE);
