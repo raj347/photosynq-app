@@ -411,24 +411,40 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                 // String readMessage = new String(readBuf, 0, msg.arg1);
                                 //??mtvStatusMessage.setText(R.string.connected);
                                 String dataString;
+                                //StringBuffer options = new StringBuffer();
+                                //ArrayList<SelectedOptions> allOptions = listAdapter.getSelectedOptions();
+//                                options.append("\"user_answers\": [");
+//                                //loop
+//                                if (null != allOptions) {
+//                                    for (int i = 0; i < allOptions.size(); i++) {
+//                                        options.append("\"" + allOptions.get(i).getSelectedValue() + "\"");
+//                                        if (i < allOptions.size() - 1)
+//                                            options.append(",");
+//                                    }
+//                                }
+//                                options.append(" ],");
+                                //TODO uncomment this for api v3
                                 StringBuffer options = new StringBuffer();
-                                options.append("\"user_answers\": {");
-                                //loop
+                                //options.append("\"user_answers\": {");
+                                options.append("\"user_answers\": [");
+
+
                                 ArrayList<SelectedOptions> allOptions = listAdapter.getSelectedOptions();
                                     for (int i = 0; i < allOptions.size(); i++) {
 
-                                        options.append('"')
-                                                .append(allOptions.get(i).getQuestionId())
-                                                .append('"')
-                                                .append(':')
-                                                .append('"')
+//                                        options.append('"')
+//                                                .append(allOptions.get(i).getQuestionId())
+//                                                .append('"')
+//                                                .append(':')
+                                                options.append('"')
                                                 .append(allOptions.get(i).getSelectedValue())
                                                 .append('"');
                                         if (i < allOptions.size() - 1)
                                             options.append(",");
                                     }
-                                options.append(" },");
-//                                final long time = System.currentTimeMillis();
+                                options.append(" ],");
+                                //options.append(" },");
+                                final long time = System.currentTimeMillis();
                                 String currentLocation = PrefUtils.getFromPrefs(QuestionsList.this, PrefUtils.PREFS_CURRENT_LOCATION, "");
                                 if (allOptions.size() <= 0) {
                                     dataString = "var data = [\n" + measurement.replaceAll("\\r\\n", "").replaceFirst("\\{", "{" + "\"location\":[" + currentLocation + "],") + "\n];";
@@ -703,13 +719,13 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 options.set(requestCode, so);
                 listAdapter.setSelectedOptions(options);
                 listAdapter.notifyDataSetChanged();
-                scanMode = true;
+
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
             // Handle cancel
             Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
         }
-
+        scanMode = true;
 
     }
 }

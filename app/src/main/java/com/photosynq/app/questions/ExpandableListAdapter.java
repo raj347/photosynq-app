@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
@@ -155,11 +157,18 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                         txtListChild.setText("");
                                         so.setReset(false);
                                         selectedOptions.set(groupPosition, so);
+
                                     }else {
                                         if (null != selectedOptions.get(groupPosition) && !selectedOptions.get(groupPosition).getSelectedValue().equals("Tap To Select Answer")) {
                                             txtListChild.setText(selectedOptions.get(groupPosition).getSelectedValue());
                                         }
                                     }
+                                    if(txtListChild.requestFocus()) {
+                                        InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        imm.showSoftInput(txtListChild, InputMethodManager.SHOW_IMPLICIT);
+                                        //((QuestionsList)_context).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                                    }
+
                                     break;
                                 case 1:
                                     userEnteredLayout.setVisibility(View.GONE);
@@ -216,10 +225,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                     remember2.setVisibility(View.VISIBLE);
                                     scannedValue.addTextChangedListener(new TextWatcher() {
                                         @Override
-                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                        }
 
                                         @Override
-                                        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                        }
 
                                         @Override
                                         public void afterTextChanged(Editable s) {
@@ -234,17 +245,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                             checkMeasurementButton();
 
                                             final int sdk = android.os.Build.VERSION.SDK_INT;
-                                            if(s.length() > 0)
-                                            {
-                                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                            if (s.length() > 0) {
+                                                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
                                                     ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
                                                 } else {
                                                     ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
                                                 }
-                                            }
-                                            else
-                                            {
-                                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                            } else {
+                                                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
                                                     ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.gray_light));
                                                 } else {
                                                     ll2.setBackground(_context.getResources().getDrawable(R.color.gray_light));
