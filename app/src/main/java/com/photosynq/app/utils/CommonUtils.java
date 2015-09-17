@@ -453,17 +453,17 @@ public class CommonUtils {
     public static void setProgress(final Activity context, ProgressDialog progressDialog, int progressValue){
        if(progressDialog != null && context != null) {
 
-           String progressStr = PrefUtils.getFromPrefs(context, "SyncProgress", "0");
-           int progress = Integer.parseInt(progressStr);
+           //String progressStr = PrefUtils.getFromPrefs(context, "SyncProgress", "0");
+           //int progress = Integer.parseInt(progressStr);
 
-           PrefUtils.saveToPrefs(context, "SyncProgress", "" + (progress + progressValue));
+           //PrefUtils.saveToPrefs(context, "SyncProgress", "" + (progress + progressValue));
 
            int getProgress = progressDialog.getProgress();
            progressDialog.setProgress(getProgress + progressValue);
-           if (progress >= 100) {
+           if (getProgress >= 100) {
                progressDialog.dismiss();
 
-               PrefUtils.saveToPrefs(context, "SyncProgress", "0");
+              // PrefUtils.saveToPrefs(context, "SyncProgress", "0");
                progressDialog.setProgress(0);
 
                PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");

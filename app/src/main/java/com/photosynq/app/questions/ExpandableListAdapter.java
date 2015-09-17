@@ -368,11 +368,13 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                             R.layout.simple_spinner_item,list );
                     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     projectDefinedOptionsSpinner.setAdapter(dataAdapter);
-                    projectDefinedOptionsSpinner.setTag(groupPosition);
+                    projectDefinedOptionsSpinner.setTag(groupPosition+"-"+childPosition);
                     projectDefinedOptionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            int questionNumber = (int)parent.getTag();
+                            String[] ids = ((String)parent.getTag()).split("-");
+                            int questionNumber =  Integer.parseInt(ids[0]);
+                            //int questionNumber = (int)parent.getTag();
                             SelectedOptions so = selectedOptions.get(questionNumber);
                             so.setSelectedValue(parent.getItemAtPosition(position).toString());
                             selectedOptions.set(questionNumber, so);
@@ -447,11 +449,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     dataAdapter1.setDropDownViewResource(R.layout.spinner_image_text);
 
                     photoDefinedOptionsSpinner.setAdapter(dataAdapter1);
-                    photoDefinedOptionsSpinner.setTag(groupPosition);
+                    photoDefinedOptionsSpinner.setTag(groupPosition+"-"+childPosition);
                     photoDefinedOptionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            int questionNumber = (int) parent.getTag();
+                            String[] ids = ((String)parent.getTag()).split("-");
+                            int questionNumber =  Integer.parseInt(ids[0]);
                             SelectedOptions so = selectedOptions.get(questionNumber);
                             so.setSelectedValue(parent.getItemAtPosition(position).toString());
                             selectedOptions.set(questionNumber, so);
