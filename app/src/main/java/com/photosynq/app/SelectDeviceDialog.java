@@ -22,7 +22,6 @@ import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,8 +127,6 @@ public class SelectDeviceDialog extends DialogFragment {
                 try {
                     ((MainActivity) getActivity()).setDeviceConnected(device.getName(), appSettings.getConnectionId());
                 }catch (Exception e){
-
-                    ((ProjectMeasurmentActivity) getActivity()).setDeviceConnected(device.getName(), appSettings.getConnectionId());
                 }
             }
         }

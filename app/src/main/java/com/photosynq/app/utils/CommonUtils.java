@@ -70,11 +70,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-//import tourguide.tourguide.Overlay;
-//import tourguide.tourguide.Pointer;
-//import tourguide.tourguide.ToolTip;
-//import tourguide.tourguide.TourGuide;
-
 
 /**
  * Created by kalpesh on 24/01/15.
@@ -414,56 +409,17 @@ public class CommonUtils {
 
     }
 
-//    public static TourGuide showShowCaseView(Activity activity, int viewId, String title, String message){
-//
-//        Animation animation = new TranslateAnimation(0f, 0f, 200f, 0f);
-//        animation.setDuration(1000);
-//        animation.setFillAfter(true);
-//        animation.setInterpolator(new BounceInterpolator());
-//
-//        ToolTip toolTip = new ToolTip()
-//                .setTitle(title)
-//                .setDescription(message)
-//                .setTextColor(Color.parseColor("#bdc3c7"))
-//                .setBackgroundColor(Color.parseColor("#e74c3c"))
-//                .setShadow(true)
-//                .setGravity(Gravity.TOP)
-//                .setEnterAnimation(animation);
-//
-//        View view = activity.findViewById(viewId);
-//        TourGuide mTourGuideHandler = TourGuide.init(activity).with(TourGuide.Technique.Click)
-//                .setPointer(new Pointer())
-//                .setToolTip(toolTip)
-//                .setOverlay(new Overlay())
-//                .playOn(view);
-//
-//        return mTourGuideHandler;
-//
-////        ViewTarget target = new ViewTarget( viewId, activity);
-////        ShowcaseView sv = new ShowcaseView.Builder(activity, true)
-////                .setTarget(target)
-////                .setContentTitle(title)
-////                .setContentText(message)
-////                .setStyle(R.style.CustomShowcaseTheme4)
-////                .build();
-////        sv.setButtonPosition(lps);
-//
-//    }
+
 
     public static void setProgress(final Activity context, ProgressDialog progressDialog, int progressValue){
        if(progressDialog != null && context != null) {
 
-           //String progressStr = PrefUtils.getFromPrefs(context, "SyncProgress", "0");
-           //int progress = Integer.parseInt(progressStr);
-
-           //PrefUtils.saveToPrefs(context, "SyncProgress", "" + (progress + progressValue));
 
            int getProgress = progressDialog.getProgress();
            progressDialog.setProgress(getProgress + progressValue);
            if (getProgress >= 100) {
                progressDialog.dismiss();
 
-              // PrefUtils.saveToPrefs(context, "SyncProgress", "0");
                progressDialog.setProgress(0);
 
                PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");

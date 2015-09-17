@@ -11,10 +11,11 @@ public class Constants {
     //  public static final String SERVER_URL = "http://staging.photosynq.venturit.net/";
 
 
-    public static final String API_VER = "api/v2/";
+    public static final String API_VER = "api/v3/";
 
     public static final String PHOTOSYNQ_LOGIN_URL = SERVER_URL+API_VER+"sign_in.json";
     public static final String PHOTOSYNQ_PROJECTS_LIST_URL = SERVER_URL+API_VER+"projects.json?";
+    public static final String PHOTOSYNQ_MY_PROJECTS_LIST_URL = SERVER_URL+API_VER+"users/active_projects.json?";
     public static final String PHOTOSYNQ_PROTOCOLS_LIST_URL = SERVER_URL+API_VER+"protocols.json?";
     public static final String PHOTOSYNQ_MACROS_LIST_URL =SERVER_URL+API_VER+ "macros.json?";
     public static final String PHOTOSYNQ_DATA_URL = SERVER_URL+API_VER+"projects/";

@@ -187,9 +187,6 @@ public class ProjectDetailsActivity extends ActionBarActivity {
             }
         }
 
-//        Intent intent = new Intent(this, ProjectMeasurmentActivity.class);
-//        intent.putExtra(DatabaseHelper.C_PROJECT_ID, projectID);
-//        startActivityForResult(intent, 555);
         Intent intent = new Intent(this, QuestionsList.class);
         intent.putExtra(DatabaseHelper.C_PROJECT_ID, projectID);
         startActivityForResult(intent, 555);

@@ -72,15 +72,6 @@
                 android:value="com.photosynq.app.MainActivity" />
         </activity>
         <activity
-            android:name=".ProjectMeasurmentActivity"
-            android:parentActivityName=".ProjectDetailsActivity"
-            android:screenOrientation="nosensor"
-            android:windowSoftInputMode="adjustResize" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.photosynq.app.ProjectDetailsActivity" />
-        </activity>
-        <activity
             android:name=".DirectionsActivity"
             android:label="@string/title_activity_directions"
             android:screenOrientation="nosensor"
