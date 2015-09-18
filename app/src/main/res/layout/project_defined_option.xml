@@ -7,7 +7,7 @@
     <com.photosynq.app.questions.NoDefaultSpinner
         android:id="@+id/project_defined_options_spinner"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="50dp"
         android:prompt="@string/pleaseselectanswer"
         android:spinnerMode="dialog"
         android:textColor="@color/textPrimary"
