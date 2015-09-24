@@ -425,25 +425,25 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 //                                options.append(" ],");
                                 //TODO uncomment this for api v3
                                 StringBuffer options = new StringBuffer();
-                                //options.append("\"user_answers\": {");
-                                options.append("\"user_answers\": [");
+                                options.append("\"user_answers\": {");
+                                //options.append("\"user_answers\": [");
 
 
                                 ArrayList<SelectedOptions> allOptions = listAdapter.getSelectedOptions();
                                     for (int i = 0; i < allOptions.size(); i++) {
 
-//                                        options.append('"')
-//                                                .append(allOptions.get(i).getQuestionId())
-//                                                .append('"')
-//                                                .append(':')
-                                                options.append('"')
+                                        options.append('"')
+                                                .append(allOptions.get(i).getQuestionId())
+                                                .append('"')
+                                                .append(':')
+                                                .append('"')
                                                 .append(allOptions.get(i).getSelectedValue())
                                                 .append('"');
                                         if (i < allOptions.size() - 1)
                                             options.append(",");
                                     }
-                                options.append(" ],");
-                                //options.append(" },");
+                                //options.append(" ],");
+                                options.append(" },");
                                 final long time = System.currentTimeMillis();
                                 String currentLocation = PrefUtils.getFromPrefs(QuestionsList.this, PrefUtils.PREFS_CURRENT_LOCATION, "");
                                 if (allOptions.size() <= 0) {

@@ -143,7 +143,7 @@ public class CommonUtils {
                 urlc.connect();
                 return (urlc.getResponseCode() == 200);
             } catch (IOException e) {
-                PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
+                //PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
                 Log.e("Connectivity", "Error checking internet connection", e);
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(
@@ -168,7 +168,7 @@ public class CommonUtils {
                 );
             }
         } else {
-            PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
+            //PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
             Log.d("Connectivity", "You are not connect to a network.");
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(
@@ -366,33 +366,33 @@ public class CommonUtils {
         return appSettings.getConnectionId();
     }
 
-    public static String getAutoIncrementedValue(Context ctx,String question_id, String index) {
-        if(Integer.parseInt(index) == -1) {
-            return "-2";
-        }
-
-        String userId = PrefUtils.getFromPrefs(ctx , PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
-        DatabaseHelper db = DatabaseHelper.getHelper(ctx);
-        String projectId = db.getSettings(userId).getProjectId();
-        Question question = db.getQuestionForProject(projectId, question_id);
-        Data data = db.getData(userId, projectId, question.getQuestionId());
-        String[] items = data.getValue().split(",");
-        int from = Integer.parseInt(items[0]);
-        int to = Integer.parseInt(items[1]);
-        int repeat = Integer.parseInt(items[2]);
-        ArrayList<Integer> populatedValues = new ArrayList<Integer>();
-        for(int i=from;i<=to;i++){
-            for(int j=0;j<repeat;j++){
-                populatedValues.add(i);
-
-            }
-        }
-
-        if(Integer.parseInt(index) > populatedValues.size()-1)
-            return "-1";
-
-        return populatedValues.get(Integer.parseInt(index)).toString();
-    }
+//    public static String getAutoIncrementedValue(Context ctx,String question_id, String index) {
+//        if(Integer.parseInt(index) == -1) {
+//            return "-2";
+//        }
+//
+//        String userId = PrefUtils.getFromPrefs(ctx , PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
+//        DatabaseHelper db = DatabaseHelper.getHelper(ctx);
+//        String projectId = db.getSettings(userId).getProjectId();
+//        Question question = db.getQuestionForProject(projectId, question_id);
+//        Data data = db.getData(userId, projectId, question.getQuestionId());
+//        String[] items = data.getValue().split(",");
+//        int from = Integer.parseInt(items[0]);
+//        int to = Integer.parseInt(items[1]);
+//        int repeat = Integer.parseInt(items[2]);
+//        ArrayList<Integer> populatedValues = new ArrayList<Integer>();
+//        for(int i=from;i<=to;i++){
+//            for(int j=0;j<repeat;j++){
+//                populatedValues.add(i);
+//
+//            }
+//        }
+//
+//        if(Integer.parseInt(index) > populatedValues.size()-1)
+//            return "-1";
+//
+//        return populatedValues.get(Integer.parseInt(index)).toString();
+//    }
 
     public static Date convertToDate(String rawdate)
     {
@@ -422,7 +422,7 @@ public class CommonUtils {
 
                progressDialog.setProgress(0);
 
-               PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
+             //  PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
 
                context.runOnUiThread(new Runnable() {
                    @Override

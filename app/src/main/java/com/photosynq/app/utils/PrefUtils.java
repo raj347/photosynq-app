@@ -46,7 +46,7 @@ public class PrefUtils {
     public static final String PREFS_TOTAL_CACHED_DATA_POINTS = "TOTAL_CACHED_DATA_POINTS";
 
     //
-    public static final String PREFS_IS_SYNC_IN_PROGRESS = "IS_SYNC_IN_PROGRESS";
+    //public static final String PREFS_IS_SYNC_IN_PROGRESS = "IS_SYNC_IN_PROGRESS";
 
     //check whether keep button click or not.
     public static final String PREFS_KEEP_BTN_CLICK = "KEEP_BTN_CLICK";

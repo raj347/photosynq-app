@@ -145,11 +145,6 @@ public class DisplayResultsActivity extends ActionBarActivity implements
             }
         });
 
-//        String isShowed = PrefUtils.getFromPrefs(this, "IsFirstDisplayResultsActivity", "FALSE");
-//        if (isShowed.equals("FALSE")) {
-//            CommonUtils.showShowCaseView(this, R.id.linearLayout1, "Submit data to the project, or discard", "");
-//            PrefUtils.saveToPrefs(this, "IsFirstDisplayResultsActivity", "TRUE");
-//        }
 
     }
 
@@ -456,7 +451,7 @@ public class DisplayResultsActivity extends ActionBarActivity implements
             }
 
             SyncHandler syncHandler = new SyncHandler(this, MainActivity.getProgressBar());
-            syncHandler.DoSync(SyncHandler.UPLOAD_RESULTS_MODE);
+            syncHandler.DoSync();
 
             finish();
 

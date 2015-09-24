@@ -5,7 +5,6 @@ import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -102,13 +101,13 @@ public class MainActivity extends ActionBarActivity
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             //use the query to search your data somehow
-            if(mCurrentSelectedPosition == 1) { //My Projects
+            if(mCurrentSelectedPosition == 0) { //My Projects
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProjectModeFragment.newInstance(mCurrentSelectedPosition, query), ProjectModeFragment.class.getName())
+                        .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedPosition, query), MyProjectsFragment.class.getName())
                         .commit();
             }else{
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProjectModeFragment.newInstance(mCurrentSelectedPosition, query), ProjectModeFragment.class.getName())
+                        .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedPosition, query), DiscoverFragment.class.getName())
                         .commit();
             }
         }
@@ -151,16 +150,18 @@ public class MainActivity extends ActionBarActivity
 
         switch (position){
             case 0:
-                // Open Discover
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProjectModeFragment.newInstance(position), ProjectModeFragment.class.getName())
-                        .commit();
-                break;
-            case 1:
                 // Open MyProjects
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProjectModeFragment.newInstance(position), ProjectModeFragment.class.getName())
+                        .replace(R.id.container, MyProjectsFragment.newInstance(position), MyProjectsFragment.class.getName())
                         .commit();
+
+                break;
+            case 1:
+                // Open Discover
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, DiscoverFragment.newInstance(position), DiscoverFragment.class.getName())
+                        .commit();
+
                 break;
             case 2:
                 // Open Quick Measurement
@@ -256,10 +257,10 @@ public class MainActivity extends ActionBarActivity
     public void onSectionAttached(int number) {
         switch (number) {
             case 0:
-                mTitle = getString(R.string.discover_title);
+                mTitle = getString(R.string.my_projects_title);
                 break;
             case 1:
-                mTitle = getString(R.string.my_projects_title);
+                mTitle = getString(R.string.discover_title);
                 break;
             case 2:
                 mTitle = "Select Measurement";
@@ -347,13 +348,13 @@ public class MainActivity extends ActionBarActivity
         //mIsSearchView = false;
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if(mCurrentSelectedPosition == 0) {//Discover
+        if(mCurrentSelectedPosition == 1) {//Discover
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, ProjectModeFragment.newInstance(mCurrentSelectedPosition), ProjectModeFragment.class.getName())
+                    .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedPosition), DiscoverFragment.class.getName())
                     .commit();
-        }else if(mCurrentSelectedPosition == 1) { //My Projects
+        }else if(mCurrentSelectedPosition == 0) { //My Projects
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, ProjectModeFragment.newInstance(mCurrentSelectedPosition), ProjectModeFragment.class.getName())
+                    .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedPosition), MyProjectsFragment.class.getName())
                     .commit();
         }
     }

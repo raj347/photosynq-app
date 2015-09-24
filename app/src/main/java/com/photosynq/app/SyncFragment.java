@@ -234,15 +234,15 @@ public class SyncFragment extends Fragment implements PhotosynqResponse {
 
                 if (clickCounter == 0) {
 
-                    String isSyncInProgress = PrefUtils.getFromPrefs(getActivity(), PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
-                    if (isSyncInProgress.equals("true")) {
-
-                        Toast.makeText(getActivity(), "Sync already in progress!", Toast.LENGTH_LONG).show();
-                        return;
-
-                    } else {
-                        Toast.makeText(getActivity(), "Checking internet connection...", Toast.LENGTH_SHORT).show();
-                    }
+//                    String isSyncInProgress = PrefUtils.getFromPrefs(getActivity(), PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
+//                    if (isSyncInProgress.equals("true")) {
+//
+//                        Toast.makeText(getActivity(), "Sync already in progress!", Toast.LENGTH_LONG).show();
+//                        return;
+//
+//                    } else {
+//                        Toast.makeText(getActivity(), "Checking internet connection...", Toast.LENGTH_SHORT).show();
+//                    }
 
                 }
                 clickCounter++;
@@ -269,7 +269,7 @@ public class SyncFragment extends Fragment implements PhotosynqResponse {
 
                                         MainActivity mainActivity = (MainActivity) getActivity();
                                         SyncHandler syncHandler = new SyncHandler(mainActivity);
-                                        syncHandler.DoSync(SyncHandler.ALL_SYNC_UI_MODE_CLEAR_CACHE);
+                                        syncHandler.DoSync();
 
                                     } else {//if Wifi is not connected
 
@@ -283,7 +283,7 @@ public class SyncFragment extends Fragment implements PhotosynqResponse {
 
                                     MainActivity mainActivity = (MainActivity) getActivity();
                                     SyncHandler syncHandler = new SyncHandler(mainActivity);
-                                    syncHandler.DoSync(SyncHandler.ALL_SYNC_UI_MODE_CLEAR_CACHE);
+                                    syncHandler.DoSync();
                                 }
                             } else if (clickCounter == 1) {
                                 if (cbAutoSyncWifiOnly.isChecked()) {
@@ -295,7 +295,7 @@ public class SyncFragment extends Fragment implements PhotosynqResponse {
 
                                         MainActivity mainActivity = (MainActivity) getActivity();
                                         SyncHandler syncHandler = new SyncHandler(mainActivity);
-                                        syncHandler.DoSync(SyncHandler.ALL_SYNC_UI_MODE);
+                                        syncHandler.DoSync();
 
                                     } else {//if Wifi is not connected
 
@@ -308,7 +308,7 @@ public class SyncFragment extends Fragment implements PhotosynqResponse {
 
                                     MainActivity mainActivity = (MainActivity) getActivity();
                                     SyncHandler syncHandler = new SyncHandler(mainActivity);
-                                    syncHandler.DoSync(SyncHandler.ALL_SYNC_UI_MODE);
+                                    syncHandler.DoSync();
                                 }
 
                             }

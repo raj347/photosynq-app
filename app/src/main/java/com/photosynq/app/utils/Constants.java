@@ -7,19 +7,19 @@ public class Constants {
 
     public static final String SUCCESS = "SUCCESS";
     public static final String SERVER_NOT_ACCESSIBLE = "SERVER_NOT_ACCESSIBLE";
-    public static final String SERVER_URL = "http://photosynq.org/";
-    //  public static final String SERVER_URL = "http://staging.photosynq.venturit.net/";
+    //public static final String SERVER_URL = "http://photosynq.org/";
+      public static final String SERVER_URL = "http://staging.photosynq.venturit.net/";
 
 
     public static final String API_VER = "api/v3/";
 
     public static final String PHOTOSYNQ_LOGIN_URL = SERVER_URL+API_VER+"sign_in.json";
     public static final String PHOTOSYNQ_PROJECTS_LIST_URL = SERVER_URL+API_VER+"projects.json?";
+    public static final String PHOTOSYNQ_PROJECT_DETAILS_URL = SERVER_URL+API_VER+"projects/";
     public static final String PHOTOSYNQ_MY_PROJECTS_LIST_URL = SERVER_URL+API_VER+"users/active_projects.json?";
     public static final String PHOTOSYNQ_PROTOCOLS_LIST_URL = SERVER_URL+API_VER+"protocols.json?";
     public static final String PHOTOSYNQ_MACROS_LIST_URL =SERVER_URL+API_VER+ "macros.json?";
     public static final String PHOTOSYNQ_DATA_URL = SERVER_URL+API_VER+"projects/";
-
     // Message types sent from the BluetoothService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;

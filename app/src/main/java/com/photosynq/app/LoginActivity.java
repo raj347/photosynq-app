@@ -83,7 +83,7 @@ public class LoginActivity extends Activity implements PhotosynqResponse {
 
         copyAssets();
 
-        PrefUtils.saveToPrefs(getApplicationContext(), PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
+        //PrefUtils.saveToPrefs(getApplicationContext(), PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
 
         mStrEmail = PrefUtils.getFromPrefs(getApplicationContext(), PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
         mStrPassword = PrefUtils.getFromPrefs(getApplicationContext() , PrefUtils.PREFS_LOGIN_PASSWORD_KEY, PrefUtils.PREFS_DEFAULT_VAL);

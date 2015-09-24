@@ -187,7 +187,7 @@ public class NavigationDrawerFragment extends Fragment {
             public void onClick(View v) {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 SyncHandler syncHandler = new SyncHandler(mainActivity, MainActivity.getProgressBar());
-                syncHandler.DoSync(SyncHandler.ALL_SYNC_UI_MODE);
+                syncHandler.DoSync();
 
                 Toast.makeText(getActivity(), "Sync started!", Toast.LENGTH_LONG).show();
 
@@ -206,8 +206,8 @@ public class NavigationDrawerFragment extends Fragment {
                 getActivity(),
                 R.layout.navigation_drawer_item,
                 new String[]{
-                        getString(R.string.discover_title),
                         getString(R.string.my_projects_title),
+                        getString(R.string.discover_title),
                         getString(R.string.quick_measurement_title),
                         getString(R.string.sync_settings_title),
                         "About"
