@@ -20,6 +20,7 @@ public class Constants {
     public static final String PHOTOSYNQ_PROTOCOLS_LIST_URL = SERVER_URL+API_VER+"protocols.json?";
     public static final String PHOTOSYNQ_MACROS_LIST_URL =SERVER_URL+API_VER+ "macros.json?";
     public static final String PHOTOSYNQ_DATA_URL = SERVER_URL+API_VER+"projects/";
+    public static final String PHOTOSYNQ_SEARCH_URL = SERVER_URL+API_VER+"projects/search.json?keyword=";
     // Message types sent from the BluetoothService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;

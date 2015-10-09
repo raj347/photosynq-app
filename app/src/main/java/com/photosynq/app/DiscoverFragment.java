@@ -86,6 +86,7 @@ public class DiscoverFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_discover_project_mode, container, false);
         // Initialize ListView
+        System.out.println("Search string =" + mSearchString);
         pageno=1;
         projectList = (ListView) rootView.findViewById(R.id.lv_project);
         projects = new ArrayList<ResearchProject>();
@@ -93,25 +94,26 @@ public class DiscoverFragment extends Fragment {
         projectList.setAdapter(arrayAdapter);
 
         getprojects();
-
-        projectList.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount-1;
-                if(loadMore) {
-                    if (pageno < totalpages) {
-                        if(!loading) {
-                            getprojects();
-                        }
-                    }
+        if(mSearchString.length() <= 0) {
+            projectList.setOnScrollListener(new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(AbsListView view, int scrollState) {
                 }
 
-            }
-        });
+                @Override
+                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                    boolean loadMore = firstVisibleItem + visibleItemCount >= totalItemCount - 1;
+                    if (loadMore) {
+                        if (pageno < totalpages) {
+                            if (!loading) {
+                                getprojects();
+                            }
+                        }
+                    }
+
+                }
+            });
+        }
         projectList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
@@ -131,10 +133,17 @@ public class DiscoverFragment extends Fragment {
     private void getprojects(){
         String authToken = PrefUtils.getFromPrefs(getActivity().getApplicationContext(), PrefUtils.PREFS_AUTH_TOKEN_KEY, PrefUtils.PREFS_DEFAULT_VAL);
         String email = PrefUtils.getFromPrefs(getActivity().getApplicationContext(), PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
-        new DownloadDiscoverProjects().execute(getActivity().getApplicationContext(), Constants.PHOTOSYNQ_PROJECTS_LIST_URL
-                + "all=1" + "&page=" + pageno
-                + "&user_email=" + email + "&user_token="
-                + authToken);
+        if(mSearchString.length() > 0) {
+            new DownloadDiscoverProjects().execute(getActivity().getApplicationContext(), Constants.PHOTOSYNQ_SEARCH_URL
+                    + mSearchString
+                    + "&user_email=" + email + "&user_token="
+                    + authToken);
+        }else{
+            new DownloadDiscoverProjects().execute(getActivity().getApplicationContext(), Constants.PHOTOSYNQ_PROJECTS_LIST_URL
+                    + "all=1" + "&page=" + pageno
+                    + "&user_email=" + email + "&user_token="
+                    + authToken);
+        }
 
     }
     @Override
@@ -148,45 +157,7 @@ public class DiscoverFragment extends Fragment {
         }
     }
 
-//    private void showProjectList() {
-//        if(mSearchString.length() > 0) {
-//            projects=dbHelper.getAllResearchProjects(mSearchString);
-//            if(projects == null  || projects.isEmpty()){
-//                Toast.makeText(getActivity(), "No project found", Toast.LENGTH_LONG).show();
-//            }
-//        }
-//        else
-//        {
-//            projects = dbHelper.getAllResearchProjects();
-//        }
-//
-//        arrayAdapter = new ProjectArrayAdapter(getActivity().getApplicationContext(), projects);
-//        projectList.setAdapter(arrayAdapter);
-//    }
 
-    /**
-     * Download list of research project and set to listview.
-     */
-//    private void refreshProjectList() {
-//        dbHelper = DatabaseHelper.getHelper(getActivity());
-//        projects.clear();
-//        if(mSearchString.length() > 0) {
-//            projects.addAll(dbHelper.getAllResearchProjects(mSearchString));
-//
-//            if(projects.isEmpty()){
-//                Toast.makeText(getActivity(), "No project found", Toast.LENGTH_LONG).show();
-//            }
-//        }
-//        else
-//        {
-//            projects.addAll(dbHelper.getAllResearchProjects());
-//        }
-//
-//        //arrayAdapter = new ProjectArrayAdapter(getActivity(), projects);
-//        //projectList.setAdapter(arrayAdapter);
-//        arrayAdapter.notifyDataSetChanged();
-//        projectList.invalidateViews();
-//    }
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -356,8 +327,13 @@ public class DiscoverFragment extends Fragment {
 
                         for (int i = 0; i < jArray.length(); i++) {
                             JSONObject jsonProject = jArray.getJSONObject(i);
-
-                            String projectImageUrl = jsonProject.getString("project_image");//get project image url.
+                            String projectImageUrl ="";
+                            try {
+                                 projectImageUrl = jsonProject.getString("project_image");//get project image url.
+                            }catch (Exception e)
+                            {
+                                Log.d("Discover","Project url not found");
+                            }
                             JSONObject creatorJsonObj = jsonProject.getJSONObject("creator");//get project creator infos.
                             JSONObject creatorAvatar = creatorJsonObj.getJSONObject("avatar");//
 

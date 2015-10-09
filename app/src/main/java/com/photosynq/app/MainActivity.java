@@ -5,7 +5,10 @@ import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.MatrixCursor;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -23,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -110,6 +115,8 @@ public class MainActivity extends ActionBarActivity
                         .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedPosition, query), DiscoverFragment.class.getName())
                         .commit();
             }
+
+
         }
     }
 
@@ -298,7 +305,7 @@ public class MainActivity extends ActionBarActivity
         if(isSearchableView) {
 
             MenuItem searchItem = menu.findItem(R.id.action_search);
-            SearchView searchView = (SearchView) searchItem.getActionView();
+            final SearchView searchView = (SearchView) searchItem.getActionView();
 
             // Associate searchable configuration with the SearchView
             SearchManager searchManager =
@@ -316,6 +323,57 @@ public class MainActivity extends ActionBarActivity
                 public boolean onMenuItemActionCollapse(MenuItem item) {
                     closeSearchView();
                     return true;
+                }
+            });
+
+
+//            if (android.os.Build.VERSION.SDK_INT > 10){
+//                String[] columnNames = {"_id","text"};
+//                MatrixCursor cursor = new MatrixCursor(columnNames);
+//                String[] array = getResources().getStringArray(R.array.all_strings); //if strings are in resources
+//                String[] temp = new String[2];
+//                int id = 0;
+//                for(String item : array){
+//                    temp[0] = Integer.toString(id++);
+//                    temp[1] = item;
+//                    cursor.addRow(temp);
+//                }
+//                String[] from = {"text"};
+//                int[] to = {R.id.text1};
+//                final CursorAdapter cursorAdapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.simple_spinner_item, cursor, from, to);
+//
+//                searchView.setSuggestionsAdapter(cursorAdapter);
+//                searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+//
+//                    @Override
+//                    public boolean onSuggestionClick(int position) {
+//                        String selectedItem = (String)cursorAdapter.getItem(position);
+//                        Log.v("search view", selectedItem);
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean onSuggestionSelect(int position) {
+//                        return false;
+//                    }
+//                });
+//            }
+
+
+
+
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    searchView.clearFocus();
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    System.out.println("String-"+s);
+                    return false;
                 }
             });
 

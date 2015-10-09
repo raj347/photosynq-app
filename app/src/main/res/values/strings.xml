@@ -60,7 +60,11 @@
         <item>Auto Increment</item>
         <item>Scan Code</item>
     </string-array>
-
+    <string-array name = "all_strings">
+        <item>Enter Answer</item>
+        <item>Auto Increment</item>
+        <item>Scan Code</item>
+    </string-array>
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

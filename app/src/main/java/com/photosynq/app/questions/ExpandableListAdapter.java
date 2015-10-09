@@ -127,28 +127,26 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
                                             ExpandableListView explist = (ExpandableListView) mainLayout.getParent();
                                             LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(groupPosition);
-                                            TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
-                                            selectedAnswer.setText(s.toString());
+                                            if(null!=ll2) {
+                                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                                selectedAnswer.setText(s.toString());
+
+                                                final int sdk = android.os.Build.VERSION.SDK_INT;
+                                                if (s.length() > 0) {
+                                                    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                                        ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
+                                                    } else {
+                                                        ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
+                                                    }
+                                                } else {
+                                                    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                                        ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.gray_light));
+                                                    } else {
+                                                        ll2.setBackground(_context.getResources().getDrawable(R.color.gray_light));
+                                                    }
+                                                }
+                                            }
                                             checkMeasurementButton();
-
-                                            final int sdk = android.os.Build.VERSION.SDK_INT;
-                                            if(s.length() > 0)
-                                            {
-                                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
-                                                } else {
-                                                    ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.gray_light));
-                                                } else {
-                                                    ll2.setBackground(_context.getResources().getDrawable(R.color.gray_light));
-                                                }
-                                            }
-
 
                                         }
                                     });
@@ -240,22 +238,24 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
                                             ExpandableListView explist = (ExpandableListView) mainLayout.getParent();
                                             LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(groupPosition);
-                                            TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
-                                            selectedAnswer.setText(s.toString());
-                                            checkMeasurementButton();
+                                            if(null != ll2) {
+                                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                                selectedAnswer.setText(s.toString());
+                                                checkMeasurementButton();
 
-                                            final int sdk = android.os.Build.VERSION.SDK_INT;
-                                            if (s.length() > 0) {
-                                                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
+                                                final int sdk = android.os.Build.VERSION.SDK_INT;
+                                                if (s.length() > 0) {
+                                                    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                                        ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
+                                                    } else {
+                                                        ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
+                                                    }
                                                 } else {
-                                                    ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
-                                                }
-                                            } else {
-                                                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.gray_light));
-                                                } else {
-                                                    ll2.setBackground(_context.getResources().getDrawable(R.color.gray_light));
+                                                    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                                        ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.gray_light));
+                                                    } else {
+                                                        ll2.setBackground(_context.getResources().getDrawable(R.color.gray_light));
+                                                    }
                                                 }
                                             }
 
@@ -383,13 +383,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                             ExpandableListView explist = (ExpandableListView) ll.getParent();
 
                             LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(questionNumber);
-                            TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
-                            selectedAnswer.setText(parent.getItemAtPosition(position).toString());
-                            final int sdk = android.os.Build.VERSION.SDK_INT;
-                            if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
-                            } else {
-                                ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
+                            if(null != ll2) {
+                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                selectedAnswer.setText(parent.getItemAtPosition(position).toString());
+
+                                final int sdk = android.os.Build.VERSION.SDK_INT;
+                                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
+                                } else {
+                                    ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
+                                }
                             }
                             checkMeasurementButton();
 
@@ -464,26 +467,26 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                             ExpandableListView explist = (ExpandableListView) ll.getParent();
 
                             LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(questionNumber);
+                            if(null != ll2) {
+                                ImageView lblListHeader_image = (ImageView) ll2.findViewById(R.id.lblListHeader);
+                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                selectedAnswer.setText("");
 
-                            ImageView lblListHeader_image = (ImageView) ll2.findViewById(R.id.lblListHeader);
-                            TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
-                            selectedAnswer.setText("");
+                                String[] splitOptionText = selectedOptions.get(questionNumber).getSelectedValue().toString().split(",");
+                                Picasso.with(_context)
+                                        .load(splitOptionText[1])
+                                        .placeholder(R.drawable.ic_launcher1)
+                                        .resize(60, 60)
+                                        .error(R.drawable.ic_launcher1)
+                                        .into(lblListHeader_image);
 
-                            String[] splitOptionText = selectedOptions.get(questionNumber).getSelectedValue().toString().split(",");
-                            Picasso.with(_context)
-                                    .load(splitOptionText[1])
-                                    .placeholder(R.drawable.ic_launcher1)
-                                    .resize(60, 60)
-                                    .error(R.drawable.ic_launcher1)
-                                    .into(lblListHeader_image);
-
-                            final int sdk = android.os.Build.VERSION.SDK_INT;
-                            if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
-                            } else {
-                                ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
+                                final int sdk = android.os.Build.VERSION.SDK_INT;
+                                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                                    ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
+                                } else {
+                                    ll2.setBackground(_context.getResources().getDrawable(R.color.green_light));
+                                }
                             }
-
                             checkMeasurementButton();
 
                         }
