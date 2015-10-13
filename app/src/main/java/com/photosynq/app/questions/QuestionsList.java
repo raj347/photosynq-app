@@ -14,12 +14,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +64,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     BluetoothMessage bluetoothMessage;
     private String deviceAddress;
     private BluetoothAdapter mBluetoothAdapter = null;
+    private TextView outputTextView;
 
 
     private String mConnectedDeviceName;
@@ -154,6 +157,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 }
             }
         });
+
         Button directionsButton = (Button) findViewById(R.id.btn_directions);
         directionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,6 +165,25 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 Intent openMainActivity = new Intent(QuestionsList.this, DirectionsActivity.class);
                 openMainActivity.putExtra(DatabaseHelper.C_PROJECT_ID, projectId);
                 startActivity(openMainActivity);
+            }
+        });
+
+        Button outputButton = (Button) findViewById(R.id.btn_output);
+        outputTextView = (TextView) findViewById(R.id.outputtv);
+        final ScrollView listscroll = (ScrollView) findViewById(R.id.questionlistscroll);
+        final ScrollView outputscroll = (ScrollView) findViewById(R.id.outputscroll);
+        outputButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(listscroll.getVisibility() == View.GONE){
+                    ((Button)view).setText("+ Show O/P");
+                    outputscroll.setVisibility(View.GONE);
+                    listscroll.setVisibility(View.VISIBLE);
+                }else {
+                    ((Button)view).setText("+ Hide O/P");
+                    outputscroll.setVisibility(View.VISIBLE);
+                    listscroll.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -178,6 +201,10 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 Button btnTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
 
                 switch (msg.what) {
+                    case Constants.MESSAGE_STREAM:
+                        String outputstream = bluetoothMessage.message;
+                        outputTextView.setText(outputstream);
+                        break;
                     case Constants.MESSAGE_STATE_CHANGE:
                         if (Constants.D) Log.i("PHOTOSYNC", "MESSAGE_STATE_CHANGE: " + msg.arg1);
                         switch (msg.arg1) {
@@ -565,6 +592,33 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //Handle the back button
+        if(keyCode == KeyEvent.KEYCODE_BACK) {
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Caution")
+                    .setMessage("Are you sure you want to leave this screen?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //Stop the activity
+                            PrefUtils.saveToPrefs(QuestionsList.this, PrefUtils.PREFS_PREV_SELECTED_POSITION, "0");
+
+                            QuestionsList.this.finish();
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+
+            return true;
+        }
+        else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
     @Override
     public void onResume() {
         super.onResume();

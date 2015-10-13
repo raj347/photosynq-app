@@ -321,10 +321,12 @@ public class BluetoothService {
                     String readMessage = new String(buffer, 0, bytes);
                     long time = System.currentTimeMillis();
 
-                    measurement.append(readMessage.replaceAll("\\{", "{\"time\":"+time+","));
+                    measurement.append(readMessage.replaceAll("\\{", "{\"time\":" + time + ","));
+                    Log.d("DeviceOutput", readMessage);
+
                     //tempMeasurement.append(readMessage.replaceAll("\\{", "{\"time\":\""+time+"\","));
                     mBluetoothMessage.message = measurement.toString();
-                    if (readMessage.replaceAll("\\r\\n", "######").contains("############")) {
+                    if (readMessage.replaceAll("\\r\\n", "######").contains("]]}######")) {
 
 						mHandler.obtainMessage (Constants.MESSAGE_READ, measurement.length(), -1, mBluetoothMessage).sendToTarget();
 
@@ -342,7 +344,7 @@ public class BluetoothService {
 						//System.out.println("Quitting while loop ....................");
 						//break;
 					}else{
-
+                        mHandler.obtainMessage (Constants.MESSAGE_STREAM, readMessage.length(), -1, mBluetoothMessage).sendToTarget();
                         mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_FIRST_RESP, 0, mBluetoothMessage).sendToTarget();
 
 //                        //if (readMessage.indexOf("}") > 0) {

@@ -36,6 +36,7 @@
     <string name="result_discarded">Results discarded.</string>
     <string name="btn_get_directions">Get directions</string>
     <string name="btn_take_measurement">+ Take Measurement</string>
+    <string name="btn_output">+ Show O/P</string>
     <string name="connected">Connected, Click to start measurement</string>
     <string name="start_date_lbl">Start Date:</string>
     <string name="end_date_lbl">End Date:</string>

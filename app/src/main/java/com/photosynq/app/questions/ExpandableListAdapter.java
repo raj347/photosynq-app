@@ -366,7 +366,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     List<String> list = getGroup(groupPosition).getOptions();
                     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(convertView.getContext(),
                             R.layout.simple_spinner_item,list );
-                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                    dataAdapter.setDropDownViewResource(R.layout.spinner_text);
                     projectDefinedOptionsSpinner.setAdapter(dataAdapter);
                     projectDefinedOptionsSpinner.setTag(groupPosition+"-"+childPosition);
                     projectDefinedOptionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

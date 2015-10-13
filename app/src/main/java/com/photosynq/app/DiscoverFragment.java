@@ -37,6 +37,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,7 +75,7 @@ public class DiscoverFragment extends Fragment {
     public static DiscoverFragment newInstance(int sectionNumber, String searchString) {
         DiscoverFragment fragment = new DiscoverFragment();
         mSectionNumber = sectionNumber;
-        mSearchString = searchString;
+        mSearchString = searchString.replaceAll(" ","%20");
         return fragment;
     }
 
@@ -134,6 +135,7 @@ public class DiscoverFragment extends Fragment {
         String authToken = PrefUtils.getFromPrefs(getActivity().getApplicationContext(), PrefUtils.PREFS_AUTH_TOKEN_KEY, PrefUtils.PREFS_DEFAULT_VAL);
         String email = PrefUtils.getFromPrefs(getActivity().getApplicationContext(), PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
         if(mSearchString.length() > 0) {
+
             new DownloadDiscoverProjects().execute(getActivity().getApplicationContext(), Constants.PHOTOSYNQ_SEARCH_URL
                     + mSearchString
                     + "&user_email=" + email + "&user_token="

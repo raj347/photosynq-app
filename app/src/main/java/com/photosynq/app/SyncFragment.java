@@ -427,39 +427,5 @@ public class SyncFragment extends Fragment implements PhotosynqResponse {
 
         tvAutoSyncCachedDataPtValue.setText(recordCount + "");
 
-
-//        Thread t = new Thread() {
-//
-//            @Override
-//            public void run() {
-//                try {
-//                    while (!isInterrupted()) {
-//                        Thread.sleep(1000);
-//                        if (getActivity() != null) {
-//                            getActivity().runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    try {
-//                                        DatabaseHelper db = DatabaseHelper.getHelper(getActivity());
-//                                        int recordCount = db.getAllUnuploadedResultsCount(null);
-//                                        PrefUtils.saveToPrefs(getActivity(), PrefUtils.PREFS_TOTAL_CACHED_DATA_POINTS, "" + recordCount);
-//
-//                                        //set total of cached points.
-//                                        if (recordCount > 0) {
-//                                            tvAutoSyncCachedDataPtValue.setText(recordCount + "");
-//                                        } else {
-//                                            tvAutoSyncCachedDataPtValue.setText("0");
-//                                        }
-//                                    }catch (Exception e){}
-//                                }
-//                            });
-//                        }
-//                    }
-//                } catch (InterruptedException e) {
-//                }
-//            }
-//        };
-//
-//        t.start();
     }
 }

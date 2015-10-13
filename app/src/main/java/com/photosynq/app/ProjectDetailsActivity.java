@@ -214,6 +214,7 @@ public class ProjectDetailsActivity extends ActionBarActivity {
                     + projectID + "/join.json/"
                     + "?user_email=" + email + "&user_token="
                     + authToken);
+            progress = ProgressDialog.show(ProjectDetailsActivity.this, "Please wait . . .","", true);
         }
         else {
 //            String userId = PrefUtils.getFromPrefs(this, PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
@@ -458,7 +459,7 @@ public class ProjectDetailsActivity extends ActionBarActivity {
             }
             try {
                 Log.d("join project", "$$$$ URI"+uri[1]);
-                    postRequest = new HttpPost((String)uri[1]);
+                        postRequest = new HttpPost((String)uri[1]);
                     if(null!=input)
                     {
                         postRequest.setEntity(input);
@@ -491,7 +492,9 @@ public class ProjectDetailsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
+
             super.onPostExecute(result);
+            progress.dismiss();
             if (null == result)
             {
                 Toast.makeText(getApplicationContext(),"There was a problem joining this project, please try again!",Toast.LENGTH_LONG).show();
@@ -510,7 +513,7 @@ public class ProjectDetailsActivity extends ActionBarActivity {
                                 + "?user_email=" + email + "&user_token="
                                 + authToken);
                     } else {
-                        Toast.makeText(getApplicationContext(), "There was a problem joining this project, please try again!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), jobj.getString("notice"), Toast.LENGTH_LONG).show();
                         Log.d("PHTTPC", "Project joining failed.");
 
                     }
