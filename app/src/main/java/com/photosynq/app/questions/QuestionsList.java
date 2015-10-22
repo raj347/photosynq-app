@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
@@ -73,6 +74,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_questions_list);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -679,7 +681,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     void setDeviceTimeOut(){
 
         PrefUtils.saveToPrefs(QuestionsList.this, "isGetResponse", "false");
-        new CountDownTimer(5000, 1000) {
+        new CountDownTimer(10000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 System.out.print("@@@@@@@@@@@@@@ test tick on send protocol");
@@ -707,7 +709,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                                     @Override
                                                     public void onClick(DialogInterface dialogInterface, int which) {
                                                         sendData("-1+-1+"); // Send cancel request
-                                                        finish();
+                                                      //  finish();
                                                         //??sendData("1027"); // Restart teensy device
                                                     }
 

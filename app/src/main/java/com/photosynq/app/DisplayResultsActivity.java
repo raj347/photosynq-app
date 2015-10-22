@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.support.v7.app.ActionBar;
@@ -191,7 +192,9 @@ public class DisplayResultsActivity extends ActionBarActivity implements
         webview.loadUrl(url);
         webview.getSettings().setJavaScriptEnabled(true);
 
-        WebView.setWebContentsDebuggingEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
 
     }
     public void keep_click(View view) throws UnsupportedEncodingException, JSONException {

@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CLEAR_APP_CACHE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:allowBackup="true"
@@ -96,6 +97,7 @@
             android:name=".questions.QuestionsList"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait"
+            android:keepScreenOn="true"
             android:label="@string/title_activity_questions_list" >
         </activity>
     </application>
