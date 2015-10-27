@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -112,6 +113,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                             .findViewById(R.id.user_input_edit_text);
                                     CheckBox remember = (CheckBox)mainLayout.findViewById(R.id.remember_check_box);
                                     remember.setVisibility(View.VISIBLE);
+
                                     txtListChild.addTextChangedListener(new TextWatcher() {
                                         @Override
                                         public void beforeTextChanged(CharSequence s, int start, int count, int after) {}

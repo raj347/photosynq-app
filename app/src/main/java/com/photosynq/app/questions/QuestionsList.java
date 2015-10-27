@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
@@ -19,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
@@ -93,7 +95,10 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
         expListView.setGroupIndicator(null);
 
         listAdapter = new ExpandableListAdapter(this, questions,expListView);
+
         expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+
             //Collapse all group except selected group
             @Override
             public void onGroupExpand(int groupPosition) {
@@ -102,6 +107,16 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                     expListView.collapseGroup(lastExpandedPosition);
                 }
                 lastExpandedPosition = groupPosition;
+            }
+        });
+
+        expListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                if (expListView != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(expListView.getWindowToken(), 0);
+                }
             }
         });
         expListView.setAdapter(listAdapter);
@@ -648,24 +663,30 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 if (option.getQuestionType() == Question.USER_DEFINED) {
                     if (option.getOptionType() == 1) {
                         option.setReset(false);
-                        int from = Integer.parseInt(option.getRangeFrom());
-                        int to = Integer.parseInt(option.getRangeTo());
-                        int repeat = Integer.parseInt(option.getRangeRepeat());
-                        ArrayList<Integer> populatedValues = new ArrayList<Integer>();
-                        for (int i = from; i <= to; i++) {
-                            for (int j = 0; j < repeat; j++) {
-                                populatedValues.add(i);
+                        try {
+                            int from = Integer.parseInt(option.getRangeFrom());
+                            int to = Integer.parseInt(option.getRangeTo());
+                            int repeat = Integer.parseInt(option.getRangeRepeat());
+                            ArrayList<Integer> populatedValues = new ArrayList<Integer>();
+                            for (int i = from; i <= to; i++) {
+                                for (int j = 0; j < repeat; j++) {
+                                    populatedValues.add(i);
 
+                                }
                             }
+                            int currentIndex = option.getAutoIncIndex();
+                            currentIndex++;
+                            if (currentIndex > populatedValues.size() - 1) {
+                                option.setSelectedValue("Loop completed");
+                            } else {
+                                option.setSelectedValue(populatedValues.get(currentIndex).toString());
+                                option.setAutoIncIndex(currentIndex);
+                            }
+                        }catch (Exception e)
+                        {
+                            //eating exception
                         }
-                        int currentIndex = option.getAutoIncIndex();
-                        currentIndex++;
-                        if (currentIndex > populatedValues.size() - 1) {
-                            option.setSelectedValue("Loop completed");
-                        } else {
-                            option.setSelectedValue(populatedValues.get(currentIndex).toString());
-                            option.setAutoIncIndex(currentIndex);
-                        }
+
 
                     }
 
