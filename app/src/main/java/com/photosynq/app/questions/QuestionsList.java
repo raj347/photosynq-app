@@ -205,32 +205,26 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
         });
     }
 
-    private void createHandler() {
+    private synchronized void createHandler() {
         mHandler = null;
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
 
-
-                BluetoothMessage bluetoothMessage = (BluetoothMessage) msg.obj;
                 TextView mtvStatusMessage = (TextView) findViewById(R.id.tv_status_message);
                 ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
                 Button btnTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
 
                 switch (msg.what) {
                     case Constants.MESSAGE_STREAM:
-                        String outputstream = bluetoothMessage.message;
-                        outputTextView.setText(outputstream);
+                        String oldmdg = outputTextView.getText().toString();
+                        outputTextView.setText(oldmdg+(CharSequence) msg.obj);
                         break;
                     case Constants.MESSAGE_STATE_CHANGE:
                         if (Constants.D) Log.i("PHOTOSYNC", "MESSAGE_STATE_CHANGE: " + msg.arg1);
                         switch (msg.arg1) {
                             case BluetoothService.STATE_CONNECTED:
-                                //??
-//                            if (txtOutput != null) {
-//                                txtOutput.setText("");
-//                            }
-
+                                BluetoothMessage bluetoothMessagee = (BluetoothMessage) msg.obj;
                                 if (msg.arg2 == 0) {//Sending cancel request to the device
                                     sendData("-1+-1+");
                                     //setDeviceTimeOut();
@@ -366,7 +360,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                                 } else {
                                     if (mIsMeasureBtnClicked) {
-                                        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_CONNECTED, 1, bluetoothMessage).sendToTarget();
+                                        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_CONNECTED, 1, bluetoothMessagee).sendToTarget();
                                     }
                                 }
 
@@ -379,9 +373,9 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                 mtvStatusMessage.setText(R.string.title_not_connected);
                                 break;
                             case BluetoothService.STATE_FIRST_RESP:
-
+                                BluetoothMessage bluetoothMessage1 = (BluetoothMessage) msg.obj;
                                 PrefUtils.saveToPrefs(QuestionsList.this, "isGetResponse", "true");
-                                final String measurement = bluetoothMessage.message;
+                                final String measurement = bluetoothMessage1.message;
 
                                 if (mIsCancelMeasureBtnClicked == true) {
 
@@ -439,35 +433,14 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                     case Constants.MESSAGE_WRITE:
                         break;
                     case Constants.MESSAGE_READ:
-
                         PrefUtils.saveToPrefs(QuestionsList.this, "isGetResponse", "true");
-                        //timer.cancel();
                         if (mIsCancelMeasureBtnClicked == false) {
-                            String measurement = bluetoothMessage.message;
+                            BluetoothMessage bluetoothMessage2 = (BluetoothMessage) msg.obj;
+                            String measurement = bluetoothMessage2.message;
                             // Do not process the message if contain pwr_off from device
+                            Log.d("QuestionList", measurement);
                             if (measurement.contains("sample") || measurement.contains("user_questions")) {
-
-//                            if (txtOutput != null) {
-//                                txtOutput.setText( measurement.toString());
-//                            }
-
-                                // construct a string from the valid bytes in the buffer
-                                // String readMessage = new String(readBuf, 0, msg.arg1);
-                                //??mtvStatusMessage.setText(R.string.connected);
                                 String dataString;
-                                //StringBuffer options = new StringBuffer();
-                                //ArrayList<SelectedOptions> allOptions = listAdapter.getSelectedOptions();
-//                                options.append("\"user_answers\": [");
-//                                //loop
-//                                if (null != allOptions) {
-//                                    for (int i = 0; i < allOptions.size(); i++) {
-//                                        options.append("\"" + allOptions.get(i).getSelectedValue() + "\"");
-//                                        if (i < allOptions.size() - 1)
-//                                            options.append(",");
-//                                    }
-//                                }
-//                                options.append(" ],");
-                                //TODO uncomment this for api v3
                                 StringBuffer options = new StringBuffer();
                                 options.append("\"user_answers\": {");
                                 //options.append("\"user_answers\": [");
@@ -509,7 +482,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                                 final String reading = measurement.replaceAll("\\r\\n", "").replaceFirst("\\{", "{" + options)
                                         ;
-
+                                outputTextView.setText("");
                                 new CountDownTimer(1000, 1000) {
 
                                     @Override
@@ -531,7 +504,8 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                             }
                         } else {
-                            String measurement = bluetoothMessage.message;
+                            BluetoothMessage bluetoothMessage3 = (BluetoothMessage) msg.obj;
+                            String measurement = bluetoothMessage3.message;
                             //if(measurement.toString().contains("\\r\\n\\r\\n")) {
                             mIsCancelMeasureBtnClicked = false;
                             if (btnTakeMeasurement != null) {
@@ -577,8 +551,8 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                         //timer.cancel();
                         break;
                     case Constants.MESSAGE_STOP:
-                        Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
-                                Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
+                        //        Toast.LENGTH_LONG).show();
                         //??mBluetoothService.stop();
                         break;
                 }
@@ -622,8 +596,10 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                         public void onClick(DialogInterface dialog, int which) {
                             //Stop the activity
                             PrefUtils.saveToPrefs(QuestionsList.this, PrefUtils.PREFS_PREV_SELECTED_POSITION, "0");
-
+                            BluetoothService mBluetoothService = BluetoothService.getInstance(bluetoothMessage, mHandler);
+                            mBluetoothService.stop();
                             QuestionsList.this.finish();
+
                         }
 
                     })

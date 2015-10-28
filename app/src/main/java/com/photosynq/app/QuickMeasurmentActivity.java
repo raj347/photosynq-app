@@ -369,8 +369,8 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
                     }
                     break;
                 case Constants.MESSAGE_STOP:
-                    Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
-                            Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
+                    //        Toast.LENGTH_SHORT).show();
                     //??mBluetoothService.stop();
                     break;
             }

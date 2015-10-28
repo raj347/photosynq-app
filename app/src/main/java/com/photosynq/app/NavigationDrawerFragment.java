@@ -210,7 +210,7 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.discover_title),
                         getString(R.string.quick_measurement_title),
                         getString(R.string.sync_settings_title),
-                        "About"
+                        getString(R.string.about)
                 });
         mDrawerListView.setAdapter(mNavigationAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);

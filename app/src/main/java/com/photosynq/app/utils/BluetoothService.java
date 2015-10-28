@@ -17,7 +17,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 public class BluetoothService {
-    private static final String TAG = "PhotoSynqBluetoothService";
+    private static final String TAG = "BluetoothService";
     private static final boolean D = true;
 
     // Unique UUID for this application
@@ -191,6 +191,7 @@ public class BluetoothService {
                 "\n Check batteries if connection issues persist");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
+        mHandler.obtainMessage (Constants.MESSAGE_STOP, 0, -1, "STOP").sendToTarget();
     }
 
     /**
@@ -285,7 +286,7 @@ public class BluetoothService {
         private final OutputStream mmOutStream;
 
         public ConnectedThread(BluetoothSocket socket) {
-            Log.i(TAG, "create ConnectedThread");
+            Log.i(TAG, "create Connected");
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
@@ -327,7 +328,7 @@ public class BluetoothService {
                     Log.d("DeviceOutput-Measure=", measurement.toString());
                     //tempMeasurement.append(readMessage.replaceAll("\\{", "{\"time\":\""+time+"\","));
                     mBluetoothMessage.message = measurement.toString();
-                    if (measurement.toString().replaceAll("\\r\\n", "######").contains("]]}######")) {
+                    if (measurement.toString().replaceAll("\\r\\n\\r\\n", "############").contains("]]}############")) {
                         Log.d("DeviceOutput", "END DETECTED ");
 						mHandler.obtainMessage (Constants.MESSAGE_READ, measurement.length(), -1, mBluetoothMessage).sendToTarget();
                         Log.d("DeviceOutput", "MEASUREMENT Complete");
@@ -335,39 +336,22 @@ public class BluetoothService {
 						measurement=new StringBuffer();
                         buffer = null;
                         buffer = new byte[10485];
-                        //??measurement.delete(0, measurement.length());
 
-//						Message msg = mHandler.obtainMessage(ResultActivity.MESSAGE_STOP);
-//				        Bundle bundle = new Bundle();
-//				        bundle.putString(ResultActivity.TOAST, "Measurement Complete");
-//				        msg.setData(bundle);
-//				        mHandler.sendMessage(msg);
-						//System.out.println("Quitting while loop ....................");
-						//break;
+
+                        try {
+                            Thread.sleep(1000); //1000 milliseconds is one second.
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                        }
+
 					}else{
                         Log.d("DeviceOutput", "STREAMING");
-                        mHandler.obtainMessage (Constants.MESSAGE_STREAM, readMessage.length(), -1, mBluetoothMessage).sendToTarget();
+                        mHandler.obtainMessage (Constants.MESSAGE_STREAM, readMessage.length(), -1, readMessage).sendToTarget();
                         mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_FIRST_RESP, 0, mBluetoothMessage).sendToTarget();
 
-//                        //if (readMessage.indexOf("}") > 0) {
-//
-//                            //mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_FIRST_RESP, 0, readMessage).sendToTarget();
-//                        mBluetoothMessage.message = measurement.toString();
-//                        if (readMessage.indexOf("{") == 0){
-//
-//                            mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_FIRST_RESP, 0, mBluetoothMessage).sendToTarget();
-//                        }else{
-//
-//                            if (tempMeasurement.toString().length() > 100){
-//
-//                                mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_FIRST_RESP, 0, mBluetoothMessage).sendToTarget();
-//
-//                                tempMeasurement = null;
-//                                tempMeasurement = new StringBuffer();
-//                            }
-//                        }
                     }
 				} catch (IOException e) {
+                    mHandler.obtainMessage (Constants.MESSAGE_STOP, 0, -1, "STOP").sendToTarget();
 					Log.e(TAG, "disconnected", e);
 					connectionLost();
 					break;

@@ -151,7 +151,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        if(position != 5) // Do not keep selection of Select measurement device option
+        if(position != 6) // Do not keep selection of Select measurement device option
             mCurrentSelectedPosition = position;
         FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -185,47 +185,50 @@ public class MainActivity extends ActionBarActivity
                         .commit();
                 break;
             case 4:
-
-                try {
-
-                    String appName = getString(R.string.app_name);
-                    String versionName = this.getPackageManager()
-                            .getPackageInfo(this.getPackageName(), 0).versionName;
-
-                    String messageStr = appName + "\n\n" +
-                            "Version " + versionName + "\n" +
-                            Constants.SERVER_URL;
-
-                    final SpannableString s =
-                            new SpannableString(messageStr);
-                    Linkify.addLinks(s, Linkify.WEB_URLS);
-                    final TextView message = new TextView(this);
-                    message.setPadding(25,25,25,25);
-                    message.setGravity(Gravity.CENTER);
-                    message.setText(s);
-                    message.setMovementMethod(LinkMovementMethod.getInstance());
-
-                    System.out.println(versionName);
-
-                    new AlertDialog.Builder(this)
-                            .setIcon(R.drawable.ic_launcher1)
-                            .setTitle("About")
-                            .setView(message)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int which) {
-
-
-                                        }
-
-                                    }
-
-                            )
-                            .show();
-
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
+                // About
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, AboutFragment.newInstance(position), AboutFragment.class.getName())
+                        .commit();
+//                try {
+//
+//                    String appName = getString(R.string.app_name);
+//                    String versionName = this.getPackageManager()
+//                            .getPackageInfo(this.getPackageName(), 0).versionName;
+//
+//                    String messageStr = appName + "\n\n" +
+//                            "Version " + versionName + "\n" +
+//                            Constants.SERVER_URL;
+//
+//                    final SpannableString s =
+//                            new SpannableString(messageStr);
+//                    Linkify.addLinks(s, Linkify.WEB_URLS);
+//                    final TextView message = new TextView(this);
+//                    message.setPadding(25,25,25,25);
+//                    message.setGravity(Gravity.CENTER);
+//                    message.setText(s);
+//                    message.setMovementMethod(LinkMovementMethod.getInstance());
+//
+//                    System.out.println(versionName);
+//
+//                    new AlertDialog.Builder(this)
+//                            .setIcon(R.drawable.ic_launcher1)
+//                            .setTitle("About")
+//                            .setView(message)
+//                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialogInterface, int which) {
+//
+//
+//                                        }
+//
+//                                    }
+//
+//                            )
+//                            .show();
+//
+//                } catch (PackageManager.NameNotFoundException e) {
+//                    e.printStackTrace();
+//                }
 
                 break;
             case 5:
@@ -276,6 +279,9 @@ public class MainActivity extends ActionBarActivity
                 mTitle = getString(R.string.sync_settings_title);
                 break;
             case 4:
+                mTitle = getString(R.string.about);
+                break;
+            case 5:
                 mTitle = getString(R.string.profile_title);
                 break;
         }
