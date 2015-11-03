@@ -139,7 +139,7 @@ public class SelectDeviceDialog extends DialogFragment {
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
                 BluetoothDevice btDevice = (BluetoothDevice) pairedDeviceList.getItemAtPosition(position);
                 FragmentManager fragmentManager = getActivity().getFragmentManager();
-                Log.d("Pairing device : ", btDevice.getName());
+//                Log.d("Pairing device : ", btDevice.getName());
                 try {
                     createBond(btDevice);
                     String bluetoothID = btDevice.getAddress();

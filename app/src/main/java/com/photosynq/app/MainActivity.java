@@ -34,6 +34,8 @@ import android.widget.TextView;
 import com.photosynq.app.utils.Constants;
 import com.photosynq.app.utils.PrefUtils;
 
+import de.cketti.library.changelog.ChangeLog;
+
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -79,7 +81,10 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         //??onNavigationDrawerItemSelected(mCurrentSelectedPosition);
-
+        ChangeLog cl = new ChangeLog(this);
+        if (cl.isFirstRun()) {
+            cl.getLogDialog().show();
+        }
     }
 
     @Override

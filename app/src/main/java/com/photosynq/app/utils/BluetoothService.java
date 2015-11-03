@@ -32,6 +32,8 @@ public class BluetoothService {
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
+    private String readMessage;
+    private StringBuffer measurement;
 
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
@@ -174,7 +176,10 @@ public class BluetoothService {
             r = mConnectedThread;
         }
         // Perform the write unsynchronized
+        measurement=new StringBuffer();
+
         r.write(out);
+
     }
 
     /**
@@ -306,7 +311,7 @@ public class BluetoothService {
         public void run() {
 			Log.i(TAG, "BEGIN $$$$$$$ mConnectedThread");
 			byte[] buffer = new byte[10485];
-			StringBuffer measurement=new StringBuffer();
+            //measurement=new StringBuffer();
             //StringBuffer tempMeasurement=new StringBuffer();
             //int totalbytes =0;
 			int bytes;
@@ -319,7 +324,7 @@ public class BluetoothService {
 
                     // Send the obtained bytes to the UI Activity
 //					mHandler.obtainMessage(ResultActivity.MESSAGE_READ, bytes,-1, buffer).sendToTarget();
-                    String readMessage = new String(buffer, 0, bytes);
+                    readMessage = new String(buffer, 0, bytes);
                     long time = System.currentTimeMillis();
 
                     measurement.append(readMessage.replaceAll("\\{", "{\"time\":" + time + ","));

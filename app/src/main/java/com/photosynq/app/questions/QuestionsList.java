@@ -193,11 +193,11 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
             @Override
             public void onClick(View view) {
                 if(listscroll.getVisibility() == View.GONE){
-                    ((Button)view).setText("+ Show O/P");
+                    ((Button)view).setText("+ O/P");
                     outputscroll.setVisibility(View.GONE);
                     listscroll.setVisibility(View.VISIBLE);
                 }else {
-                    ((Button)view).setText("+ Hide O/P");
+                    ((Button)view).setText("- O/P");
                     outputscroll.setVisibility(View.VISIBLE);
                     listscroll.setVisibility(View.GONE);
                 }
@@ -674,6 +674,9 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
             mIsCancelMeasureBtnClicked = false;
         }
         scanMode=false;
+
+        int count =  listAdapter.getGroupCount();
+        for (int i = 0; i <count ; i++){expListView.collapseGroup(i);}
     }
     void setDeviceTimeOut(){
 

@@ -136,7 +136,7 @@ public class UpdateProject implements PhotosynqResponse {
                         JSONObject jsonProject = jArray.getJSONObject(i);
                         String protocol_ids = jsonProject.getJSONArray("protocols_ids").toString().trim();
 
-                        JSONObject projectImageUrl = jsonProject.getJSONObject("project_photo");//get project image url.
+                        JSONObject projectImageUrl = jsonProject.getJSONObject("project_image");//get project image url.
                         JSONObject creatorJsonObj = jsonProject.getJSONObject("creator");//get project creator infos.
                         JSONObject creatorAvatar = creatorJsonObj.getJSONObject("avatar");//
 
@@ -148,7 +148,7 @@ public class UpdateProject implements PhotosynqResponse {
                                 creatorJsonObj.getString("id"),
                                 jsonProject.getString("start_date"),
                                 jsonProject.getString("end_date"),
-                                projectImageUrl.getString("original"),
+                                projectImageUrl.getString("small"),
                                 jsonProject.getString("beta"),
                                 jsonProject.getString("is_contributed"),
                                 protocol_ids.substring(1, protocol_ids.length() - 1),
