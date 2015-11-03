@@ -8,49 +8,41 @@
     android:keepScreenOn="true">
 
     <include layout="@layout/toolbar"/>
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout_listView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <ScrollView
-            android:layout_above="@+id/ll_btn"
-            android:layout_below="@id/toolbar"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true" >
+    <ScrollView
+        android:layout_above="@+id/ll_btn"
+        android:layout_below="@id/toolbar"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true" >
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_margin="10dp"
-                android:layout_width="match_parent"
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:descendantFocusability="afterDescendants">
+
+            <TextView
+                android:id="@+id/tv_protocol_name"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:descendantFocusability="afterDescendants">
+                android:textColor="@color/textPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
 
-                <TextView
-                    android:id="@+id/tv_protocol_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textPrimary"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/tv_protocol_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="15dp"
+                android:textColor="@color/textPrimaryLight"
+                android:textSize="14sp"/>
 
-                <TextView
-                    android:id="@+id/tv_protocol_desc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="15dp"
-                    android:textColor="@color/textPrimaryLight"
-                    android:textSize="14sp"/>
+        </LinearLayout>
 
-            </LinearLayout>
-
-        </ScrollView>
-
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-
+    </ScrollView>
 
     <!--<RelativeLayout-->
         <!--android:id="@+id/ll_btn"-->

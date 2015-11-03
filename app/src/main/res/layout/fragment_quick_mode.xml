@@ -32,12 +32,18 @@ android:orientation="vertical">
             </Button>
         </LinearLayout>
 
+
         <LinearLayout
             android:layout_above="@id/ll_btn"
             android:layout_alignParentTop="true"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:orientation="vertical">
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout_listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
 
             <ListView
                 android:id="@+id/lv_protocol"
@@ -50,7 +56,9 @@ android:orientation="vertical">
                 android:divider="@color/list_divider"
                 android:dividerHeight="1dp"
                 />
+        </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
+
     </RelativeLayout>
 
 
