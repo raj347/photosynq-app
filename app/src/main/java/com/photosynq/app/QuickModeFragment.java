@@ -94,29 +94,29 @@ public class QuickModeFragment extends Fragment implements PhotosynqResponse , S
 
         // Initialize ListView
         protocolList = (ListView) rootView.findViewById(R.id.lv_protocol);
-        showFewProtocolList();
+        showAllProtocolList();
 
-        if(arrayAdapter.isEmpty())
-        {
-            MainActivity mainActivity = (MainActivity)getActivity();
-            SyncHandler syncHandler = new SyncHandler(mainActivity);
-            syncHandler.DoSync();
-        }
+//        if(arrayAdapter.isEmpty())
+//        {
+//            MainActivity mainActivity = (MainActivity)getActivity();
+//            SyncHandler syncHandler = new SyncHandler(mainActivity);
+//            syncHandler.DoSync();
+//        }
 
-        final Button showAllProtocolsBtn = (Button) rootView.findViewById(R.id.show_all_protocol_btn);
-        showAllProtocolsBtn.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
-        showAllProtocolsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(showAllProtocolsBtn.getText().equals("Show All Protocols")){
-                    showAllProtocolList();
-                    showAllProtocolsBtn.setText("Show Pre-Selected Protocols");
-                }else if (showAllProtocolsBtn.getText().equals("Show Pre-Selected Protocols")){
-                    showFewProtocolList();
-                    showAllProtocolsBtn.setText("Show All Protocols");
-                }
-            }
-        });
+//        final Button showAllProtocolsBtn = (Button) rootView.findViewById(R.id.show_all_protocol_btn);
+//        showAllProtocolsBtn.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+//        showAllProtocolsBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(showAllProtocolsBtn.getText().equals("Show All Protocols")){
+//                    showAllProtocolList();
+//                    showAllProtocolsBtn.setText("Show Pre-Selected Protocols");
+//                }else if (showAllProtocolsBtn.getText().equals("Show Pre-Selected Protocols")){
+//                    showFewProtocolList();
+//                    showAllProtocolsBtn.setText("Show All Protocols");
+//                }
+//            }
+//        });
 
         protocolList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -359,6 +359,14 @@ public class QuickModeFragment extends Fragment implements PhotosynqResponse , S
                                     obj.getString("macro_id"), "slug",
                                     obj.getString("pre_selected"));
                             db.updateProtocol(protocol);
+
+                            String authToken = PrefUtils.getFromPrefs(getActivity().getApplicationContext(), PrefUtils.PREFS_AUTH_TOKEN_KEY, PrefUtils.PREFS_DEFAULT_VAL);
+                            String email = PrefUtils.getFromPrefs(getActivity().getApplicationContext(), PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
+                            new DownloadMacros().execute(getActivity().getApplicationContext(), Constants.PHOTOSYNQ_MACRO_URL
+                                    +obj.getString("macro_id")+".json"
+                                    + "?user_email=" + email + "&user_token="
+                                    + authToken);
+
                         }
                     }
 
@@ -392,5 +400,107 @@ public class QuickModeFragment extends Fragment implements PhotosynqResponse , S
 
         }
 
+    }
+
+    public class DownloadMacros extends AsyncTask<Object, Object, String> {
+        @Override
+        protected String doInBackground(Object... uri) {
+            HttpClient httpclient = new DefaultHttpClient();
+            Context context = (Context) uri[0];
+            HttpResponse response = null;
+            HttpGet getRequest;
+            String responseString = null;
+            if (!CommonUtils.isConnected(context)) {
+                return Constants.SERVER_NOT_ACCESSIBLE;
+            }
+            Log.d("PHTTPC", "in async task");
+            try {
+                Log.d("PHTTPC", "$$$$ URI" + uri[1]);
+                getRequest = new HttpGet((String) uri[1]);
+                Log.d("PHTTPC", "$$$$ Executing GET request");
+                response = httpclient.execute(getRequest);
+
+                if (null != response) {
+                    try {
+                        StatusLine statusLine = response.getStatusLine();
+                        if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+                            ByteArrayOutputStream out = new ByteArrayOutputStream();
+                            response.getEntity().writeTo(out);
+                            out.close();
+                            responseString = out.toString();
+
+                            processResult(responseString);
+
+                        } else {
+                            //Closes the connection.
+                            response.getEntity().getContent().close();
+                            throw new IOException(statusLine.getReasonPhrase());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            } catch (IOException e) {
+            }
+            return responseString;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            // Notify swipeRefreshLayout that the refresh has finished
+            showAllProtocolList();
+            mListViewContainer.setRefreshing(false);
+
+        }
+
+        private void processResult(String result) {
+
+            Date date = new Date();
+            System.out.println("UpdateMacro Start onResponseReceived: " + date.getTime());
+
+            DatabaseHelper db = DatabaseHelper.getHelper(getActivity());
+            JSONArray jArray;
+
+            if (null != result) {
+                if (result.equals(Constants.SERVER_NOT_ACCESSIBLE)) {
+                    if (null != getActivity()) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity(), R.string.server_not_reachable, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                    return;
+                }
+
+                try {
+                    JSONObject resultJsonObject = new JSONObject(result);
+
+                    if (resultJsonObject.has("macros")) {
+                        String newobj = resultJsonObject.getString("macros");
+                        jArray = new JSONArray(newobj);
+                        for (int i = 0; i < jArray.length(); i++) {
+
+                            JSONObject obj = jArray.getJSONObject(i);
+                            Macro macro = new Macro(obj.getString("id"),
+                                    obj.getString("name"),
+                                    obj.getString("description"),
+                                    obj.getString("default_x_axis"),
+                                    obj.getString("default_y_axis"),
+                                    obj.getString("javascript_code"),
+                                    "slug");
+                            db.updateMacro(macro);
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

@@ -16,28 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.photosynq.app.MainActivity;
-import com.photosynq.app.R;
-import com.photosynq.app.db.DatabaseHelper;
-import com.photosynq.app.http.HTTPConnection;
 import com.photosynq.app.http.PhotosynqResponse;
-import com.photosynq.app.model.ProjectResult;
-import com.photosynq.app.response.MyProjects;
-import com.photosynq.app.response.UpdateMacro;
-import com.photosynq.app.response.UpdateProject;
-import com.photosynq.app.response.UpdateProtocol;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONObject;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by kalpesh on 30/11/14.
