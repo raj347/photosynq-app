@@ -134,6 +134,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     .append(C_PROJECT_BETA).append(TEXT).append(COMMA)
                     .append(C_IS_CONTRIBUTED).append(TEXT).append(COMMA)
                     .append(C_PROJECT_PROTOCOL_IDS).append(TEXT).append(COMMA)
+                    .append(C_PROTOCOL_JSON).append(TEXT).append(COMMA)
                     .append(C_PROJECT_IMAGE_URL).append(TEXT).append(")");
 
 
@@ -405,6 +406,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(C_LEAD_NAME,
                     null != rp.getLead_name() ? rp.getLead_name() : "");
             values.put(C_LEAD_DATA_COUNT,
+                    null != rp.getLead_name() ? rp.getLead_name() : "");
+            values.put(C_PROTOCOL_JSON,
                     null != rp.getLead_name() ? rp.getLead_name() : "");
 			values.put(C_RECORD_HASH, rp.getRecordHash()
             );

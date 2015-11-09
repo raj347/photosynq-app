@@ -82,7 +82,8 @@ public class MyProjects implements PhotosynqResponse {
                                 protocol_ids.substring(1, protocol_ids.length() - 1),
                                 creatorJsonObj.getString("name"),
                                 creatorJsonObj.getString("contributions"),
-                                creatorAvatar.getString("thumb")); // remove first and last square bracket and store as a comma separated string
+                                creatorAvatar.getString("thumb"),
+                                jsonProject.getString("protocol_json")); // remove first and last square bracket and store as a comma separated string
 
                         db.deleteOptions(rp.id);
 

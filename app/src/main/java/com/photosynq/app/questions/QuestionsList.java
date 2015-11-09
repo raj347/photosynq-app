@@ -320,11 +320,11 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                                 System.out.println("######Writing macros_variable.js file:" + data);
                                                 CommonUtils.writeStringToFile(QuestionsList.this, "macros_variable.js", data);
 
-                                                protocolJson = "[" + protocolJson.substring(0, protocolJson.length() - 1) + "]"; // remove last comma and add suqare brackets and start and end.
+                                                //protocolJson = "[" + protocolJson.substring(0, protocolJson.length() - 1) + "]"; // remove last comma and add suqare brackets and start and end.
 
-                                                System.out.println("$$$$$$$$$$$$$$ protocol json sending to device :" + protocolJson + "length:" + protocolJson.length());
+                                                System.out.println("$$$$$$$$$$$$$$ protocol json sending to device :" + researchProject.getProtocol_json() + "length:" +  researchProject.getProtocol_json().length());
 
-                                                sendData(protocolJson);
+                                                sendData( researchProject.getProtocol_json());
                                                 setDeviceTimeOut();
 
                                                 mtvStatusMessage.setText("Initializing measurement please wait ...");
