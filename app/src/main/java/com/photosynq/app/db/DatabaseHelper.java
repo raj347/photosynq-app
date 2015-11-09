@@ -458,6 +458,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
                 rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
                 rp.setProtocols_ids(c.getString(c.getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                rp.setProtocol_json(c.getString(c.getColumnIndex(C_PROTOCOL_JSON)));
                 rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
             }
             c.close();
@@ -560,8 +561,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (c.moveToFirst()) {
 			do {
 				ResearchProject rp = new ResearchProject();
-				rp.setId(c.getString(c.getColumnIndex(C_PROJECT_ID)));
-				rp.setName(c.getString(c.getColumnIndex(C_PROJECT_NAME)));
+                rp.setId(c.getString(c.getColumnIndex(C_PROJECT_ID)));
+                rp.setName(c.getString(c.getColumnIndex(C_PROJECT_NAME)));
 				rp.setDescription(c.getString(c.getColumnIndex(C_PROJECT_DESCRIPTION)));
 				rp.setDirToCollab(c.getString(c.getColumnIndex(C_PROJECT_DIR_TO_COLLAB)));
 				rp.setCreatorId(c.getString(c.getColumnIndex(C_PROJECT_LEAD_ID)));
@@ -569,11 +570,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 rp.setLead_data_count(c.getString(c.getColumnIndex(C_LEAD_DATA_COUNT)));
                 rp.setLead_avatar(c.getString(c.getColumnIndex(C_LEAD_IMAGE_URL)));
                 rp.setStartDate(c.getString(c.getColumnIndex(C_PROJECT_START_DATE)));
-				rp.setEndDate(c.getString(c.getColumnIndex(C_PROJECT_END_DATE)));
-				rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
-				rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
+                rp.setEndDate(c.getString(c.getColumnIndex(C_PROJECT_END_DATE)));
+                rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
+                rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
 				rp.setProtocols_ids(c.getString(c
-						.getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                        .getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                rp.setProtocol_json(c.getString(c
+                        .getColumnIndex(C_PROTOCOL_JSON)));
 				rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
 
 				researchProjects.add(rp);
@@ -612,7 +615,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
                 rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
                 rp.setProtocols_ids(c.getString(c
-						.getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                        .getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                rp.setProtocol_json(c.getString(c
+                        .getColumnIndex(C_PROTOCOL_JSON)));
                 rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
 
 				researchProjects.add(rp);
@@ -657,6 +662,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null != rp.getLead_name() ? rp.getLead_name() : "");
         values.put(C_PROJECT_PROTOCOL_IDS,
                 null != rp.getProtocols_ids() ? rp.getProtocols_ids() : "");
+        values.put(C_PROTOCOL_JSON,
+                null != rp.getProtocol_json() ? rp.getProtocol_json() : "");
         values.put(C_RECORD_HASH, rp.getRecordHash());
 
         int rowsaffected = getWDatabase(context).update(TABLE_RESEARCH_PROJECT, values, C_PROJECT_ID

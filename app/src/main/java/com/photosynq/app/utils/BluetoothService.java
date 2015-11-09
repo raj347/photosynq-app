@@ -329,8 +329,8 @@ public class BluetoothService {
 
                     measurement.append(readMessage.replaceAll("\\{", "{\"time\":" + time + ","));
 
-                    Log.d("DeviceOutput", readMessage);
-                    Log.d("DeviceOutput-Measure=", measurement.toString());
+                    //Log.d("DeviceOutput", readMessage);
+                    //Log.d("DeviceOutput-Measure=", measurement.toString());
                     //tempMeasurement.append(readMessage.replaceAll("\\{", "{\"time\":\""+time+"\","));
                     mBluetoothMessage.message = measurement.toString();
                     if (measurement.toString().replaceAll("\\r\\n\\r\\n", "############").contains("]]}############")) {
@@ -350,7 +350,7 @@ public class BluetoothService {
                         }
 
 					}else{
-                        Log.d("DeviceOutput", "STREAMING");
+                        //Log.d("DeviceOutput", "STREAMING");
                         mHandler.obtainMessage (Constants.MESSAGE_STREAM, readMessage.length(), -1, readMessage).sendToTarget();
                         mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_FIRST_RESP, 0, mBluetoothMessage).sendToTarget();
 
