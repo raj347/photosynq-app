@@ -3,6 +3,7 @@ package com.photosynq.app;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,12 +15,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.Target;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.photosynq.app.db.DatabaseHelper;
 import com.photosynq.app.http.PhotosynqResponse;
 import com.photosynq.app.model.Macro;
@@ -89,6 +96,17 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_project_mode, container, false);
+
+        boolean seen = Boolean.parseBoolean(PrefUtils.getFromPrefs(getActivity(), PrefUtils.PREFS_MYPRJ_HINT_SEEN, "false"));
+
+        if(!seen) {
+            ShowcaseView.Builder showCaseBuilder = new ShowcaseView.Builder(this.getActivity());
+            showCaseBuilder.setStyle(R.style.CustomShowcaseTheme);
+            showCaseBuilder.setContentTitle("Pull to refresh projects");
+            showCaseBuilder.build();
+            PrefUtils.saveToPrefs(getActivity(), PrefUtils.PREFS_MYPRJ_HINT_SEEN, "true");
+        }
+
         // SwipeRefreshLayout
         mListViewContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout_listView);
         onCreateSwipeToRefresh(mListViewContainer);

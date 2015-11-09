@@ -51,6 +51,8 @@ public class PrefUtils {
     //check whether keep button click or not.
     public static final String PREFS_KEEP_BTN_CLICK = "KEEP_BTN_CLICK";
 
+    public static final String PREFS_MYPRJ_HINT_SEEN = "PREFS_MYPRJ_HINT_SEEN";
+
     /**
      * Called to save supplied value in shared preferences against given key.
      */
