@@ -202,6 +202,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                     }
                                     checkMeasurementButton();
                                     selectedOptions.set(groupPosition, so);
+
                                     break;
                                 case 2:
                                     EditText scannedValue = (EditText) scanLayout
@@ -330,6 +331,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     return convertView;
 
                 case Question.PROJECT_DEFINED:
+                    final boolean[] collapse = {true};
                    // if (convertView == null) {
                         LayoutInflater proj_def_infalInflater = (LayoutInflater) this._context
                                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -371,12 +373,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
                     dataAdapter.setDropDownViewResource(R.layout.spinner_text);
                     projectDefinedOptionsSpinner.setAdapter(dataAdapter);
-                    projectDefinedOptionsSpinner.setTag(groupPosition+"-"+childPosition);
+                    projectDefinedOptionsSpinner.setTag(groupPosition + "-" + childPosition);
                     projectDefinedOptionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            String[] ids = ((String)parent.getTag()).split("-");
-                            int questionNumber =  Integer.parseInt(ids[0]);
+                            String[] ids = ((String) parent.getTag()).split("-");
+                            int questionNumber = Integer.parseInt(ids[0]);
                             //int questionNumber = (int)parent.getTag();
                             SelectedOptions so = selectedOptions.get(questionNumber);
                             so.setSelectedValue(parent.getItemAtPosition(position).toString());
@@ -386,7 +388,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                             ExpandableListView explist = (ExpandableListView) ll.getParent();
 
                             LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(questionNumber);
-                            if(null != ll2) {
+                            if (null != ll2) {
                                 TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
                                 selectedAnswer.setText(parent.getItemAtPosition(position).toString());
 
@@ -398,6 +400,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                 }
                             }
                             checkMeasurementButton();
+                            if(collapse[0]) {
+                                exp.collapseGroup(groupPosition);
+                            }else { collapse[0] = true;}
 
                         }
 
@@ -411,11 +416,15 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                         projectDefinedOptionsSpinner.setSelection(-1);
                         so1.setReset(false);
                         selectedOptions.set(groupPosition, so1);
+
                     }else {
                         projectDefinedOptionsSpinner.setSelection(dataAdapter.getPosition(selectedOptions.get(groupPosition).getSelectedValue()));
+                        collapse[0]= false;
                     }
+
                     return convertView;
                 case Question.PHOTO_TYPE_DEFINED:
+                    final boolean[] collapse1 = {true};
                     //if (convertView == null) {
                         LayoutInflater photo_infalInflater = (LayoutInflater) this._context
                                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -491,6 +500,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                 }
                             }
                             checkMeasurementButton();
+                            if(collapse1[0]) {
+                                exp.collapseGroup(groupPosition);
+                            }else { collapse1[0] = true;}
 
                         }
 
@@ -506,6 +518,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                         selectedOptions.set(groupPosition, so2);
                     }else{
                         photoDefinedOptionsSpinner.setSelection(dataAdapter1.getPosition(selectedOptions.get(groupPosition).getSelectedValue()));
+                        collapse1[0]= false;
                     }
 
 
@@ -513,7 +526,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 //                            .findViewById(R.id.lblListItem);
 //
 //                    txtListChild3.setText("Please handle me 3");
-
                     return convertView;
                 default:
                     if (convertView == null) {
