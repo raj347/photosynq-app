@@ -21,6 +21,9 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -87,12 +90,18 @@ public class AboutFragment extends Fragment implements SelectDeviceDialogDelegat
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
+    Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
+        public void run() {
+            dismissProgress();
+        }
+    };
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_about, container, false);
+        runnable.run();
 
         deviceAddress = CommonUtils.getDeviceAddress(getActivity());
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -151,6 +160,16 @@ public class AboutFragment extends Fragment implements SelectDeviceDialogDelegat
             e.printStackTrace();
         }
         return view;
+    }
+
+    private void dismissProgress()
+    {
+
+
+        handler.postDelayed(runnable, 5000);
+        try{
+            progress.dismiss();
+        }catch (Exception e){}
     }
 
 

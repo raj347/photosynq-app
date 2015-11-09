@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.photosynq.app.utils.Constants;
 import com.photosynq.app.utils.PrefUtils;
@@ -311,7 +312,11 @@ public class MainActivity extends ActionBarActivity
         } else if (mTitle.equals(getString(R.string.my_projects_title))) {
             inflater.inflate(R.menu.menu_my_projects, menu);
             isSearchableView = true;
+        }else if (mTitle.equals(getString(R.string.about))) {
+            inflater.inflate(R.menu.about_menu, menu);
+            //isSearchableView = true;
         }
+
 
         if(isSearchableView) {
 
@@ -401,7 +406,16 @@ public class MainActivity extends ActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        if (id == R.id.refreshmenu) {
+            if(mCurrentSelectedPosition == 4) { //About
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, AboutFragment.newInstance(mCurrentSelectedPosition), AboutFragment.class.getName())
+                        .commit();
+            }
 
+            return true;
+        }
         //noinspection SimplifiableIfStatement
 //        if(mIsSearchView){
 //            if (id == android.R.id.home) {
@@ -426,6 +440,7 @@ public class MainActivity extends ActionBarActivity
                     .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedPosition), MyProjectsFragment.class.getName())
                     .commit();
         }
+
     }
 
     public void setDeviceConnected(String deviceName, String deviceAddress) {
