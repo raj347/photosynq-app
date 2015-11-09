@@ -18,6 +18,7 @@ public class Constants {
     public static final String PHOTOSYNQ_PROJECT_DETAILS_URL = SERVER_URL+API_VER+"projects/";
     public static final String PHOTOSYNQ_MY_PROJECTS_LIST_URL = SERVER_URL+API_VER+"users/active_projects.json?";
     public static final String PHOTOSYNQ_PRE_SEL_PROTOCOLS_LIST_URL = SERVER_URL+API_VER+"protocols.json?preselected=true";
+    public static final String PHOTOSYNQ_PROTOCOLS_LIST_URL = SERVER_URL+API_VER+"protocols.json?";
     public static final String PHOTOSYNQ_MACRO_URL =SERVER_URL+API_VER+ "macros/";
     public static final String PHOTOSYNQ_DATA_URL = SERVER_URL+API_VER+"projects/";
     public static final String PHOTOSYNQ_USER_INFO = SERVER_URL+API_VER+"users/info.json?";

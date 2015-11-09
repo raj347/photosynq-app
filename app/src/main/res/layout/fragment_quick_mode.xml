@@ -1,22 +1,47 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:background="@color/fragment_background"
-android:orientation="vertical">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/fragment_background"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
-            android:layout_height="wrap_content"
+            android:id="@+id/ll_btn"
+            android:layout_width="fill_parent"
+            android:layout_height="?actionBarSize"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/list_divider" />
+
+            <Button
+                android:id="@+id/show_all_protocol_btn"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="10dp"
+                android:background="@drawable/btn_layout_orange"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                android:text="Show All Protocols" >
+            </Button>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_above="@id/ll_btn"
             android:layout_alignParentTop="true"
             android:layout_width="wrap_content"
+            android:layout_height="0dp"
             android:orientation="vertical">
             <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swipeRefreshLayout_listView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
+                            android:id="@+id/swipeRefreshLayout_listView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
             <ListView
                 android:id="@+id/lv_protocol"
                 android:layout_width="match_parent"
@@ -28,9 +53,8 @@ android:orientation="vertical">
                 android:divider="@color/list_divider"
                 android:dividerHeight="1dp"
                 />
-        </android.support.v4.widget.SwipeRefreshLayout>
+            </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
-
     </RelativeLayout>
 
 
