@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.photosynq.app.PhotoSyncApplication;
 import com.photosynq.app.model.BluetoothMessage;
 
 import java.io.IOException;
@@ -315,17 +316,23 @@ public class BluetoothService {
 				try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
+                    PhotoSyncApplication.sApplication.log("read from bt stream", bytes + " bytes read", "bt-transfers");
+
 
                     // Send the obtained bytes to the UI Activity
 //					mHandler.obtainMessage(ResultActivity.MESSAGE_READ, bytes,-1, buffer).sendToTarget();
                     String readMessage = new String(buffer, 0, bytes);
                     long time = System.currentTimeMillis();
+//                    0xFF ... 0xFE
+                    PhotoSyncApplication.sApplication.log("incoming BT string", readMessage, "bt-transfers");
 
                     measurement.append(readMessage.replaceAll("\\{", "{\"time\":"+time+","));
                     //tempMeasurement.append(readMessage.replaceAll("\\{", "{\"time\":\""+time+"\","));
                     mBluetoothMessage.message = measurement.toString();
-                    if (readMessage.replaceAll("\\r\\n", "######").contains("############")) {
 
+                    PhotoSyncApplication.sApplication.log("checking if message contains ############", mBluetoothMessage.message.replaceAll("\\r\\n", "######"), "bt-transfers");
+                    if (mBluetoothMessage.message.replaceAll("\\r\\n", "######").contains("############")) {
+                        PhotoSyncApplication.sApplication.log("processed string", mBluetoothMessage.message, "bt-transfers");
 						mHandler.obtainMessage (Constants.MESSAGE_READ, measurement.length(), -1, mBluetoothMessage).sendToTarget();
 
                         measurement = null;

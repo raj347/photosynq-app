@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -210,7 +211,8 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.my_projects_title),
                         getString(R.string.quick_measurement_title),
                         getString(R.string.sync_settings_title),
-                        "About"
+                        "About",
+                        "Send Debug"
                 });
         mDrawerListView.setAdapter(mNavigationAdapter);
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -381,6 +383,13 @@ public class NavigationDrawerFragment extends Fragment {
                 mNavigationAdapter.setItemSelected(position);
             }
         }
+
+        Log.d(">==< NX >==<", "position "+position);
+        if(position == 5){
+            PhotoSyncApplication.sApplication.log("debug button pressed", "this is buffer content", "ui-operations");
+            PhotoSyncApplication.sApplication.uploadLog();
+        }
+
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }

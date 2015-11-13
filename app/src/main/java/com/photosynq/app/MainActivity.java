@@ -54,6 +54,8 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ((PhotoSyncApplication)getApplicationContext()).registerActivity(this);
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -77,6 +79,7 @@ public class MainActivity extends ActionBarActivity
         //??onNavigationDrawerItemSelected(mCurrentSelectedPosition);
 
     }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -220,7 +223,7 @@ public class MainActivity extends ActionBarActivity
                 }
 
                 break;
-            case 5:
+            case 7:
                 // Open Profile
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, ProfileFragment.newInstance(position), ProfileFragment.class.getName())
@@ -248,6 +251,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onDestroy(){
         super.onDestroy();
+        ((PhotoSyncApplication)getApplicationContext()).unRegisterActivity();
 
         //??PrefUtils.saveToPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, "0");
 
