@@ -343,7 +343,7 @@ public class ProjectDetailsActivity extends ActionBarActivity {
                     if (resultJsonObject.has("project")) {
                         JSONObject jsonProject = resultJsonObject.getJSONObject("project");
 
-                        String protocol_ids = jsonProject.getJSONArray("protocol_ids").toString().trim();
+                        //String protocol_ids = jsonProject.getJSONArray("protocol_ids").toString().trim();
 
                         String projectImageUrl = jsonProject.getString("project_image");//get project image url.
                         JSONObject creatorJsonObj = jsonProject.getJSONObject("creator");//get project creator infos.
@@ -361,7 +361,7 @@ public class ProjectDetailsActivity extends ActionBarActivity {
                                 projectImageUrl,
                                 jsonProject.getString("beta"),
                                 jsonProject.getString("is_contributed"),
-                                protocol_ids.substring(1, protocol_ids.length() - 1),
+                                "",
                                 creatorJsonObj.getString("name"),
                                 creatorJsonObj.getString("contributions"),
                                 creatorAvatar.getString("thumb"),
@@ -401,11 +401,17 @@ public class ProjectDetailsActivity extends ActionBarActivity {
                                         jsonQuestion.getString("label"),
                                         questionType);
                                 db.updateQuestion(question);
+                                String protocol_ids = "";
 
                                 for (int proto = 0; proto < protocols.length(); proto++) {
-
+                                    if (!protocol_ids.isEmpty())
+                                    {
+                                        protocol_ids = protocol_ids +",";
+                                    }
                                     JSONObject protocolobj = protocols.getJSONObject(proto);
                                     String id = protocolobj.getString("id");
+                                    protocol_ids = protocol_ids + id;
+
                                     System.out.println("Protocol ID " + id);
                                     Protocol protocol = new Protocol(id,
                                             protocolobj.getString("name"),
@@ -426,6 +432,7 @@ public class ProjectDetailsActivity extends ActionBarActivity {
 
                                     db.updateProtocol(protocol);
                                 }
+                                rp.setProtocols_ids(protocol_ids);
                             }
                             db.updateResearchProject(rp);
                         }

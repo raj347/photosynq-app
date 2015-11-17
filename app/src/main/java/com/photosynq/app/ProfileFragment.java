@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.photosynq.app.db.DatabaseHelper;
 import com.photosynq.app.model.ResearchProject;
 import com.photosynq.app.utils.CommonUtils;
 import com.photosynq.app.utils.Constants;
@@ -98,6 +99,8 @@ public class ProfileFragment extends Fragment {
                 SharedPreferences.Editor editor = settings.edit();
                 editor.clear();
                 editor.commit();
+                DatabaseHelper db = DatabaseHelper.getHelper(getActivity());
+                db.deleteAllData();
                 Intent intent = new Intent(context, LoginActivity.class);
                 intent.putExtra("change_user", true);
                 startActivity(intent);

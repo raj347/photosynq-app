@@ -33,5 +33,22 @@
             android:layout_height="wrap_content" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@mipmap/pull_to_refresh"
+    android:id="@+id/imageView"
+    android:layout_alignParentTop="true"
+    android:layout_toLeftOf="@+id/pulltorefreshtext"
+    android:layout_toStartOf="@+id/pulltorefreshtext" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pull to refresh"
+        android:id="@+id/pulltorefreshtext"
+        android:layout_alignBottom="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/black"
+        android:textSize="27dp" />
 
 </RelativeLayout>

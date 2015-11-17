@@ -15,18 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
+
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
-import com.github.amlcurran.showcaseview.targets.Target;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.photosynq.app.db.DatabaseHelper;
 import com.photosynq.app.http.PhotosynqResponse;
 import com.photosynq.app.model.Macro;
@@ -70,6 +65,8 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
     private String pCreatorId;
     private List<ResearchProject> projects;
     private SwipeRefreshLayout mListViewContainer;
+    private ImageView pulltorefreshimage;
+    private TextView pulltorefreshtext;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -96,17 +93,6 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_project_mode, container, false);
-
-        boolean seen = Boolean.parseBoolean(PrefUtils.getFromPrefs(getActivity(), PrefUtils.PREFS_MYPRJ_HINT_SEEN, "false"));
-
-        if(!seen) {
-            ShowcaseView.Builder showCaseBuilder = new ShowcaseView.Builder(this.getActivity());
-            showCaseBuilder.setStyle(R.style.CustomShowcaseTheme);
-            showCaseBuilder.setContentTitle("Pull to refresh projects");
-            showCaseBuilder.build();
-            PrefUtils.saveToPrefs(getActivity(), PrefUtils.PREFS_MYPRJ_HINT_SEEN, "true");
-        }
-
         // SwipeRefreshLayout
         mListViewContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout_listView);
         onCreateSwipeToRefresh(mListViewContainer);
@@ -116,8 +102,24 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
 
         // Initialize ListView
         projectList = (ListView) rootView.findViewById(R.id.lv_project);
-        showProjectList();
+         pulltorefreshimage = (ImageView)rootView.findViewById(R.id.imageView);
+         pulltorefreshtext = (TextView)rootView.findViewById(R.id.pulltorefreshtext);
+        //showProjectList();
+        projects= dbHelper.getAllResearchProjects();
 
+        arrayAdapter = new ProjectArrayAdapter(getActivity(), projects);
+        projectList.setAdapter(arrayAdapter);
+
+        if(projects.isEmpty())
+        {
+            pulltorefreshimage.setVisibility(View.VISIBLE);
+            pulltorefreshtext.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            pulltorefreshimage.setVisibility(View.INVISIBLE);
+            pulltorefreshtext.setVisibility(View.INVISIBLE);
+        }
         if(arrayAdapter.isEmpty())
         {
             if(mSearchString.length() == 0) {
@@ -153,30 +155,30 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
         }
     }
 
-    private void showProjectList() {
-        if(mSearchString.length() > 0) {
-            projects = dbHelper.getAllResearchProjects(mSearchString);
-
-            if(projects == null  || projects.isEmpty()){
-                Toast.makeText(getActivity(), "No project found", Toast.LENGTH_LONG).show();
-            }
-        }else{
-            projects= dbHelper.getAllResearchProjects();
-            if(projects.size() <= 0)
-            {
-                mListViewContainer.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mListViewContainer.setRefreshing(true);
-                        onRefresh();
-                    }
-                });
-            }
-        }
-
-        arrayAdapter = new ProjectArrayAdapter(getActivity(), projects);
-        projectList.setAdapter(arrayAdapter);
-    }
+//    private void showProjectList() {
+//        if(mSearchString.length() > 0) {
+//            projects = dbHelper.getAllResearchProjects(mSearchString);
+//
+//            if(projects == null  || projects.isEmpty()){
+//                Toast.makeText(getActivity(), "No project found", Toast.LENGTH_LONG).show();
+//            }
+//        }else{
+//            projects= dbHelper.getAllResearchProjects();
+//            if(projects.size() <= 0)
+//            {
+//                mListViewContainer.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mListViewContainer.setRefreshing(true);
+//                        onRefresh();
+//                    }
+//                });
+//            }
+//        }
+//
+//        arrayAdapter = new ProjectArrayAdapter(getActivity(), projects);
+//        projectList.setAdapter(arrayAdapter);
+//    }
 
     /**
      * Download list of research project and set to listview.
@@ -193,6 +195,16 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
             projects.addAll(dbHelper.getAllResearchProjects());
         }
 
+        if(projects.isEmpty())
+        {
+            pulltorefreshimage.setVisibility(View.VISIBLE);
+            pulltorefreshtext.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            pulltorefreshimage.setVisibility(View.INVISIBLE);
+            pulltorefreshtext.setVisibility(View.INVISIBLE);
+        }
         //arrayAdapter = new ProjectArrayAdapter(getActivity(), projects);
         //projectList.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();

@@ -35,9 +35,6 @@ import com.photosynq.app.model.Data;
 import com.photosynq.app.model.ProjectResult;
 import com.photosynq.app.model.Question;
 import com.photosynq.app.response.UpdateData;
-import com.photosynq.app.response.UpdateMacro;
-import com.photosynq.app.response.UpdateProject;
-import com.photosynq.app.response.UpdateProtocol;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -145,6 +142,10 @@ public class CommonUtils {
             } catch (IOException e) {
                 //PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
                 Log.e("Connectivity", "Error checking internet connection", e);
+                Toast.makeText(context, "You are not connect to a network.\n" +
+                                        "\n" +
+                                        "Check if wifi is turned on \n" +
+                                        "and if networks are available in your system settings screen. ", Toast.LENGTH_LONG).show();
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(
                         new Runnable() {

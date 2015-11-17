@@ -85,15 +85,15 @@ public class SyncHandler {
                 // Sync with clear cache
 
 
-                final Activity mainActivity = (Activity)activity;
-                mainActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        syncData();
-                    }
-                });
-
+//                final Activity mainActivity = (Activity)activity;
+//                mainActivity.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//
+//                    }
+//                });
+                syncData();
                 return Constants.SUCCESS;
 
             } catch (Exception e) {
@@ -107,7 +107,9 @@ public class SyncHandler {
 
             PrefUtils.saveToPrefs(context, PrefUtils.PREFS_CURRENT_LOCATION, null);
             // Upload all unuploaded results
-            CommonUtils.uploadResults(context, -1);
+            if(CommonUtils.isConnected(context)) {
+                CommonUtils.uploadResults(context, -1);
+            }
 
         }
 

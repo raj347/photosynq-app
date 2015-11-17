@@ -408,7 +408,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(C_LEAD_DATA_COUNT,
                     null != rp.getLead_name() ? rp.getLead_name() : "");
             values.put(C_PROTOCOL_JSON,
-                    null != rp.getLead_name() ? rp.getLead_name() : "");
+                    null != rp.getProtocol_json() ? rp.getProtocol_json() : "");
 			values.put(C_RECORD_HASH, rp.getRecordHash()
             );
 			// insert row
@@ -1331,7 +1331,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_QUESTION,null,null);
         db.delete(TABLE_RESEARCH_PROJECT,null,null);
         db.delete(TABLE_REMEMBER_ANSWERS,null,null);
-		db.delete(TABLE_RESULTS,null,null);
+		//db.delete(TABLE_RESULTS,null,null);
 		db.delete(TABLE_USER_ANSWERS,null,null);
 		//closeWriteDatabase();
     }

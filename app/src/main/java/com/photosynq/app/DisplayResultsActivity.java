@@ -3,12 +3,16 @@ package com.photosynq.app;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -31,20 +35,37 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.photosynq.app.db.DatabaseHelper;
+import com.photosynq.app.model.Macro;
+import com.photosynq.app.model.Option;
 import com.photosynq.app.model.ProjectResult;
 import com.photosynq.app.model.Protocol;
+import com.photosynq.app.model.Question;
+import com.photosynq.app.model.ResearchProject;
+import com.photosynq.app.response.UpdateData;
 import com.photosynq.app.utils.CommonUtils;
 import com.photosynq.app.utils.Constants;
 import com.photosynq.app.utils.LocationUtils;
 import com.photosynq.app.utils.PrefUtils;
 import com.photosynq.app.utils.SyncHandler;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 
 public class DisplayResultsActivity extends ActionBarActivity implements
@@ -206,7 +227,7 @@ public class DisplayResultsActivity extends ActionBarActivity implements
         else
         {
             keepClickFlag = true;
-            PrefUtils.saveToPrefs(getApplicationContext(), PrefUtils.PREFS_KEEP_BTN_CLICK, "KeepBtnCLickYes");
+            //PrefUtils.saveToPrefs(getApplicationContext(), PrefUtils.PREFS_KEEP_BTN_CLICK, "KeepBtnCLickYes");
 
             if (!reading.contains("location")) {
 
@@ -444,18 +465,14 @@ public class DisplayResultsActivity extends ActionBarActivity implements
             if (isJSONValid(reading)) {
 
                 Log.d("IsJSONValid", "Valid Json");
-                DatabaseHelper databaseHelper = DatabaseHelper.getHelper(this);
-                ProjectResult result = new ProjectResult(projectId, reading, "N");
-                databaseHelper.createResult(result);
+                new Uploadresult().execute();
+
 
             } else {
                 Log.d("IsJSONValid", "Invalid Json");
                 Toast.makeText(getApplicationContext(), "Error: Invalid JSON. Restart device and try again", Toast.LENGTH_SHORT).show();
             }
-
-            SyncHandler syncHandler = new SyncHandler(this, MainActivity.getProgressBar());
-            syncHandler.DoSync();
-
+// ################
             finish();
 
         }
@@ -474,6 +491,109 @@ public class DisplayResultsActivity extends ActionBarActivity implements
         return true;
     }
 
+    public class Uploadresult extends AsyncTask<Object, Object, String> {
+        @Override
+        protected String doInBackground(Object... uri) {
+            String authToken = PrefUtils.getFromPrefs(getApplicationContext(), PrefUtils.PREFS_AUTH_TOKEN_KEY, PrefUtils.PREFS_DEFAULT_VAL);
+            String email = PrefUtils.getFromPrefs(getApplicationContext(), PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
+            StringEntity input = null;
+            String responseString = null;
+            JSONObject request_data = new JSONObject();
+
+            try {
+                JSONObject jo = new JSONObject(reading);
+                request_data.put("user_email", email);
+                request_data.put("user_token", authToken);
+                request_data.put("data", jo);
+                input = new StringEntity(request_data.toString());
+                input.setContentType("application/json");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                //??return Constants.SERVER_NOT_ACCESSIBLE;
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                //??return Constants.SERVER_NOT_ACCESSIBLE;
+            }
+
+            String strDataURI = Constants.PHOTOSYNQ_DATA_URL
+                    + projectId + "/data.json";
+
+            Log.d("DisplayResultActivity", "$$$$ URI" + strDataURI);
+
+            HttpPost postRequest = new HttpPost(strDataURI);
+            if (null != input) {
+                postRequest.setEntity(input);
+            }
+            Log.d("DisplayResultActivity", "$$$$ Executing POST request");
+            HttpClient httpclient = new DefaultHttpClient();
+            try {
+                HttpResponse response = httpclient.execute(postRequest);
+
+                if (null != response) {
+                    StatusLine statusLine = response.getStatusLine();
+                    if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        response.getEntity().writeTo(out);
+                        out.close();
+                        responseString = out.toString();
+                        final JSONObject jo = new JSONObject(responseString);
+                        String status = jo.getString("status");
+
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        if (status.toUpperCase().equals("SUCCESS"))
+                        {
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "Success! \nSubmitted", Toast.LENGTH_SHORT).show();
+                                }
+                            }, 0 );
+                        }else if (status.toUpperCase().equals("FAILED"))
+                        {
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    try {
+                                        Toast.makeText(getApplicationContext(), "Submission Failed \nError:"+jo.getString("notice"), Toast.LENGTH_SHORT).show();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, 0 );
+                        }else
+                        {
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    DatabaseHelper databaseHelper = DatabaseHelper.getHelper(getApplicationContext());
+                                    ProjectResult result = new ProjectResult(projectId, reading, "N");
+                                    databaseHelper.createResult(result);
+                                    Toast.makeText(getApplicationContext(), "Success! \nCached", Toast.LENGTH_SHORT).show();
+                                }
+                            }, 0 );
+                        }
+                    } else {
+                        //Closes the connection.
+                        response.getEntity().getContent().close();
+                        throw new IOException(statusLine.getReasonPhrase());
+                    }
+                }
+
+
+            } catch (Exception e) {
+                //??return Constants.SERVER_NOT_ACCESSIBLE;
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        DatabaseHelper databaseHelper = DatabaseHelper.getHelper(getApplicationContext());
+                        ProjectResult result = new ProjectResult(projectId, reading, "N");
+                        databaseHelper.createResult(result);
+                        Toast.makeText(getApplicationContext(), "Success! \nCached", Toast.LENGTH_SHORT).show();
+                    }
+                }, 0 );
+                //e.printStackTrace();
+            }
+            return responseString;
+        }
+
+        }
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
