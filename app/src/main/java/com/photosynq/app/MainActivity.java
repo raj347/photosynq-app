@@ -433,7 +433,7 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         if(mCurrentSelectedPosition == 1) {//Discover
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedPosition), DiscoverFragment.class.getName())
+                    .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedPosition), DiscoverFragment.class.getName())
                     .commit();
         }else if(mCurrentSelectedPosition == 0) { //My Projects
             fragmentManager.beginTransaction()

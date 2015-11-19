@@ -75,7 +75,7 @@ public class DiscoverFragment extends Fragment {
     public static DiscoverFragment newInstance(int sectionNumber, String searchString) {
         DiscoverFragment fragment = new DiscoverFragment();
         mSectionNumber = sectionNumber;
-        mSearchString = searchString.replaceAll(" ","%20");
+        mSearchString = searchString.trim().replaceAll(" ","%20");
         return fragment;
     }
 

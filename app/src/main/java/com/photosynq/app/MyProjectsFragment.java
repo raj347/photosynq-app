@@ -82,7 +82,7 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
     public static MyProjectsFragment newInstance(int sectionNumber, String searchString) {
         MyProjectsFragment fragment = new MyProjectsFragment();
         mSectionNumber = sectionNumber;
-        mSearchString = searchString;
+        mSearchString = searchString.trim().replaceAll(" ","%20");
         return fragment;
     }
 
@@ -105,7 +105,12 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
          pulltorefreshimage = (ImageView)rootView.findViewById(R.id.imageView);
          pulltorefreshtext = (TextView)rootView.findViewById(R.id.pulltorefreshtext);
         //showProjectList();
-        projects= dbHelper.getAllResearchProjects();
+        if(mSearchString.length() == 0) {
+            projects = dbHelper.getAllResearchProjects();
+        }else
+        {
+            projects = dbHelper.getAllResearchProjects(mSearchString);
+        }
 
         arrayAdapter = new ProjectArrayAdapter(getActivity(), projects);
         projectList.setAdapter(arrayAdapter);
@@ -422,7 +427,7 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
                             JSONObject creatorJsonObj = jsonProject.getJSONObject("creator");//get project creator infos.
                             JSONObject creatorAvatar = creatorJsonObj.getJSONObject("avatar");//
                             JSONArray protocols = jsonProject.getJSONArray("protocols");
-
+                            System.out.println("####### Project ID "+jsonProject.getString("id"));
 
                             ResearchProject rp = new ResearchProject(
                                     jsonProject.getString("id"),
@@ -492,15 +497,21 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
                                             protocolobj.getString("macro_id"), "slug",
                                             protocolobj.getString("pre_selected"));
                                     JSONObject macroobject = protocolobj.getJSONObject("macro");
-                                    Macro macro = new Macro(macroobject.getString("id"),
-                                            macroobject.getString("name"),
-                                            macroobject.getString("description"),
-                                            macroobject.getString("default_x_axis"),
-                                            macroobject.getString("default_y_axis"),
-                                            macroobject.getString("javascript_code"),
-                                            "slug");
-                                    System.out.println("Macro ID "+macro.getId());
-                                    db.updateMacro(macro);
+                                    try {
+                                        Macro macro = new Macro(macroobject.getString("id"),
+                                                macroobject.getString("name"),
+                                                macroobject.getString("description"),
+                                                macroobject.getString("default_x_axis"),
+                                                macroobject.getString("default_y_axis"),
+                                                macroobject.getString("javascript_code"),
+                                                "slug");
+                                        System.out.println("Macro ID " + macro.getId());
+                                        db.updateMacro(macro);
+                                    }catch (Exception e)
+                                    {
+                                        e.printStackTrace();
+                                        System.out.println("No Macro for protocol:"+protocol.getId());
+                                    }
 
                                     db.updateProtocol(protocol);
                                 }
