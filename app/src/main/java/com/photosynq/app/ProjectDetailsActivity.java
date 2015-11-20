@@ -61,6 +61,7 @@ public class ProjectDetailsActivity extends ActionBarActivity {
 
     String projectID;
     private boolean discovermode = false;
+    private boolean myprojectssearchmode = false;
     private boolean save_locally = false;
     private ProgressDialog progress;
     private final static String JOIN_PORJECT="+ Join Project";
@@ -86,14 +87,15 @@ public class ProjectDetailsActivity extends ActionBarActivity {
         if (extras != null) {
             projectID = extras.getString(DatabaseHelper.C_PROJECT_ID);
             discovermode = extras.getBoolean(DiscoverFragment.DISCOVER);
+            myprojectssearchmode = extras.getBoolean(MyProjectsFragment.MYPROJECTSEARCHMODE);
             ResearchProject project = databaseHelper.getResearchProject(projectID);
 
-            if( !discovermode ) {
+            if( !discovermode && !myprojectssearchmode) {
                     loaddetails(project);
             }
             else
             {
-                if(null!=project)
+                if(null!=project )
                 {
                     loaddetails(project);
                 }

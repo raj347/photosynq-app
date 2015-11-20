@@ -95,7 +95,7 @@ public class DiscoverFragment extends Fragment {
         projectList.setAdapter(arrayAdapter);
 
         getprojects();
-        if(mSearchString.length() <= 0) {
+//        if(mSearchString.length() <= 0) {
             projectList.setOnScrollListener(new AbsListView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -114,7 +114,7 @@ public class DiscoverFragment extends Fragment {
 
                 }
             });
-        }
+ //       }
         projectList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
@@ -138,9 +138,11 @@ public class DiscoverFragment extends Fragment {
 
             new DownloadDiscoverProjects().execute(getActivity().getApplicationContext(), Constants.PHOTOSYNQ_SEARCH_URL
                     + mSearchString
+                    +"&page=" +pageno
                     + "&user_email=" + email + "&user_token="
                     + authToken);
         }else{
+
             new DownloadDiscoverProjects().execute(getActivity().getApplicationContext(), Constants.PHOTOSYNQ_PROJECTS_LIST_URL
                     + "all=1" + "&page=" + pageno
                     + "&user_email=" + email + "&user_token="
