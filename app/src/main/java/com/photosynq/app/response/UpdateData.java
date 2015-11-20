@@ -58,22 +58,23 @@ public class UpdateData implements PhotosynqResponse{
 
             }
 
-            JSONObject jo = new JSONObject(result);
+            final JSONObject jo = new JSONObject(result);
             String status = jo.getString("status");
 
-
+            Handler handler = new Handler(Looper.getMainLooper());
             if (status.toUpperCase().equals("SUCCESS"))
             {
                 //Toast.makeText(context, R.string.data_uploaded_to_server, Toast.LENGTH_LONG).show();
 
                 // This toast shows successful contribution in photosynq by submitting measurements.
-                Handler handler = new Handler(Looper.getMainLooper());
+
 
                 handler.postDelayed(new Runnable() {
                     public void run() {
                         String getKeepBtnStatus = PrefUtils.getFromPrefs(context, PrefUtils.PREFS_KEEP_BTN_CLICK, "");
                         if(getKeepBtnStatus.equals("KeepBtnCLickYes")) {
                             Toast.makeText(context, "Success! \nSubmitted", Toast.LENGTH_SHORT).show();
+                            PrefUtils.saveToPrefs(context, PrefUtils.PREFS_KEEP_BTN_CLICK, "KeepBtnCLickNo");
                         }
                     }
                 }, 1000 );
@@ -85,7 +86,21 @@ public class UpdateData implements PhotosynqResponse{
                     db.deleteResult(rowid);
                 }
             }else {
-                //Toast.makeText(context, jo.getString("notice"), Toast.LENGTH_SHORT).show();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String getKeepBtnStatus = PrefUtils.getFromPrefs(context, PrefUtils.PREFS_KEEP_BTN_CLICK, "");
+                            if(getKeepBtnStatus.equals("KeepBtnCLickYes")) {
+                                Toast.makeText(context, jo.getString("notice"), Toast.LENGTH_SHORT).show();
+                                PrefUtils.saveToPrefs(context, PrefUtils.PREFS_KEEP_BTN_CLICK, "KeepBtnCLickNo");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },100);
+
             }
 
         } catch (JSONException e) {

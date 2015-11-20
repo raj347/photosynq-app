@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
         android:layout_alignParentRight="true"
-        android:text="Remember answer"
+        android:text="Remember"
         android:checked="false" />
     </RelativeLayout>
 

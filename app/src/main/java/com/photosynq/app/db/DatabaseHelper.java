@@ -134,6 +134,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     .append(C_PROJECT_BETA).append(TEXT).append(COMMA)
                     .append(C_IS_CONTRIBUTED).append(TEXT).append(COMMA)
                     .append(C_PROJECT_PROTOCOL_IDS).append(TEXT).append(COMMA)
+                    .append(C_PROTOCOL_JSON).append(TEXT).append(COMMA)
                     .append(C_PROJECT_IMAGE_URL).append(TEXT).append(")");
 
 
@@ -406,6 +407,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     null != rp.getLead_name() ? rp.getLead_name() : "");
             values.put(C_LEAD_DATA_COUNT,
                     null != rp.getLead_name() ? rp.getLead_name() : "");
+            values.put(C_PROTOCOL_JSON,
+                    null != rp.getProtocol_json() ? rp.getProtocol_json() : "");
 			values.put(C_RECORD_HASH, rp.getRecordHash()
             );
 			// insert row
@@ -455,6 +458,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
                 rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
                 rp.setProtocols_ids(c.getString(c.getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                rp.setProtocol_json(c.getString(c.getColumnIndex(C_PROTOCOL_JSON)));
                 rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
             }
             c.close();
@@ -462,87 +466,87 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rp;
 	}
 
-	public List<ResearchProject> getUserCreatedContributedProjects(String userId) {
-
-		List<ResearchProject> researchProjects = new ArrayList<>();
-		StringBuilder selectQuery = new StringBuilder(SELECT).append(" * ")
-                .append(FROM).append(TABLE_RESEARCH_PROJECT)
-				.append(WHERE).append( C_PROJECT_LEAD_ID)
-                .append(" = '").append(userId)
-                .append("' or ").append(C_IS_CONTRIBUTED).append(" = 'true'");
-
-		Log.e("DBHGUCCP", selectQuery.toString());
-		Cursor c = getWDatabase(context).rawQuery(selectQuery.toString(), null);
-
-		if (c.moveToFirst()) {
-			do {
-				ResearchProject rp = new ResearchProject();
-				rp.setId(c.getString(c.getColumnIndex(C_PROJECT_ID)));
-				rp.setName(c.getString(c.getColumnIndex(C_PROJECT_NAME)));
-				rp.setDescription(c.getString(c.getColumnIndex(C_PROJECT_DESCRIPTION)));
-				rp.setDirToCollab(c.getString(c.getColumnIndex(C_PROJECT_DIR_TO_COLLAB)));
-				rp.setCreatorId(c.getString(c.getColumnIndex(C_PROJECT_LEAD_ID)));
-                rp.setLead_name(c.getString(c.getColumnIndex(C_LEAD_NAME)));
-                rp.setLead_data_count(c.getString(c.getColumnIndex(C_LEAD_DATA_COUNT)));
-                rp.setLead_avatar(c.getString(c.getColumnIndex(C_LEAD_IMAGE_URL)));
-				rp.setStartDate(c.getString(c.getColumnIndex(C_PROJECT_START_DATE)));
-				rp.setEndDate(c.getString(c.getColumnIndex(C_PROJECT_END_DATE)));
-				rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
-				rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
-				rp.setProtocols_ids(c.getString(c.getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
-				rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
-				rp.setIs_contributed(c.getString(c.getColumnIndex(C_IS_CONTRIBUTED)));
-
-				researchProjects.add(rp);
-			} while (c.moveToNext());
-		}
-
-		c.close();
-		return researchProjects;
-	}
+//	public List<ResearchProject> getUserCreatedContributedProjects(String userId) {
+//
+//		List<ResearchProject> researchProjects = new ArrayList<>();
+//		StringBuilder selectQuery = new StringBuilder(SELECT).append(" * ")
+//                .append(FROM).append(TABLE_RESEARCH_PROJECT)
+//				.append(WHERE).append( C_PROJECT_LEAD_ID)
+//                .append(" = '").append(userId)
+//                .append("' or ").append(C_IS_CONTRIBUTED).append(" = 'true'");
+//
+//		Log.e("DBHGUCCP", selectQuery.toString());
+//		Cursor c = getWDatabase(context).rawQuery(selectQuery.toString(), null);
+//
+//		if (c.moveToFirst()) {
+//			do {
+//				ResearchProject rp = new ResearchProject();
+//				rp.setId(c.getString(c.getColumnIndex(C_PROJECT_ID)));
+//				rp.setName(c.getString(c.getColumnIndex(C_PROJECT_NAME)));
+//				rp.setDescription(c.getString(c.getColumnIndex(C_PROJECT_DESCRIPTION)));
+//				rp.setDirToCollab(c.getString(c.getColumnIndex(C_PROJECT_DIR_TO_COLLAB)));
+//				rp.setCreatorId(c.getString(c.getColumnIndex(C_PROJECT_LEAD_ID)));
+//                rp.setLead_name(c.getString(c.getColumnIndex(C_LEAD_NAME)));
+//                rp.setLead_data_count(c.getString(c.getColumnIndex(C_LEAD_DATA_COUNT)));
+//                rp.setLead_avatar(c.getString(c.getColumnIndex(C_LEAD_IMAGE_URL)));
+//				rp.setStartDate(c.getString(c.getColumnIndex(C_PROJECT_START_DATE)));
+//				rp.setEndDate(c.getString(c.getColumnIndex(C_PROJECT_END_DATE)));
+//				rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
+//				rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
+//				rp.setProtocols_ids(c.getString(c.getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+//				rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
+//				rp.setIs_contributed(c.getString(c.getColumnIndex(C_IS_CONTRIBUTED)));
+//
+//				researchProjects.add(rp);
+//			} while (c.moveToNext());
+//		}
+//
+//		c.close();
+//		return researchProjects;
+//	}
 
 	// Get all research project information from database where name contains search string.
-	public List<ResearchProject> getUserCreatedContributedProjects(String searchString, String userId) {
-		List<ResearchProject> researchProjects = new ArrayList<>();
-
-		StringBuilder selectQuery = new StringBuilder(SELECT).append(" * ")
-                .append(FROM).append( TABLE_RESEARCH_PROJECT)
-				.append(WHERE).append("(").append(C_PROJECT_LEAD_ID)
-                .append(" = '").append(userId)
-				.append("' or ").append(C_IS_CONTRIBUTED).append(" = 'true')")
-                .append(AND).append(C_PROJECT_NAME ).append(" LIKE '%").append(searchString).append("%'");
-
-		Log.e("DBHGUCCP", selectQuery.toString());
-
-		Cursor c = getWDatabase(context).rawQuery(selectQuery.toString(), null);
-
-		if (c.moveToFirst()) {
-			do {
-				ResearchProject rp = new ResearchProject();
-				rp.setId(c.getString(c.getColumnIndex(C_PROJECT_ID)));
-				rp.setName(c.getString(c.getColumnIndex(C_PROJECT_NAME)));
-				rp.setDescription(c.getString(c.getColumnIndex(C_PROJECT_DESCRIPTION)));
-				rp.setDirToCollab(c.getString(c.getColumnIndex(C_PROJECT_DIR_TO_COLLAB)));
-				rp.setCreatorId(c.getString(c.getColumnIndex(C_PROJECT_LEAD_ID)));
-                rp.setLead_name(c.getString(c.getColumnIndex(C_LEAD_NAME)));
-                rp.setLead_data_count(c.getString(c.getColumnIndex(C_LEAD_DATA_COUNT)));
-                rp.setLead_avatar(c.getString(c.getColumnIndex(C_LEAD_IMAGE_URL)));
-				rp.setStartDate(c.getString(c.getColumnIndex(C_PROJECT_START_DATE)));
-				rp.setEndDate(c.getString(c.getColumnIndex(C_PROJECT_END_DATE)));
-				rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
-				rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
-				rp.setProtocols_ids(c.getString(c
-                        .getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
-				rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
-				rp.setIs_contributed(c.getString(c.getColumnIndex(C_IS_CONTRIBUTED)));
-
-				researchProjects.add(rp);
-			} while (c.moveToNext());
-		}
-
-		c.close();
-		return researchProjects;
-	}
+//	public List<ResearchProject> getUserCreatedContributedProjects(String searchString, String userId) {
+//		List<ResearchProject> researchProjects = new ArrayList<>();
+//
+//		StringBuilder selectQuery = new StringBuilder(SELECT).append(" * ")
+//                .append(FROM).append( TABLE_RESEARCH_PROJECT)
+//				.append(WHERE).append("(").append(C_PROJECT_LEAD_ID)
+//                .append(" = '").append(userId)
+//				.append("' or ").append(C_IS_CONTRIBUTED).append(" = 'true')")
+//                .append(AND).append(C_PROJECT_NAME ).append(" LIKE '%").append(searchString).append("%'");
+//
+//		Log.e("DBHGUCCP", selectQuery.toString());
+//
+//		Cursor c = getWDatabase(context).rawQuery(selectQuery.toString(), null);
+//
+//		if (c.moveToFirst()) {
+//			do {
+//				ResearchProject rp = new ResearchProject();
+//				rp.setId(c.getString(c.getColumnIndex(C_PROJECT_ID)));
+//				rp.setName(c.getString(c.getColumnIndex(C_PROJECT_NAME)));
+//				rp.setDescription(c.getString(c.getColumnIndex(C_PROJECT_DESCRIPTION)));
+//				rp.setDirToCollab(c.getString(c.getColumnIndex(C_PROJECT_DIR_TO_COLLAB)));
+//				rp.setCreatorId(c.getString(c.getColumnIndex(C_PROJECT_LEAD_ID)));
+//                rp.setLead_name(c.getString(c.getColumnIndex(C_LEAD_NAME)));
+//                rp.setLead_data_count(c.getString(c.getColumnIndex(C_LEAD_DATA_COUNT)));
+//                rp.setLead_avatar(c.getString(c.getColumnIndex(C_LEAD_IMAGE_URL)));
+//				rp.setStartDate(c.getString(c.getColumnIndex(C_PROJECT_START_DATE)));
+//				rp.setEndDate(c.getString(c.getColumnIndex(C_PROJECT_END_DATE)));
+//				rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
+//				rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
+//				rp.setProtocols_ids(c.getString(c
+//                        .getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+//				rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
+//				rp.setIs_contributed(c.getString(c.getColumnIndex(C_IS_CONTRIBUTED)));
+//
+//				researchProjects.add(rp);
+//			} while (c.moveToNext());
+//		}
+//
+//		c.close();
+//		return researchProjects;
+//	}
 
 
 	// Get all research project information from database.
@@ -557,8 +561,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (c.moveToFirst()) {
 			do {
 				ResearchProject rp = new ResearchProject();
-				rp.setId(c.getString(c.getColumnIndex(C_PROJECT_ID)));
-				rp.setName(c.getString(c.getColumnIndex(C_PROJECT_NAME)));
+                rp.setId(c.getString(c.getColumnIndex(C_PROJECT_ID)));
+                rp.setName(c.getString(c.getColumnIndex(C_PROJECT_NAME)));
 				rp.setDescription(c.getString(c.getColumnIndex(C_PROJECT_DESCRIPTION)));
 				rp.setDirToCollab(c.getString(c.getColumnIndex(C_PROJECT_DIR_TO_COLLAB)));
 				rp.setCreatorId(c.getString(c.getColumnIndex(C_PROJECT_LEAD_ID)));
@@ -566,11 +570,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 rp.setLead_data_count(c.getString(c.getColumnIndex(C_LEAD_DATA_COUNT)));
                 rp.setLead_avatar(c.getString(c.getColumnIndex(C_LEAD_IMAGE_URL)));
                 rp.setStartDate(c.getString(c.getColumnIndex(C_PROJECT_START_DATE)));
-				rp.setEndDate(c.getString(c.getColumnIndex(C_PROJECT_END_DATE)));
-				rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
-				rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
+                rp.setEndDate(c.getString(c.getColumnIndex(C_PROJECT_END_DATE)));
+                rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
+                rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
 				rp.setProtocols_ids(c.getString(c
-						.getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                        .getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                rp.setProtocol_json(c.getString(c
+                        .getColumnIndex(C_PROTOCOL_JSON)));
 				rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
 
 				researchProjects.add(rp);
@@ -609,7 +615,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 rp.setImageUrl(c.getString(c.getColumnIndex(C_PROJECT_IMAGE_URL)));
                 rp.setRecordHash(c.getString(c.getColumnIndex(C_RECORD_HASH)));
                 rp.setProtocols_ids(c.getString(c
-						.getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                        .getColumnIndex(C_PROJECT_PROTOCOL_IDS)));
+                rp.setProtocol_json(c.getString(c
+                        .getColumnIndex(C_PROTOCOL_JSON)));
                 rp.setBeta(c.getString(c.getColumnIndex(C_PROJECT_BETA)));
 
 				researchProjects.add(rp);
@@ -654,6 +662,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null != rp.getLead_name() ? rp.getLead_name() : "");
         values.put(C_PROJECT_PROTOCOL_IDS,
                 null != rp.getProtocols_ids() ? rp.getProtocols_ids() : "");
+        values.put(C_PROTOCOL_JSON,
+                null != rp.getProtocol_json() ? rp.getProtocol_json() : "");
         values.put(C_RECORD_HASH, rp.getRecordHash());
 
         int rowsaffected = getWDatabase(context).update(TABLE_RESEARCH_PROJECT, values, C_PROJECT_ID
@@ -1161,30 +1171,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	// Getting single parameters of settings
-	public Data getData(String userID, String projectID, String questionID) {
-
-		String selectQuery = "SELECT  * FROM " + TABLE_DATA
-                + " WHERE " + C_USER_ID + " = '" + userID
-                + "' and " + C_PROJECT_ID + " = '" + projectID
-                + "' and " + C_QUESTION_ID + " = '" + questionID + "'";
-
-		Data data = new Data();
-		data.setUser_id(userID);
-		Cursor c = getWDatabase(context).rawQuery(selectQuery, null);
-		if (c.moveToFirst()) {
-
-			data.setUser_id(c.getString(c.getColumnIndex(C_USER_ID)));
-			data.setProject_id(c.getString(c.getColumnIndex(C_PROJECT_ID)));
-			data.setQuestion_id(c.getString(c.getColumnIndex(C_QUESTION_ID)));
-			data.setType(c.getString(c.getColumnIndex(C_TYPE)));
-            data.setSelected_option(c.getString(c.getColumnIndex(C_SELECTED_OPTION_TEXT)));
-            data.setIs_remembered(c.getString(c.getColumnIndex(C_IS_REMEMBER)));
-            data.setValue(c.getString(c.getColumnIndex(C_VALUES)));
-
-        }
-		c.close();
-		return data;
-	}
+//	public Data getData(String userID, String projectID, String questionID) {
+//
+//		String selectQuery = "SELECT  * FROM " + TABLE_DATA
+//                + " WHERE " + C_USER_ID + " = '" + userID
+//                + "' and " + C_PROJECT_ID + " = '" + projectID
+//                + "' and " + C_QUESTION_ID + " = '" + questionID + "'";
+//
+//		Data data = new Data();
+//		data.setUser_id(userID);
+//		Cursor c = getWDatabase(context).rawQuery(selectQuery, null);
+//		if (c.moveToFirst()) {
+//
+//			data.setUser_id(c.getString(c.getColumnIndex(C_USER_ID)));
+//			data.setProject_id(c.getString(c.getColumnIndex(C_PROJECT_ID)));
+//			data.setQuestion_id(c.getString(c.getColumnIndex(C_QUESTION_ID)));
+//			data.setType(c.getString(c.getColumnIndex(C_TYPE)));
+//            data.setSelected_option(c.getString(c.getColumnIndex(C_SELECTED_OPTION_TEXT)));
+//            data.setIs_remembered(c.getString(c.getColumnIndex(C_IS_REMEMBER)));
+//            data.setValue(c.getString(c.getColumnIndex(C_VALUES)));
+//
+//        }
+//		c.close();
+//		return data;
+//	}
 
 	// Updating single setting
 	public boolean updateData(Data data) {
@@ -1321,7 +1331,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_QUESTION,null,null);
         db.delete(TABLE_RESEARCH_PROJECT,null,null);
         db.delete(TABLE_REMEMBER_ANSWERS,null,null);
-		db.delete(TABLE_RESULTS,null,null);
+		//db.delete(TABLE_RESULTS,null,null);
 		db.delete(TABLE_USER_ANSWERS,null,null);
 		//closeWriteDatabase();
     }

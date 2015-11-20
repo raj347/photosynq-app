@@ -3,19 +3,16 @@ package com.photosynq.app.http;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.photosynq.app.MainActivity;
-import com.photosynq.app.http.PhotosynqResponse;
-import com.photosynq.app.response.UpdateProject;
+
 import com.photosynq.app.utils.CommonUtils;
 import com.photosynq.app.utils.Constants;
-import com.photosynq.app.utils.PrefUtils;
+
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;

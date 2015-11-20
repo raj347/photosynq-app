@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
@@ -14,12 +15,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +67,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     BluetoothMessage bluetoothMessage;
     private String deviceAddress;
     private BluetoothAdapter mBluetoothAdapter = null;
+    private TextView outputTextView;
 
 
     private String mConnectedDeviceName;
@@ -70,6 +76,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_questions_list);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -88,7 +95,10 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
         expListView.setGroupIndicator(null);
 
         listAdapter = new ExpandableListAdapter(this, questions,expListView);
+
         expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+
             //Collapse all group except selected group
             @Override
             public void onGroupExpand(int groupPosition) {
@@ -97,6 +107,16 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                     expListView.collapseGroup(lastExpandedPosition);
                 }
                 lastExpandedPosition = groupPosition;
+            }
+        });
+
+        expListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                if (expListView != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(expListView.getWindowToken(), 0);
+                }
             }
         });
         expListView.setAdapter(listAdapter);
@@ -154,6 +174,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 }
             }
         });
+
         Button directionsButton = (Button) findViewById(R.id.btn_directions);
         directionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,30 +184,47 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 startActivity(openMainActivity);
             }
         });
+
+        Button outputButton = (Button) findViewById(R.id.btn_output);
+        outputTextView = (TextView) findViewById(R.id.outputtv);
+        final ScrollView listscroll = (ScrollView) findViewById(R.id.questionlistscroll);
+        final ScrollView outputscroll = (ScrollView) findViewById(R.id.outputscroll);
+        outputButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(listscroll.getVisibility() == View.GONE){
+                    ((Button)view).setText("+ O/P");
+                    outputscroll.setVisibility(View.GONE);
+                    listscroll.setVisibility(View.VISIBLE);
+                }else {
+                    ((Button)view).setText("- O/P");
+                    outputscroll.setVisibility(View.VISIBLE);
+                    listscroll.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
-    private void createHandler() {
+    private synchronized void createHandler() {
         mHandler = null;
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
 
-
-                BluetoothMessage bluetoothMessage = (BluetoothMessage) msg.obj;
                 TextView mtvStatusMessage = (TextView) findViewById(R.id.tv_status_message);
                 ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
                 Button btnTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
 
                 switch (msg.what) {
+                    case Constants.MESSAGE_STREAM:
+                        String oldmdg = outputTextView.getText().toString();
+                        outputTextView.setText(oldmdg+(CharSequence) msg.obj);
+                        break;
                     case Constants.MESSAGE_STATE_CHANGE:
                         if (Constants.D) Log.i("PHOTOSYNC", "MESSAGE_STATE_CHANGE: " + msg.arg1);
                         switch (msg.arg1) {
                             case BluetoothService.STATE_CONNECTED:
-                                //??
-//                            if (txtOutput != null) {
-//                                txtOutput.setText("");
-//                            }
-
+                                BluetoothMessage bluetoothMessagee = (BluetoothMessage) msg.obj;
                                 if (msg.arg2 == 0) {//Sending cancel request to the device
                                     sendData("-1+-1+");
                                     //setDeviceTimeOut();
@@ -282,11 +320,11 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                                 System.out.println("######Writing macros_variable.js file:" + data);
                                                 CommonUtils.writeStringToFile(QuestionsList.this, "macros_variable.js", data);
 
-                                                protocolJson = "[" + protocolJson.substring(0, protocolJson.length() - 1) + "]"; // remove last comma and add suqare brackets and start and end.
+                                                //protocolJson = "[" + protocolJson.substring(0, protocolJson.length() - 1) + "]"; // remove last comma and add suqare brackets and start and end.
 
-                                                System.out.println("$$$$$$$$$$$$$$ protocol json sending to device :" + protocolJson + "length:" + protocolJson.length());
+                                                System.out.println("$$$$$$$$$$$$$$ protocol json sending to device :" + researchProject.getProtocol_json() + "length:" +  researchProject.getProtocol_json().length());
 
-                                                sendData(protocolJson);
+                                                sendData( researchProject.getProtocol_json());
                                                 setDeviceTimeOut();
 
                                                 mtvStatusMessage.setText("Initializing measurement please wait ...");
@@ -322,7 +360,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                                 } else {
                                     if (mIsMeasureBtnClicked) {
-                                        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_CONNECTED, 1, bluetoothMessage).sendToTarget();
+                                        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_CONNECTED, 1, bluetoothMessagee).sendToTarget();
                                     }
                                 }
 
@@ -335,9 +373,9 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                 mtvStatusMessage.setText(R.string.title_not_connected);
                                 break;
                             case BluetoothService.STATE_FIRST_RESP:
-
+                                BluetoothMessage bluetoothMessage1 = (BluetoothMessage) msg.obj;
                                 PrefUtils.saveToPrefs(QuestionsList.this, "isGetResponse", "true");
-                                final String measurement = bluetoothMessage.message;
+                                final String measurement = bluetoothMessage1.message;
 
                                 if (mIsCancelMeasureBtnClicked == true) {
 
@@ -395,55 +433,34 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                     case Constants.MESSAGE_WRITE:
                         break;
                     case Constants.MESSAGE_READ:
-
                         PrefUtils.saveToPrefs(QuestionsList.this, "isGetResponse", "true");
-                        //timer.cancel();
                         if (mIsCancelMeasureBtnClicked == false) {
-                            String measurement = bluetoothMessage.message;
+                            BluetoothMessage bluetoothMessage2 = (BluetoothMessage) msg.obj;
+                            String measurement = bluetoothMessage2.message;
                             // Do not process the message if contain pwr_off from device
+                            Log.d("QuestionList", measurement);
                             if (measurement.contains("sample") || measurement.contains("user_questions")) {
-
-//                            if (txtOutput != null) {
-//                                txtOutput.setText( measurement.toString());
-//                            }
-
-                                // construct a string from the valid bytes in the buffer
-                                // String readMessage = new String(readBuf, 0, msg.arg1);
-                                //??mtvStatusMessage.setText(R.string.connected);
                                 String dataString;
-                                //StringBuffer options = new StringBuffer();
-                                //ArrayList<SelectedOptions> allOptions = listAdapter.getSelectedOptions();
-//                                options.append("\"user_answers\": [");
-//                                //loop
-//                                if (null != allOptions) {
-//                                    for (int i = 0; i < allOptions.size(); i++) {
-//                                        options.append("\"" + allOptions.get(i).getSelectedValue() + "\"");
-//                                        if (i < allOptions.size() - 1)
-//                                            options.append(",");
-//                                    }
-//                                }
-//                                options.append(" ],");
-                                //TODO uncomment this for api v3
                                 StringBuffer options = new StringBuffer();
-                                //options.append("\"user_answers\": {");
-                                options.append("\"user_answers\": [");
+                                options.append("\"user_answers\": {");
+                                //options.append("\"user_answers\": [");
 
 
                                 ArrayList<SelectedOptions> allOptions = listAdapter.getSelectedOptions();
                                     for (int i = 0; i < allOptions.size(); i++) {
 
-//                                        options.append('"')
-//                                                .append(allOptions.get(i).getQuestionId())
-//                                                .append('"')
-//                                                .append(':')
-                                                options.append('"')
+                                        options.append('"')
+                                                .append(allOptions.get(i).getQuestionId())
+                                                .append('"')
+                                                .append(':')
+                                                .append('"')
                                                 .append(allOptions.get(i).getSelectedValue())
                                                 .append('"');
                                         if (i < allOptions.size() - 1)
                                             options.append(",");
                                     }
-                                options.append(" ],");
-                                //options.append(" },");
+                                //options.append(" ],");
+                                options.append(" },");
                                 final long time = System.currentTimeMillis();
                                 String currentLocation = PrefUtils.getFromPrefs(QuestionsList.this, PrefUtils.PREFS_CURRENT_LOCATION, "");
                                 if (allOptions.size() <= 0) {
@@ -465,7 +482,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                                 final String reading = measurement.replaceAll("\\r\\n", "").replaceFirst("\\{", "{" + options)
                                         ;
-
+                                outputTextView.setText("");
                                 new CountDownTimer(1000, 1000) {
 
                                     @Override
@@ -487,7 +504,8 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                             }
                         } else {
-                            String measurement = bluetoothMessage.message;
+                            BluetoothMessage bluetoothMessage3 = (BluetoothMessage) msg.obj;
+                            String measurement = bluetoothMessage3.message;
                             //if(measurement.toString().contains("\\r\\n\\r\\n")) {
                             mIsCancelMeasureBtnClicked = false;
                             if (btnTakeMeasurement != null) {
@@ -533,8 +551,8 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                         //timer.cancel();
                         break;
                     case Constants.MESSAGE_STOP:
-                        Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
-                                Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
+                        //        Toast.LENGTH_LONG).show();
                         //??mBluetoothService.stop();
                         break;
                 }
@@ -566,6 +584,35 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //Handle the back button
+        if(keyCode == KeyEvent.KEYCODE_BACK) {
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Caution")
+                    .setMessage("Are you sure you want to leave this screen?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //Stop the activity
+                            PrefUtils.saveToPrefs(QuestionsList.this, PrefUtils.PREFS_PREV_SELECTED_POSITION, "0");
+                            BluetoothService mBluetoothService = BluetoothService.getInstance(bluetoothMessage, mHandler);
+                            mBluetoothService.stop();
+                            QuestionsList.this.finish();
+
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+
+            return true;
+        }
+        else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+    @Override
     public void onResume() {
         super.onResume();
         if(!scanMode) {
@@ -592,24 +639,30 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 if (option.getQuestionType() == Question.USER_DEFINED) {
                     if (option.getOptionType() == 1) {
                         option.setReset(false);
-                        int from = Integer.parseInt(option.getRangeFrom());
-                        int to = Integer.parseInt(option.getRangeTo());
-                        int repeat = Integer.parseInt(option.getRangeRepeat());
-                        ArrayList<Integer> populatedValues = new ArrayList<Integer>();
-                        for (int i = from; i <= to; i++) {
-                            for (int j = 0; j < repeat; j++) {
-                                populatedValues.add(i);
+                        try {
+                            int from = Integer.parseInt(option.getRangeFrom());
+                            int to = Integer.parseInt(option.getRangeTo());
+                            int repeat = Integer.parseInt(option.getRangeRepeat());
+                            ArrayList<Integer> populatedValues = new ArrayList<Integer>();
+                            for (int i = from; i <= to; i++) {
+                                for (int j = 0; j < repeat; j++) {
+                                    populatedValues.add(i);
 
+                                }
                             }
+                            int currentIndex = option.getAutoIncIndex();
+                            currentIndex++;
+                            if (currentIndex > populatedValues.size() - 1) {
+                                option.setSelectedValue("Loop completed");
+                            } else {
+                                option.setSelectedValue(populatedValues.get(currentIndex).toString());
+                                option.setAutoIncIndex(currentIndex);
+                            }
+                        }catch (Exception e)
+                        {
+                            //eating exception
                         }
-                        int currentIndex = option.getAutoIncIndex();
-                        currentIndex++;
-                        if (currentIndex > populatedValues.size() - 1) {
-                            option.setSelectedValue("Loop completed");
-                        } else {
-                            option.setSelectedValue(populatedValues.get(currentIndex).toString());
-                            option.setAutoIncIndex(currentIndex);
-                        }
+
 
                     }
 
@@ -621,11 +674,14 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
             mIsCancelMeasureBtnClicked = false;
         }
         scanMode=false;
+
+        int count =  listAdapter.getGroupCount();
+        for (int i = 0; i <count ; i++){expListView.collapseGroup(i);}
     }
     void setDeviceTimeOut(){
 
         PrefUtils.saveToPrefs(QuestionsList.this, "isGetResponse", "false");
-        new CountDownTimer(5000, 1000) {
+        new CountDownTimer(10000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 System.out.print("@@@@@@@@@@@@@@ test tick on send protocol");
@@ -653,7 +709,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                                     @Override
                                                     public void onClick(DialogInterface dialogInterface, int which) {
                                                         sendData("-1+-1+"); // Send cancel request
-                                                        finish();
+                                                      //  finish();
                                                         //??sendData("1027"); // Restart teensy device
                                                     }
 

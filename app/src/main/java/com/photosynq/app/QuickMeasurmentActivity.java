@@ -130,16 +130,15 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
             @Override
             public void onClick(View view) {
 
-                if(btnTakeMeasurement.getText().equals("+ Take Measurement")) {
+                if (btnTakeMeasurement.getText().equals("+ Take Measurement")) {
                     if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
                         // Get the BLuetoothDevice object
-                        if(null == deviceAddress)
-                        {
+                        if (null == deviceAddress) {
                             Toast.makeText(QuickMeasurmentActivity.this, "Measurement device not configured, Please configure measurement device (bluetooth).", Toast.LENGTH_SHORT).show();
                             selectDevice();
                             return;
 
-                        }else {
+                        } else {
                             BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceAddress);
                             mBluetoothService.connect(device);
                         }
@@ -148,9 +147,7 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
                     }
                     btnTakeMeasurement.setText("Cancel Measure");
                     btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_red);
-                }
-                else if(btnTakeMeasurement.getText().equals("Cancel Measure"))
-                {
+                } else if (btnTakeMeasurement.getText().equals("Cancel Measure")) {
                     sendData("-1+-1+");
                     finish();
                 }
@@ -238,8 +235,12 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-
-            BluetoothMessage bluetoothMessage = (BluetoothMessage) msg.obj;
+            BluetoothMessage bluetoothMessage = new BluetoothMessage();
+            try {
+                 bluetoothMessage = (BluetoothMessage) msg.obj;
+            }catch (ClassCastException cce){
+                //eating exception
+            }
 
             switch (msg.what) {
                 case Constants.MESSAGE_STATE_CHANGE:
@@ -369,8 +370,8 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
                     }
                     break;
                 case Constants.MESSAGE_STOP:
-                    Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
-                            Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
+                    //        Toast.LENGTH_SHORT).show();
                     //??mBluetoothService.stop();
                     break;
             }

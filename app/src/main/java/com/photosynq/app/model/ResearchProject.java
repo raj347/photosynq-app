@@ -21,9 +21,12 @@ public class ResearchProject {
     public String lead_avatar;
 
 
+	public String protocol_json;
+
+
 	public ResearchProject(String id, String name, String description, String dirToCollab, String creatorId,
     		String startDate, String endDate, String imageUrl, String beta, String is_contributed, String protocols_ids,
-                            String lead_name, String lead_data_count, String lead_avatar)
+                            String lead_name, String lead_data_count, String lead_avatar, String protocol_json)
     {
     	this.id = id;
     	this.name = name;
@@ -40,15 +43,13 @@ public class ResearchProject {
         this.lead_data_count = lead_data_count;
         this.lead_avatar = lead_avatar;
     	this.recordHash = getProjectRecordHash();
+		this.protocol_json = protocol_json;
 
     	
     }
-    public ResearchProject()
-    {
-    	
-    }
-    
-    public String getProjectRecordHash() {
+    public ResearchProject() {}
+
+	public String getProjectRecordHash() {
 		String recordString = (null != getId() ? getId() : "") 
 				+ (null != getName() ? getName() : "" )
 				+ (null != getDescription() ? getDescription() : "" )
@@ -162,6 +163,9 @@ public class ResearchProject {
     public void setLead_avatar(String lead_avatar) {
         this.lead_avatar = lead_avatar;
     }
+    public String getProtocol_json() {return protocol_json;}
+
+    public void setProtocol_json(String protocol_json) {this.protocol_json = protocol_json;}
 
 
 

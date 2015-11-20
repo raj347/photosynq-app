@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:background="@color/fragment_background"
-android:orientation="vertical">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/fragment_background"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -38,7 +38,10 @@ android:orientation="vertical">
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:orientation="vertical">
-
+            <android.support.v4.widget.SwipeRefreshLayout
+                            android:id="@+id/swipeRefreshLayout_listView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
             <ListView
                 android:id="@+id/lv_protocol"
                 android:layout_width="match_parent"
@@ -50,6 +53,7 @@ android:orientation="vertical">
                 android:divider="@color/list_divider"
                 android:dividerHeight="1dp"
                 />
+            </android.support.v4.widget.SwipeRefreshLayout>
         </LinearLayout>
     </RelativeLayout>
 
