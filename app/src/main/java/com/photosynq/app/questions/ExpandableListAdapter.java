@@ -383,8 +383,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                             ExpandableListView explist = (ExpandableListView) ll.getParent();
 
                             LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(questionNumber);
-                            TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
-                            selectedAnswer.setText(parent.getItemAtPosition(position).toString());
+
+                            if(ll2 != null){
+                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                selectedAnswer.setText(parent.getItemAtPosition(position).toString());
+                            }
+
                             final int sdk = android.os.Build.VERSION.SDK_INT;
                             if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
                                 ll2.setBackgroundDrawable(_context.getResources().getDrawable(R.color.green_light));
