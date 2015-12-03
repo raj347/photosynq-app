@@ -12,7 +12,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         android:imeOptions="actionDone"
-        android:lines="1"
+        android:singleLine="true"
         android:gravity="center_horizontal"
         android:textSize="24sp"
         android:textColor="@color/black"

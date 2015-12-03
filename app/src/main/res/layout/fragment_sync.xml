@@ -24,7 +24,7 @@
         <Spinner
             android:id="@+id/interval_time_spinner"
             android:layout_width="140dp"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
             android:background="@android:drawable/btn_dropdown"
             android:spinnerMode="dropdown"
             android:layout_below="@+id/tv_auto_sync_interval"
@@ -163,7 +163,7 @@
             android:id="@+id/tv_sync_btn_message"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Push cached data to and update project information from PhotosynQ.org server"
+            android:text="Push cached data PhotosynQ.org server"
             android:textColor="@color/textPrimaryLight"
             android:layout_marginLeft="10sp"
             android:layout_marginRight="10dp"

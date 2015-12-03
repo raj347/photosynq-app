@@ -20,20 +20,23 @@
          />
     <TextView
         android:id="@+id/selectedAnswer"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tap To Select Answer"
-        android:textSize="25dp"
+        android:textStyle="bold"
+        android:textSize="30dp"
         android:textColor="@color/black" />
-
 
     <ImageView
         android:id="@+id/lblListHeader"
-        android:layout_toRightOf="@+id/question"
         android:layout_width="60dp"
         android:focusable="false"
         android:layout_height="60dp"
-         />
+        android:layout_gravity="right" />
+
+
+
+
     <!--<CheckBox-->
         <!--android:layout_gravity="right"-->
         <!--android:layout_marginRight="10dip"-->

@@ -1,10 +1,15 @@
 package com.photosynq.app.model;
 
+import android.util.Log;
+
 import com.photosynq.app.utils.CommonUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Protocol {
 
@@ -138,7 +143,8 @@ public class Protocol {
 			retVal = Integer.parseInt(value);
 
 		} catch (JSONException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			Logger.getAnonymousLogger().log(Level.INFO,"No value for field: "+fieldName);
 		}
 		return retVal;
 	}

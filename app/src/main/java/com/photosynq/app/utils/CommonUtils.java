@@ -35,9 +35,6 @@ import com.photosynq.app.model.Data;
 import com.photosynq.app.model.ProjectResult;
 import com.photosynq.app.model.Question;
 import com.photosynq.app.response.UpdateData;
-import com.photosynq.app.response.UpdateMacro;
-import com.photosynq.app.response.UpdateProject;
-import com.photosynq.app.response.UpdateProtocol;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -69,11 +66,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-//import tourguide.tourguide.Overlay;
-//import tourguide.tourguide.Pointer;
-//import tourguide.tourguide.ToolTip;
-//import tourguide.tourguide.TourGuide;
 
 
 /**
@@ -148,8 +140,12 @@ public class CommonUtils {
                 urlc.connect();
                 return (urlc.getResponseCode() == 200);
             } catch (IOException e) {
-                PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
+                //PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
                 Log.e("Connectivity", "Error checking internet connection", e);
+                Toast.makeText(context, "You are not connect to a network.\n" +
+                                        "\n" +
+                                        "Check if wifi is turned on \n" +
+                                        "and if networks are available in your system settings screen. ", Toast.LENGTH_LONG).show();
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(
                         new Runnable() {
@@ -173,7 +169,7 @@ public class CommonUtils {
                 );
             }
         } else {
-            PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
+            //PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
             Log.d("Connectivity", "You are not connect to a network.");
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(
@@ -371,33 +367,33 @@ public class CommonUtils {
         return appSettings.getConnectionId();
     }
 
-    public static String getAutoIncrementedValue(Context ctx,String question_id, String index) {
-        if(Integer.parseInt(index) == -1) {
-            return "-2";
-        }
-
-        String userId = PrefUtils.getFromPrefs(ctx , PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
-        DatabaseHelper db = DatabaseHelper.getHelper(ctx);
-        String projectId = db.getSettings(userId).getProjectId();
-        Question question = db.getQuestionForProject(projectId, question_id);
-        Data data = db.getData(userId, projectId, question.getQuestionId());
-        String[] items = data.getValue().split(",");
-        int from = Integer.parseInt(items[0]);
-        int to = Integer.parseInt(items[1]);
-        int repeat = Integer.parseInt(items[2]);
-        ArrayList<Integer> populatedValues = new ArrayList<Integer>();
-        for(int i=from;i<=to;i++){
-            for(int j=0;j<repeat;j++){
-                populatedValues.add(i);
-
-            }
-        }
-
-        if(Integer.parseInt(index) > populatedValues.size()-1)
-            return "-1";
-
-        return populatedValues.get(Integer.parseInt(index)).toString();
-    }
+//    public static String getAutoIncrementedValue(Context ctx,String question_id, String index) {
+//        if(Integer.parseInt(index) == -1) {
+//            return "-2";
+//        }
+//
+//        String userId = PrefUtils.getFromPrefs(ctx , PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
+//        DatabaseHelper db = DatabaseHelper.getHelper(ctx);
+//        String projectId = db.getSettings(userId).getProjectId();
+//        Question question = db.getQuestionForProject(projectId, question_id);
+//        Data data = db.getData(userId, projectId, question.getQuestionId());
+//        String[] items = data.getValue().split(",");
+//        int from = Integer.parseInt(items[0]);
+//        int to = Integer.parseInt(items[1]);
+//        int repeat = Integer.parseInt(items[2]);
+//        ArrayList<Integer> populatedValues = new ArrayList<Integer>();
+//        for(int i=from;i<=to;i++){
+//            for(int j=0;j<repeat;j++){
+//                populatedValues.add(i);
+//
+//            }
+//        }
+//
+//        if(Integer.parseInt(index) > populatedValues.size()-1)
+//            return "-1";
+//
+//        return populatedValues.get(Integer.parseInt(index)).toString();
+//    }
 
     public static Date convertToDate(String rawdate)
     {
@@ -414,59 +410,20 @@ public class CommonUtils {
 
     }
 
-//    public static TourGuide showShowCaseView(Activity activity, int viewId, String title, String message){
-//
-//        Animation animation = new TranslateAnimation(0f, 0f, 200f, 0f);
-//        animation.setDuration(1000);
-//        animation.setFillAfter(true);
-//        animation.setInterpolator(new BounceInterpolator());
-//
-//        ToolTip toolTip = new ToolTip()
-//                .setTitle(title)
-//                .setDescription(message)
-//                .setTextColor(Color.parseColor("#bdc3c7"))
-//                .setBackgroundColor(Color.parseColor("#e74c3c"))
-//                .setShadow(true)
-//                .setGravity(Gravity.TOP)
-//                .setEnterAnimation(animation);
-//
-//        View view = activity.findViewById(viewId);
-//        TourGuide mTourGuideHandler = TourGuide.init(activity).with(TourGuide.Technique.Click)
-//                .setPointer(new Pointer())
-//                .setToolTip(toolTip)
-//                .setOverlay(new Overlay())
-//                .playOn(view);
-//
-//        return mTourGuideHandler;
-//
-////        ViewTarget target = new ViewTarget( viewId, activity);
-////        ShowcaseView sv = new ShowcaseView.Builder(activity, true)
-////                .setTarget(target)
-////                .setContentTitle(title)
-////                .setContentText(message)
-////                .setStyle(R.style.CustomShowcaseTheme4)
-////                .build();
-////        sv.setButtonPosition(lps);
-//
-//    }
+
 
     public static void setProgress(final Activity context, ProgressDialog progressDialog, int progressValue){
        if(progressDialog != null && context != null) {
 
-           //String progressStr = PrefUtils.getFromPrefs(context, "SyncProgress", "0");
-           //int progress = Integer.parseInt(progressStr);
-
-           //PrefUtils.saveToPrefs(context, "SyncProgress", "" + (progress + progressValue));
 
            int getProgress = progressDialog.getProgress();
            progressDialog.setProgress(getProgress + progressValue);
            if (getProgress >= 100) {
                progressDialog.dismiss();
 
-              // PrefUtils.saveToPrefs(context, "SyncProgress", "0");
                progressDialog.setProgress(0);
 
-               PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
+             //  PrefUtils.saveToPrefs(context, PrefUtils.PREFS_IS_SYNC_IN_PROGRESS, "false");
 
                context.runOnUiThread(new Runnable() {
                    @Override

@@ -1,19 +1,54 @@
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@color/fragment_background">-->
+
+    <!--<ListView-->
+        <!--android:id="@+id/lv_project"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:divider="@null"-->
+        <!--android:dividerHeight="10dp"-->
+        <!--android:footerDividersEnabled="true"-->
+        <!--android:headerDividersEnabled="true">-->
+
+    <!--</ListView>-->
+
+<!--</RelativeLayout>-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout_listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/lv_project"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+<ImageView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/fragment_background">
-
-    <ListView
-        android:id="@+id/lv_project"
+    android:src="@mipmap/pull_to_refresh"
+    android:id="@+id/imageView"
+    android:layout_alignParentTop="true"
+    android:layout_toLeftOf="@+id/pulltorefreshtext"
+    android:layout_toStartOf="@+id/pulltorefreshtext" />
+    <TextView
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:divider="@null"
-        android:dividerHeight="10dp"
-        android:footerDividersEnabled="true"
-        android:headerDividersEnabled="true">
-
-    </ListView>
+        android:layout_height="wrap_content"
+        android:text="Pull to refresh"
+        android:id="@+id/pulltorefreshtext"
+        android:layout_alignBottom="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/black"
+        android:textSize="27dp" />
 
 </RelativeLayout>

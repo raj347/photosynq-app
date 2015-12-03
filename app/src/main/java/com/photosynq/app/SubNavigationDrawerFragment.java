@@ -184,7 +184,7 @@ public class SubNavigationDrawerFragment extends Fragment {
             public void onClick(View v) {
                 //MainActivity mainActivity = (MainActivity) getActivity();
                 SyncHandler syncHandler = new SyncHandler(getActivity(), MainActivity.getProgressBar());
-                syncHandler.DoSync(SyncHandler.ALL_SYNC_UI_MODE);
+                syncHandler.DoSync();
 
                 Toast.makeText(getActivity(), "Sync started!", Toast.LENGTH_LONG).show();
 

@@ -5,8 +5,10 @@ import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.provider.Settings;
+import android.database.MatrixCursor;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -24,11 +27,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.photosynq.app.utils.Constants;
 import com.photosynq.app.utils.PrefUtils;
+
+import de.cketti.library.changelog.ChangeLog;
 
 
 public class MainActivity extends ActionBarActivity
@@ -77,7 +84,10 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         //??onNavigationDrawerItemSelected(mCurrentSelectedPosition);
-
+        ChangeLog cl = new ChangeLog(this);
+        if (cl.isFirstRun()) {
+            cl.getLogDialog().show();
+        }
     }
 
 
@@ -105,15 +115,17 @@ public class MainActivity extends ActionBarActivity
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             //use the query to search your data somehow
-            if(mCurrentSelectedPosition == 1) { //My Projects
+            if(mCurrentSelectedPosition == 0) { //My Projects
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProjectModeFragment.newInstance(mCurrentSelectedPosition, query), ProjectModeFragment.class.getName())
+                        .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedPosition, query), MyProjectsFragment.class.getName())
                         .commit();
             }else{
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProjectModeFragment.newInstance(mCurrentSelectedPosition, query), ProjectModeFragment.class.getName())
+                        .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedPosition, query), DiscoverFragment.class.getName())
                         .commit();
             }
+
+
         }
     }
 
@@ -148,22 +160,24 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        if(position != 5) // Do not keep selection of Select measurement device option
+        if(position != 6) // Do not keep selection of Select measurement device option
             mCurrentSelectedPosition = position;
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         switch (position){
             case 0:
-                // Open Discover
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProjectModeFragment.newInstance(position), ProjectModeFragment.class.getName())
-                        .commit();
-                break;
-            case 1:
                 // Open MyProjects
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProjectModeFragment.newInstance(position), ProjectModeFragment.class.getName())
+                        .replace(R.id.container, MyProjectsFragment.newInstance(position), MyProjectsFragment.class.getName())
                         .commit();
+
+                break;
+            case 1:
+                // Open Discover
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, DiscoverFragment.newInstance(position), DiscoverFragment.class.getName())
+                        .commit();
+
                 break;
             case 2:
                 // Open Quick Measurement
@@ -180,47 +194,50 @@ public class MainActivity extends ActionBarActivity
                         .commit();
                 break;
             case 4:
-
-                try {
-
-                    String appName = getString(R.string.app_name);
-                    String versionName = this.getPackageManager()
-                            .getPackageInfo(this.getPackageName(), 0).versionName;
-
-                    String messageStr = appName + "\n\n" +
-                            "Version " + versionName + "\n" +
-                            Constants.SERVER_URL;
-
-                    final SpannableString s =
-                            new SpannableString(messageStr);
-                    Linkify.addLinks(s, Linkify.WEB_URLS);
-                    final TextView message = new TextView(this);
-                    message.setPadding(25,25,25,25);
-                    message.setGravity(Gravity.CENTER);
-                    message.setText(s);
-                    message.setMovementMethod(LinkMovementMethod.getInstance());
-
-                    System.out.println(versionName);
-
-                    new AlertDialog.Builder(this)
-                            .setIcon(R.drawable.ic_launcher1)
-                            .setTitle("About")
-                            .setView(message)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int which) {
-
-
-                                        }
-
-                                    }
-
-                            )
-                            .show();
-
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
+                // About
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, AboutFragment.newInstance(position), AboutFragment.class.getName())
+                        .commit();
+//                try {
+//
+//                    String appName = getString(R.string.app_name);
+//                    String versionName = this.getPackageManager()
+//                            .getPackageInfo(this.getPackageName(), 0).versionName;
+//
+//                    String messageStr = appName + "\n\n" +
+//                            "Version " + versionName + "\n" +
+//                            Constants.SERVER_URL;
+//
+//                    final SpannableString s =
+//                            new SpannableString(messageStr);
+//                    Linkify.addLinks(s, Linkify.WEB_URLS);
+//                    final TextView message = new TextView(this);
+//                    message.setPadding(25,25,25,25);
+//                    message.setGravity(Gravity.CENTER);
+//                    message.setText(s);
+//                    message.setMovementMethod(LinkMovementMethod.getInstance());
+//
+//                    System.out.println(versionName);
+//
+//                    new AlertDialog.Builder(this)
+//                            .setIcon(R.drawable.ic_launcher1)
+//                            .setTitle("About")
+//                            .setView(message)
+//                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialogInterface, int which) {
+//
+//
+//                                        }
+//
+//                                    }
+//
+//                            )
+//                            .show();
+//
+//                } catch (PackageManager.NameNotFoundException e) {
+//                    e.printStackTrace();
+//                }
 
                 break;
             case 7:
@@ -260,10 +277,10 @@ public class MainActivity extends ActionBarActivity
     public void onSectionAttached(int number) {
         switch (number) {
             case 0:
-                mTitle = getString(R.string.discover_title);
+                mTitle = getString(R.string.my_projects_title);
                 break;
             case 1:
-                mTitle = getString(R.string.my_projects_title);
+                mTitle = getString(R.string.discover_title);
                 break;
             case 2:
                 mTitle = "Select Measurement";
@@ -272,6 +289,9 @@ public class MainActivity extends ActionBarActivity
                 mTitle = getString(R.string.sync_settings_title);
                 break;
             case 4:
+                mTitle = getString(R.string.about);
+                break;
+            case 5:
                 mTitle = getString(R.string.profile_title);
                 break;
         }
@@ -296,12 +316,16 @@ public class MainActivity extends ActionBarActivity
         } else if (mTitle.equals(getString(R.string.my_projects_title))) {
             inflater.inflate(R.menu.menu_my_projects, menu);
             isSearchableView = true;
+        }else if (mTitle.equals(getString(R.string.about))) {
+            inflater.inflate(R.menu.about_menu, menu);
+            //isSearchableView = true;
         }
+
 
         if(isSearchableView) {
 
             MenuItem searchItem = menu.findItem(R.id.action_search);
-            SearchView searchView = (SearchView) searchItem.getActionView();
+            final SearchView searchView = (SearchView) searchItem.getActionView();
 
             // Associate searchable configuration with the SearchView
             SearchManager searchManager =
@@ -322,6 +346,57 @@ public class MainActivity extends ActionBarActivity
                 }
             });
 
+
+//            if (android.os.Build.VERSION.SDK_INT > 10){
+//                String[] columnNames = {"_id","text"};
+//                MatrixCursor cursor = new MatrixCursor(columnNames);
+//                String[] array = getResources().getStringArray(R.array.all_strings); //if strings are in resources
+//                String[] temp = new String[2];
+//                int id = 0;
+//                for(String item : array){
+//                    temp[0] = Integer.toString(id++);
+//                    temp[1] = item;
+//                    cursor.addRow(temp);
+//                }
+//                String[] from = {"text"};
+//                int[] to = {R.id.text1};
+//                final CursorAdapter cursorAdapter = new SimpleCursorAdapter(getApplicationContext(), R.layout.simple_spinner_item, cursor, from, to);
+//
+//                searchView.setSuggestionsAdapter(cursorAdapter);
+//                searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+//
+//                    @Override
+//                    public boolean onSuggestionClick(int position) {
+//                        String selectedItem = (String)cursorAdapter.getItem(position);
+//                        Log.v("search view", selectedItem);
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean onSuggestionSelect(int position) {
+//                        return false;
+//                    }
+//                });
+//            }
+
+
+
+
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    searchView.clearFocus();
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    System.out.println("String-"+s);
+                    return false;
+                }
+            });
+
         }
 
         restoreActionBar();
@@ -335,7 +410,16 @@ public class MainActivity extends ActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        if (id == R.id.refreshmenu) {
+            if(mCurrentSelectedPosition == 4) { //About
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, AboutFragment.newInstance(mCurrentSelectedPosition), AboutFragment.class.getName())
+                        .commit();
+            }
 
+            return true;
+        }
         //noinspection SimplifiableIfStatement
 //        if(mIsSearchView){
 //            if (id == android.R.id.home) {
@@ -351,15 +435,16 @@ public class MainActivity extends ActionBarActivity
         //mIsSearchView = false;
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if(mCurrentSelectedPosition == 0) {//Discover
+        if(mCurrentSelectedPosition == 1) {//Discover
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, ProjectModeFragment.newInstance(mCurrentSelectedPosition), ProjectModeFragment.class.getName())
+                    .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedPosition), DiscoverFragment.class.getName())
                     .commit();
-        }else if(mCurrentSelectedPosition == 1) { //My Projects
+        }else if(mCurrentSelectedPosition == 0) { //My Projects
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, ProjectModeFragment.newInstance(mCurrentSelectedPosition), ProjectModeFragment.class.getName())
+                    .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedPosition), MyProjectsFragment.class.getName())
                     .commit();
         }
+
     }
 
     public void setDeviceConnected(String deviceName, String deviceAddress) {

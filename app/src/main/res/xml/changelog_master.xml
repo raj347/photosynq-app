@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog>
+    <release version="3.2" versioncode="27" >
+    </release>
+    <release version="3.2" versioncode="27" >
+        <change>App now uses API v3.0</change>
+        <change>Fixed: Measurement hangs on many devices</change>
+        <change>New User interface for answering  questions</change>
+        <change>Hiding soft keyboards at appropriate places.</change>
+        <change>Sync is smoother and faster, removed unnecessary project sync.</change>
+        <change>Discover screen now searches project from website.</change>
+        <change>My Projects: shows all recent and contributed projects</change>
+        <change>Added about screen, this screen now shows Multispeq device info including its firmware</change>
+        <change>Profile now reflects # of projects and contributions.</change>
+        <change>Handled app crashing issues</change>
+        <change>Added change log *this* dialog</change>
+    </release>
+    <release version="3.1" versioncode="26" >
+        <change>1. Fixed - App crashed when answering second question in project defined questions</change>
+    </release>
+    <release version="3.0" versioncode="25" >
+        <change>UI changes</change>
+        <change>Smooth measurement upload avoiding OOM</change>
+        <change>Smooth Loading of List of projects</change>
+        <change>New Review screen for questions</change>
+        <change>improved bluetooth connection</change>
+    </release>
+    <release version="2.5.1" versioncode="22">
+        <change>Added sub menu for Project screen</change>
+        <change>Sync only data points for the project using sub menu</change>
+        <change>Display select device dialog if device is not selected</change>
+        <change>Minor bug fixes</change>
+        <change>Fixed memory leaks</change>
+    </release>
+    <release version="2.5(21)" versioncode="21">
+        <change>Added sub menu for Project screen</change>
+        <change>Sync only data points for the project using sub menu</change>
+        <change>Display select device dialog if device is not selected</change>
+        <change>Minor bug fixes</change>
+    </release>
+    <release version="2.5(20)" versioncode="20">
+        <change>Fixed issue: Android app always locks the device when it disconnects from the bluetooth. This causes the next measurement attempt to produce a "timeout" error. Restarting device solves problem.</change>
+        <change>Auto-direct users to bluetooth connection screen if no device is selected. #38 (refresh radio button selection onClick)</change>
+        <change>New back button in question screens (need to check if option is remembered)</change>
+        <change>Add ‘create new account” button, get rid of ‘take tour’ button on main page</change>
+    </release>
+    <release version="2.4(17)" versioncode="17">
+        <change>Changed photosynq logo</change>
+        <change>Changed sync sequence</change>
+        <change>Removed manual from sync interval background</change>
+        <change>Display correct data points on dialog.</change>
+        <change>Push data on WiFi range only</change>
+        <change>Show prev answer if user comes from review screen</change>
+        <change>Sync ​button flag​ corrected​</change>
+        <change>Refresh fragment from dialog</change>
+
+    </release>
+    <release version="2.4(12)" versioncode="12">
+        <change>This build uses API v2</change>
+        <change>​Updates on​ profile screen (Total Projects and Total Contributions)</change>
+        <change>Fields modified as per API v2 of projects, protocols and macros​ api​.</change>
+        <change>Display creator image and project image</change>
+        <change>Integrated Photo_Type as Question_Type</change>
+        <change>Made all request as async</change>
+        <change>Integrate Pagination for projects</change>
+        <change>This build point to staging server http://staging.photosynq.venturit.net/api/v2/</change>
+    </release>
+    <release version="2.3" versioncode="10">
+        <change>https://github.com/venturit/photosynq-app/issues/10</change>
+        <change>https://github.com/venturit/photosynq-app/issues/19</change>
+        <change>https://github.com/venturit/photosynq-app/issues/22</change>
+        <change>Location fix</change>
+        <change>Other minor issues</change>
+    </release>
+    <release version="2.1" versioncode="8">
+        <change>Default selected option is user_selected type</change>
+        <change>Reset measurement device info on menu bar when user hits clear cache</change>
+        <change>Disable swipe on data screen</change>
+        <change>Set user answers in image location</change>
+        <change>Changed messages for bluetooth and Internet connection</change>
+        <change>Added photosynq app and logo icon</change>
+        </release>
+    <release version="2.0" versioncode="7">
+        <change>Complete new user interface</change>
+        <change>Simplified flow of measurements</change>
+        <change>New result graphs</change>
+        <change>Bug fixes</change>
+        </release>
+    <release version="1.6" versioncode="6">
+        <change>Minor bug fix</change>
+    </release>
+    <release version="1.5" versioncode="5">
+        <change>Several bug fixes : https://github.com/venturit/photosynq-app/issues</change>
+        <change>Auto save functionality added</change>
+        <change>Clear Cache functionality added</change>
+        </release>
+    <release version="1" versioncode="1">
+        <change>Initial Release</change>
+        </release>
+</changelog>
