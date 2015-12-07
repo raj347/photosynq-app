@@ -52,6 +52,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QuestionsList extends ActionBarActivity implements SelectDeviceDialogDelegate {
 
@@ -94,7 +95,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
         expListView = (ExpandableListView) findViewById(R.id.queExpandableList);
         expListView.setGroupIndicator(null);
 
-        listAdapter = new ExpandableListAdapter(this, questions,expListView);
+        listAdapter = new ExpandableListAdapter(this, questions, expListView);
 
         expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
@@ -114,7 +115,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
             @Override
             public void onGroupCollapse(int groupPosition) {
                 if (expListView != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(expListView.getWindowToken(), 0);
                 }
             }
@@ -122,7 +123,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
         expListView.setAdapter(listAdapter);
 
 
-        final Button btnTakeMeasurement = (Button)findViewById(R.id.btn_take_measurement);
+        final Button btnTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
         btnTakeMeasurement.setText("+ Take Measurement");
         btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
 
@@ -192,12 +193,12 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
         outputButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(listscroll.getVisibility() == View.GONE){
-                    ((Button)view).setText("+ O/P");
+                if (listscroll.getVisibility() == View.GONE) {
+                    ((Button) view).setText("+ O/P");
                     outputscroll.setVisibility(View.GONE);
                     listscroll.setVisibility(View.VISIBLE);
-                }else {
-                    ((Button)view).setText("- O/P");
+                } else {
+                    ((Button) view).setText("- O/P");
                     outputscroll.setVisibility(View.VISIBLE);
                     listscroll.setVisibility(View.GONE);
                 }
@@ -218,7 +219,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 switch (msg.what) {
                     case Constants.MESSAGE_STREAM:
                         String oldmdg = outputTextView.getText().toString();
-                        outputTextView.setText(oldmdg+(CharSequence) msg.obj);
+                        outputTextView.setText(oldmdg + (CharSequence) msg.obj);
                         break;
                     case Constants.MESSAGE_STATE_CHANGE:
                         if (Constants.D) Log.i("PHOTOSYNC", "MESSAGE_STATE_CHANGE: " + msg.arg1);
@@ -278,7 +279,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                                 // Writing macros.js file with all macro functions
                                                 List<Macro> macros = dbHelper.getAllMacros();
                                                 for (Macro macro : macros) {
-                                                    if (macro.getId().equals( protocol.getMacroId())) {
+                                                    if (macro.getId().equals(protocol.getMacroId())) {
                                                         dataStringMacro.append("function macro_" + macro.getId() + "(json){");
                                                         dataStringMacro.append(System.getProperty("line.separator"));
                                                         dataStringMacro.append("try{");
@@ -322,9 +323,9 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                                                 //protocolJson = "[" + protocolJson.substring(0, protocolJson.length() - 1) + "]"; // remove last comma and add suqare brackets and start and end.
 
-                                                System.out.println("$$$$$$$$$$$$$$ protocol json sending to device :" + researchProject.getProtocol_json() + "length:" +  researchProject.getProtocol_json().length());
+                                                System.out.println("$$$$$$$$$$$$$$ protocol json sending to device :" + researchProject.getProtocol_json() + "length:" + researchProject.getProtocol_json().length());
 
-                                                sendData( researchProject.getProtocol_json());
+                                                sendData(researchProject.getProtocol_json());
                                                 setDeviceTimeOut();
 
                                                 mtvStatusMessage.setText("Initializing measurement please wait ...");
@@ -406,7 +407,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                             mProgressBar.setProgress(progress + 1);
                                             mtvStatusMessage.setText("Measurement " + (progress + 1) + " of " + maxProgress);
                                         }
-                                    }catch(Exception e){
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                     }
 
@@ -446,19 +447,23 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                 //options.append("\"user_answers\": [");
 
 
-                                ArrayList<SelectedOptions> allOptions = listAdapter.getSelectedOptions();
-                                    for (int i = 0; i < allOptions.size(); i++) {
+                                HashMap<Question, SelectedOptions> allOptions = listAdapter.mSelectedOptions;
 
-                                        options.append('"')
-                                                .append(allOptions.get(i).getQuestionId())
-                                                .append('"')
-                                                .append(':')
-                                                .append('"')
-                                                .append(allOptions.get(i).getSelectedValue())
-                                                .append('"');
-                                        if (i < allOptions.size() - 1)
-                                            options.append(",");
-                                    }
+                                int count = 0;
+                                for (Map.Entry<Question, SelectedOptions> e : listAdapter.mSelectedOptions.entrySet()) {
+                                    options.append('"')
+                                            .append(e.getKey().getQuestionId())
+                                            .append('"')
+                                            .append(':')
+                                            .append('"')
+                                            .append(e.getValue().getSelectedValue())
+                                            .append('"');
+                                    if (count < allOptions.size() - 1)
+                                        options.append(",");
+
+                                    count++;
+                                }
+
                                 //options.append(" ],");
                                 options.append(" },");
                                 final long time = System.currentTimeMillis();
@@ -480,8 +485,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                 System.out.println("###### writing data.js :" + dataString);
                                 CommonUtils.writeStringToFile(QuestionsList.this, "data.js", dataString);
 
-                                final String reading = measurement.replaceAll("\\r\\n", "").replaceFirst("\\{", "{" + options)
-                                        ;
+                                final String reading = measurement.replaceAll("\\r\\n", "").replaceFirst("\\{", "{" + options);
                                 outputTextView.setText("");
                                 new CountDownTimer(1000, 1000) {
 
@@ -586,7 +590,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Handle the back button
-        if(keyCode == KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Caution")
@@ -607,15 +611,15 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                     .show();
 
             return true;
-        }
-        else {
+        } else {
             return super.onKeyDown(keyCode, event);
         }
     }
+
     @Override
     public void onResume() {
         super.onResume();
-        if(!scanMode) {
+        if (!scanMode) {
             TextView mtvStatusMessage = (TextView) findViewById(R.id.tv_status_message);
             mtvStatusMessage.setText(R.string.start_measurement);
             ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -625,9 +629,9 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
             btnTakeMeasurement.setText("+ Take Measurement");
             btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
 
-            ArrayList<SelectedOptions> options = listAdapter.getSelectedOptions();
-            for (SelectedOptions option : options
-                    ) {
+            HashMap<Question, SelectedOptions> options = listAdapter.getSelectedOptions();
+            for (Map.Entry<Question, SelectedOptions> e : options.entrySet()) {
+                SelectedOptions option = e.getValue();
                 if (option.isRemember()) {
 
                     option.setReset(false);
@@ -658,8 +662,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                 option.setSelectedValue(populatedValues.get(currentIndex).toString());
                                 option.setAutoIncIndex(currentIndex);
                             }
-                        }catch (Exception e)
-                        {
+                        } catch (Exception ex) {
                             //eating exception
                         }
 
@@ -668,17 +671,19 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                 }
             }
-            listAdapter.setSelectedOptions(options);
             listAdapter.notifyDataSetChanged();
             mIsMeasureBtnClicked = false;
             mIsCancelMeasureBtnClicked = false;
         }
-        scanMode=false;
+        scanMode = false;
 
-        int count =  listAdapter.getGroupCount();
-        for (int i = 0; i <count ; i++){expListView.collapseGroup(i);}
+        int count = listAdapter.getGroupCount();
+        for (int i = 0; i < count; i++) {
+            expListView.collapseGroup(i);
+        }
     }
-    void setDeviceTimeOut(){
+
+    void setDeviceTimeOut() {
 
         PrefUtils.saveToPrefs(QuestionsList.this, "isGetResponse", "false");
         new CountDownTimer(10000, 1000) {
@@ -709,7 +714,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                                     @Override
                                                     public void onClick(DialogInterface dialogInterface, int which) {
                                                         sendData("-1+-1+"); // Send cancel request
-                                                      //  finish();
+                                                        //  finish();
                                                         //??sendData("1027"); // Restart teensy device
                                                     }
 
@@ -768,13 +773,20 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
             if (null != intent) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
 
-                Toast.makeText(this, contents+" "+requestCode, Toast.LENGTH_SHORT).show();
-                ArrayList<SelectedOptions> options = listAdapter.getSelectedOptions();
+                Toast.makeText(this, contents + " " + requestCode, Toast.LENGTH_SHORT).show();
+                HashMap<Question, SelectedOptions> options = listAdapter.getSelectedOptions();
+
+                // TODO we need to mark this not with the IDX of the list but with a reference to the
+                // HashMap created
+
+                /**
                 SelectedOptions so = options.get(requestCode);
                 so.setSelectedValue(contents);
                 options.set(requestCode, so);
                 listAdapter.setSelectedOptions(options);
                 listAdapter.notifyDataSetChanged();
+
+                 **/
 
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {

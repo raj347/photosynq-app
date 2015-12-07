@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:id="@+id/proj_def_spinner_ll"
-    android:layout_height="match_parent">
+<LinearLayout android:id="@+id/proj_def_spinner_ll"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
-    <com.photosynq.app.questions.NoDefaultSpinner
+    <!--<com.photosynq.app.questions.NoDefaultSpinner
         android:id="@+id/project_defined_options_spinner"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -15,15 +16,25 @@
         android:layout_marginRight="10dip"
         android:layout_marginBottom="10dip"
         android:layout_marginTop="10dip">
-    </com.photosynq.app.questions.NoDefaultSpinner>
+    </com.photosynq.app.questions.NoDefaultSpinner>-->
+
     <CheckBox
         android:id="@+id/remember_check_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:text="Remember answer"
+        android:layout_marginBottom="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"/>
+        android:text="Remember answer"/>
+
+    <LinearLayout
+        android:id="@+id/user_answer_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp"
+        >
+    </LinearLayout>
 
 
 </LinearLayout>
