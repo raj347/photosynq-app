@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,8 +32,12 @@ import com.squareup.picasso.Picasso;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.photosynq.app.utils.NxDebugEngine.log;
+
 /**
  * Created by shekhar on 8/19/15.
+ *
+ * edited by Manuel Di Cerbo 09 Dec 2015
  */
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -50,15 +55,15 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public ExpandableListAdapter(Context context, List<Question> questionList, ExpandableListView exp) {
         mContext = context;
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mExpandableListView = exp;
+        mExpandableListView = exp;
+        mQuestionList = questionList;
 
-        this.mQuestionList = questionList;
         for (Question question : questionList) {
             SelectedOptions selectedOptions = new SelectedOptions();
             selectedOptions.setProjectId(question.getProjectId());
             selectedOptions.setQuestionType(question.getQuestionType());
             selectedOptions.setQuestionId(question.getQuestionId());
-            selectedOptions.setSelectedValue("Tap To Select Answer");
+            selectedOptions.setSelectedValue(SelectedOptions.TAP_TO_SELECT_ANSWER);
             mSelectedOptions.put(question, selectedOptions);
         }
     }
@@ -128,7 +133,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                             ExpandableListView explist = (ExpandableListView) mainLayout.getParent();
                                             LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(groupPosition);
                                             if (null != ll2) {
-                                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.tv_header_subtitle);
                                                 selectedAnswer.setText(s.toString());
 
                                                 final int sdk = android.os.Build.VERSION.SDK_INT;
@@ -238,7 +243,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                             ExpandableListView explist = (ExpandableListView) mainLayout.getParent();
                                             LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(groupPosition);
                                             if (null != ll2) {
-                                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.tv_header_subtitle);
                                                 selectedAnswer.setText(s.toString());
                                                 checkMeasurementButton();
 
@@ -318,7 +323,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     return convertView;
 
                 case Question.PROJECT_DEFINED:
-                    return inflateProjectDefined(question, convertView);
+                    return inflateProjectDefined(question, groupPosition);
                 case Question.PHOTO_TYPE_DEFINED:
                     final boolean[] collapse1 = {true};
                     //if (convertView == null) {
@@ -372,8 +377,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
                             LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(questionNumber);
                             if (null != ll2) {
-                                ImageView lblListHeader_image = (ImageView) ll2.findViewById(R.id.lblListHeader);
-                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+                                ImageView lblListHeader_image = (ImageView) ll2.findViewById(R.id.iv_header_thumb);
+                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.tv_header_subtitle);
                                 selectedAnswer.setText("");
 
                                 String[] splitOptionText = mSelectedOptions.get(question).getSelectedValue().toString().split(",");
@@ -409,7 +414,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                         photoDefinedOptionsSpinner.setSelection(-1);
                         so2.setReset(false);
                     } else {
-                        photoDefinedOptionsSpinner.setSelection(dataAdapter1.getPosition(mSelectedOptions.get(groupPosition).getSelectedValue()));
+                        photoDefinedOptionsSpinner.setSelection(dataAdapter1.getPosition(mSelectedOptions.get(question).getSelectedValue()));
                         collapse1[0] = false;
                     }
 
@@ -436,9 +441,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         } else {
             if (convertView == null) {
-                LayoutInflater infalInflater = (LayoutInflater) this.mContext
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = infalInflater.inflate(R.layout.exp_question_list_item, null);
+                convertView = mLayoutInflater.inflate(R.layout.exp_question_list_item, null);
             }
 
             TextView txtListChildDefault = (TextView) convertView
@@ -476,139 +479,52 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
         Question question = getGroup(groupPosition);
-        if (null != question) {
-            switch (question.getQuestionType()) {
-                case Question.USER_DEFINED:
-                case Question.PROJECT_DEFINED:
-                    LayoutInflater infalInflater = (LayoutInflater) this.mContext
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = infalInflater.inflate(R.layout.list_group, null);
-                    //}
-                    convertView.setTag(question);
 
-                    TextView lblListHeader = (TextView) convertView
-                            .findViewById(R.id.lblListHeader);
-                    TextView selectedAnswer = (TextView) convertView
-                            .findViewById(R.id.selectedAnswer);
-                    lblListHeader.setTypeface(null, Typeface.BOLD);
-                    if (null != question) {
-                        lblListHeader.setText(question.getQuestionText());
-                        if (null != mSelectedOptions.get(question)) {
-                            selectedAnswer.setText(mSelectedOptions.get(question).getSelectedValue());
-                        }
-
-                    } else {
-                        lblListHeader.setText("No Questions Provided");
-                    }
-
-                    if (null != mSelectedOptions.get(question) && !mSelectedOptions.get(question).getSelectedValue().equals("Tap To Select Answer")) {
-                        final int sdk = android.os.Build.VERSION.SDK_INT;
-                        if (mSelectedOptions.get(question).getSelectedValue().length() > 0) {
-                            if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                convertView.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.green_light));
-                            } else {
-                                convertView.setBackground(mContext.getResources().getDrawable(R.color.green_light));
-                            }
-                        } else {
-                            if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                convertView.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.gray_light));
-                            } else {
-                                convertView.setBackground(mContext.getResources().getDrawable(R.color.gray_light));
-                            }
-                        }
-
-
-                    }
-
-                    break;
-                case Question.PHOTO_TYPE_DEFINED:
-                    LayoutInflater image_infalInflater = (LayoutInflater) this.mContext
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = image_infalInflater.inflate(R.layout.list_group_image, null);
-                    //}
-                    convertView.setTag(groupPosition);
-
-
-                    if (null != question) {
-                        if (null != mSelectedOptions.get(question) && !mSelectedOptions.get(question).getSelectedValue().equals("Tap To Select Answer")) {
-                            ImageView lblListHeader_image = (ImageView) convertView
-                                    .findViewById(R.id.lblListHeader);
-                            String[] splitOptionText = mSelectedOptions.get(question).getSelectedValue().toString().split(",");
-                            Picasso.with(mContext)
-                                    .load(splitOptionText[1])
-                                    .placeholder(R.drawable.ic_launcher1)
-                                    .resize(60, 60)
-                                    .error(R.drawable.ic_launcher1)
-                                    .into(lblListHeader_image);
-                            TextView selectedAnswer1 = (TextView) convertView.findViewById(R.id.selectedAnswer);
-                            selectedAnswer1.setText("");
-
-
-                        } else {
-                            TextView selectedAnswer1 = (TextView) convertView.findViewById(R.id.selectedAnswer);
-                            selectedAnswer1.setText("Tap To Select Answer");
-
-                        }
-                        TextView selectedAnswer_image = (TextView) convertView
-                                .findViewById(R.id.question);
-                        selectedAnswer_image.setTypeface(null, Typeface.BOLD);
-                        selectedAnswer_image.setText(question.getQuestionText());
-
-                        if (null != mSelectedOptions.get(question) && !mSelectedOptions.get(question).getSelectedValue().equals("Tap To Select Answer")) {
-                            final int sdk = android.os.Build.VERSION.SDK_INT;
-                            if (mSelectedOptions.get(question).getSelectedValue().length() > 0) {
-                                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                    convertView.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.green_light));
-                                } else {
-                                    convertView.setBackground(mContext.getResources().getDrawable(R.color.green_light));
-                                }
-                            } else {
-                                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                    convertView.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.gray_light));
-                                } else {
-                                    convertView.setBackground(mContext.getResources().getDrawable(R.color.gray_light));
-                                }
-                            }
-
-
-                        }
-                    }
-//                    else {
-//                       // lblListHeader.setText("No Questions Provided");
-//                    }
-
-                    break;
-                default:
-                    LayoutInflater infalInflater1 = (LayoutInflater) this.mContext
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = infalInflater1.inflate(R.layout.list_group, null);
-                    //}
-                    convertView.setTag(groupPosition);
-
-                    TextView lblListHeader1 = (TextView) convertView
-                            .findViewById(R.id.lblListHeader);
-                    TextView selectedAnswer1 = (TextView) convertView
-                            .findViewById(R.id.selectedAnswer);
-                    lblListHeader1.setTypeface(null, Typeface.BOLD);
-                    lblListHeader1.setText("No Questions Provided");
-                    break;
-            }
-        } else {
-            LayoutInflater infalInflater1 = (LayoutInflater) this.mContext
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater1.inflate(R.layout.list_group, null);
-            //}
-            convertView.setTag(groupPosition);
-
-            TextView lblListHeader1 = (TextView) convertView
-                    .findViewById(R.id.lblListHeader);
-            TextView selectedAnswer1 = (TextView) convertView
-                    .findViewById(R.id.selectedAnswer);
-            lblListHeader1.setTypeface(null, Typeface.BOLD);
-            lblListHeader1.setText("No Questions Provided");
+        if (question == null) {
+            log("question is null, group position %d", groupPosition);
+            return mLayoutInflater.inflate(R.layout.list_group_image, null);
         }
-        //if (convertView == null) {
-        convertView.setPadding(0, 20, 0, 0);
+
+        convertView = mLayoutInflater.inflate(R.layout.list_group_image, null);
+
+        ImageView titleThumb = (ImageView) convertView.findViewById(R.id.iv_header_thumb);
+        TextView titleView = (TextView) convertView.findViewById(R.id.tv_header_title);
+        TextView subtitleView = (TextView) convertView.findViewById(R.id.tv_header_subtitle);
+
+        SelectedOptions so = mSelectedOptions.get(question);
+
+        boolean answerSelected = !so.getSelectedValue().equals(SelectedOptions.TAP_TO_SELECT_ANSWER);
+
+        if(question.getQuestionType() == Question.PHOTO_TYPE_DEFINED){
+            if(answerSelected){
+                String[] splitOptionText = so.getSelectedValue().split(",");
+                Picasso.with(mContext)
+                        .load(splitOptionText[1])
+                        .placeholder(R.drawable.ic_launcher1)
+                        .resize(60, 60)
+                        .error(R.drawable.ic_launcher1)
+                        .into(titleThumb);
+
+                titleView.setText(question.getQuestionText());
+                subtitleView.setText("");
+            }else{
+                titleView.setText(question.getQuestionText());
+                subtitleView.setText(SelectedOptions.TAP_TO_SELECT_ANSWER);
+            }
+
+
+            titleThumb.setVisibility(answerSelected ? View.VISIBLE : View.GONE);
+        } else {
+            titleView.setText(question.getQuestionText());
+            subtitleView.setText(so.getSelectedValue());
+
+            titleThumb.setVisibility(View.GONE);
+        }
+
+        if(answerSelected){
+            int color = mContext.getResources().getColor(R.color.green_light);
+            convertView.setBackgroundColor(color);
+        }
         mExpandableListView.setDividerHeight(20);
         checkMeasurementButton();
         return convertView;
@@ -620,7 +536,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         Button btnTakeMeasurement = (Button) ((RelativeLayout) v).findViewById(R.id.btn_take_measurement);
         boolean flag = false;
         for (SelectedOptions option : mSelectedOptions.values()) {
-            if (option.getSelectedValue().equals("Tap To Select Answer") || option.getSelectedValue().isEmpty()) {
+            if (option.getSelectedValue().equals(SelectedOptions.TAP_TO_SELECT_ANSWER) || option.getSelectedValue().isEmpty()) {
                 flag = true;
                 break;
             }
@@ -703,7 +619,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 }
 
             }
-            TextView selectedAnswer = (TextView) headerView.findViewById(R.id.selectedAnswer);
+            TextView selectedAnswer = (TextView) headerView.findViewById(R.id.tv_header_subtitle);
             if (!selectedOption.getRangeFrom().isEmpty() && !selectedOption.getRangeTo().isEmpty() && !selectedOption.getRangeRepeat().isEmpty()) {
                 if (mView.getTag() == null) {
                     selectedOption.setSelectedValue(selectedOption.getRangeFrom());
@@ -736,8 +652,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    public View inflateProjectDefined(final Question question, View convertView) {
-        convertView = mLayoutInflater.inflate(R.layout.project_defined_option, null);
+    public View inflateProjectDefined(final Question question, final int groupPosition) {
+        View convertView = mLayoutInflater.inflate(R.layout.project_defined_option, null);
         CheckBox chkRemember = (CheckBox) convertView.findViewById(R.id.remember_check_box);
         SelectedOptions currentOption = mSelectedOptions.get(question);
         chkRemember.setChecked(currentOption != null && currentOption.isRemember());
@@ -754,20 +670,44 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             }
         });
 
-
         LinearLayout currentLayout = null;
         for (int i = 0; i < question.getOptions().size(); i++) {
+            TextView tv;
             if (i % 2 == 0) {
                 currentLayout = (LinearLayout) mLayoutInflater.inflate(R.layout.user_answer_text_row, null);
                 ((LinearLayout) convertView).addView(currentLayout);
-                TextView tv = (TextView) currentLayout.findViewById(R.id.view_left);
-                tv.setText(question.getOptions().get(i));
-
+                tv = (TextView) currentLayout.findViewById(R.id.view_left);
             } else {
-                TextView tv = (TextView) currentLayout.findViewById(R.id.view_right);
-                tv.setText(question.getOptions().get(i));
+                tv = (TextView) currentLayout.findViewById(R.id.view_right);
             }
+
+            final String option = question.getOptions().get(i);
+            tv.setText(option);
+
+            float size = mContext.getResources().getDimensionPixelSize(R.dimen.text_large);
+
+            if (option.length() > 6) {
+                size = mContext.getResources().getDimensionPixelSize(R.dimen.text_medium);
+            }
+
+            if (option.length() > 20) {
+                size = mContext.getResources().getDimensionPixelSize(R.dimen.text_small);
+            }
+
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+            tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    notifyDataSetChanged();
+                    mSelectedOptions.get(question).setSelectedValue(option);
+                    mExpandableListView.collapseGroup(groupPosition);
+                    checkMeasurementButton();
+                }
+            });
         }
+
+
+
                     /* changes MDC Nexus-Computing */
 
         /**
@@ -841,12 +781,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         }
     };
 
-    private final View.OnClickListener mProjectDefinedOptionOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
+    //private final View.OnClickListener mProjectDefinedOptionOnClickListener = ;
 
     private final View.OnClickListener mUserDefinedOptionOnClickListener = new View.OnClickListener() {
         @Override

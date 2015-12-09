@@ -5,6 +5,7 @@ package com.photosynq.app;
  */
 public class SelectedOptions {
 
+    public static final String TAP_TO_SELECT_ANSWER = "Tap To Select Answer";
 
     private String questionId;
     private String projectId;

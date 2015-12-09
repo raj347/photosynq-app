@@ -1,7 +1,6 @@
 package com.photosynq.app.questions;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -14,6 +13,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -591,7 +591,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Handle the back button
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Caution")
                     .setMessage("Are you sure you want to leave this screen?")

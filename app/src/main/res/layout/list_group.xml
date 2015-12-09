@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp"
-    android:id="@+id/list_group_ll"
-    android:background="@color/gray_light"
+<LinearLayout android:id="@+id/list_group_ll"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/gray_light"
+              android:orientation="vertical"
+              android:paddingTop="8dp"
     >
 
 
     <TextView
-        android:id="@+id/lblListHeader"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="17dp"
-        android:text="Test"
-        android:textColor="@color/black" />
+        android:id="@+id/iv_header_thumb"
+        style="@style/question_title"
+        tools:text="Test"/>
 
     <TextView
-        android:id="@+id/selectedAnswer"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
-        android:textStyle="bold"
-        android:text="Test"
-        android:textColor="@color/black" />
+        android:id="@+id/tv_header_subtitle"
+        style="@style/question_subtitle"
+        tools:text="Test"/>
 
 </LinearLayout>

@@ -218,4 +218,8 @@ public class NxDebugEngine {
     private void dbg(String fmt, String... args) {
         Log.d(">==< NX DBG >==<", String.format(fmt, args));
     }
+
+    public static void log(String fmt, Object... args) {
+        Log.d(">==< NX DBG >==<", String.format(fmt, args));
+    }
 }
