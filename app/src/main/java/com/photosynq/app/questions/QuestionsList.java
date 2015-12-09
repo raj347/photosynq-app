@@ -775,6 +775,10 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                 Toast.makeText(this, contents + " " + requestCode, Toast.LENGTH_SHORT).show();
                 HashMap<Question, SelectedOptions> options = listAdapter.getSelectedOptions();
+                Question question = listAdapter.getGroup(requestCode);
+                options.get(question).setSelectedValue(contents);
+                expListView.setSelectedGroup(requestCode);
+                listAdapter.notifyDataSetChanged();
 
                 // TODO we need to mark this not with the IDX of the list but with a reference to the
                 // HashMap created

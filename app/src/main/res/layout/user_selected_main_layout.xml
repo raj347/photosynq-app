@@ -4,22 +4,8 @@
               android:layout_height="200dp"
               android:orientation="vertical">
 
-    <include
-        android:id="@+id/layout_user_entered"
-        layout="@layout/user_entered_option"
-        android:visibility="visible"></include>
-
-    <include
-        android:id="@+id/layout_scan_code"
-        layout="@layout/user_scanned_option"
-        android:visibility="gone"></include>
-
-    <include
-        android:id="@+id/layout_auto_inc"
-        layout="@layout/user_auto_inc_option"
-        android:visibility="gone"></include>
-
     <RelativeLayout
+        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom">
@@ -36,16 +22,30 @@
 
 
         <Spinner
-             android:id="@+id/option_type"
-             android:layout_width="180dp"
-             android:layout_alignParentLeft="true"
-             android:layout_height="50dp"
-             android:layout_marginLeft="10dp"
-             android:layout_centerHorizontal="true"
-             android:entries="@array/option_type"></Spinner>
-
-
+            android:id="@+id/option_type"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dp"
+            android:entries="@array/option_type"/>
 
     </RelativeLayout>
+
+    <include
+        android:id="@+id/layout_user_entered"
+        layout="@layout/user_entered_option"
+        android:visibility="visible"/>
+
+    <include
+        android:id="@+id/layout_scan_code"
+        layout="@layout/user_scanned_option"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/layout_auto_inc"
+        layout="@layout/user_auto_inc_option"
+        android:visibility="gone"/>
+
 
 </LinearLayout>

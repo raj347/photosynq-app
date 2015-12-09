@@ -2,7 +2,6 @@ package com.photosynq.app.questions;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -23,9 +22,11 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.games.quest.Quest;
 import com.google.zxing.client.android.CaptureActivity;
 import com.photosynq.app.R;
 import com.photosynq.app.SelectedOptions;
+import com.photosynq.app.model.Option;
 import com.photosynq.app.model.Question;
 import com.squareup.picasso.Picasso;
 
@@ -88,240 +89,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if (null != question) {
             switch (question.getQuestionType()) {
                 case Question.USER_DEFINED:
-
-                    //if (convertView == null) {
-                    LayoutInflater user_def_infalInflater = (LayoutInflater) this.mContext
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = user_def_infalInflater.inflate(R.layout.user_selected_main_layout, null);
-                    //}
-
-                    Spinner optionType = (Spinner) convertView.findViewById(R.id.option_type);
-                    optionType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            final LinearLayout mainLayout = (LinearLayout) (parent.getParent().getParent());
-
-                            LinearLayout userEnteredLayout = (LinearLayout) mainLayout.findViewById(R.id.layout_user_entered);
-                            LinearLayout scanLayout = (LinearLayout) mainLayout.findViewById(R.id.layout_scan_code);
-                            LinearLayout autoIncLayout = (LinearLayout) mainLayout.findViewById(R.id.layout_auto_inc);
-                            final SelectedOptions selectedOption = mSelectedOptions.get(question);
-
-                            switch (position) {
-                                case 0:
-                                    userEnteredLayout.setVisibility(View.VISIBLE);
-                                    scanLayout.setVisibility(View.GONE);
-                                    autoIncLayout.setVisibility(View.GONE);
-                                    selectedOption.setOptionType(0);
-                                    EditText txtListChild = (EditText) userEnteredLayout
-                                            .findViewById(R.id.user_input_edit_text);
-                                    CheckBox remember = (CheckBox) mainLayout.findViewById(R.id.remember_check_box);
-                                    remember.setVisibility(View.VISIBLE);
-
-                                    txtListChild.addTextChangedListener(new TextWatcher() {
-                                        @Override
-                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                        }
-
-                                        @Override
-                                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                        }
-
-                                        @Override
-                                        public void afterTextChanged(Editable s) {
-                                            selectedOption.setSelectedValue(s.toString());
-
-                                            ExpandableListView explist = (ExpandableListView) mainLayout.getParent();
-                                            LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(groupPosition);
-                                            if (null != ll2) {
-                                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.tv_header_subtitle);
-                                                selectedAnswer.setText(s.toString());
-
-                                                final int sdk = android.os.Build.VERSION.SDK_INT;
-                                                if (s.length() > 0) {
-                                                    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                                        ll2.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.green_light));
-                                                    } else {
-                                                        ll2.setBackground(mContext.getResources().getDrawable(R.color.green_light));
-                                                    }
-                                                } else {
-                                                    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                                        ll2.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.gray_light));
-                                                    } else {
-                                                        ll2.setBackground(mContext.getResources().getDrawable(R.color.gray_light));
-                                                    }
-                                                }
-                                            }
-                                            checkMeasurementButton();
-
-                                        }
-                                    });
-                                    if (selectedOption.isReset()) {
-                                        txtListChild.setText("");
-                                        selectedOption.setReset(false);
-
-                                    } else {
-                                        if (null != mSelectedOptions.get(groupPosition) && !mSelectedOptions.get(groupPosition).getSelectedValue().equals("Tap To Select Answer")) {
-                                            txtListChild.setText(mSelectedOptions.get(groupPosition).getSelectedValue());
-                                        }
-                                    }
-                                    if (txtListChild.requestFocus()) {
-                                        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-                                        imm.showSoftInput(txtListChild, InputMethodManager.SHOW_IMPLICIT);
-                                        //((QuestionsList)mContext).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                                    }
-
-                                    break;
-                                case 1:
-                                    userEnteredLayout.setVisibility(View.GONE);
-                                    scanLayout.setVisibility(View.GONE);
-                                    autoIncLayout.setVisibility(View.VISIBLE);
-                                    selectedOption.setOptionType(1);
-                                    selectedOption.setRemember(true);
-                                    CheckBox remember1 = (CheckBox) mainLayout.findViewById(R.id.remember_check_box);
-                                    remember1.setVisibility(View.GONE);
-                                    EditText fromNumber = (EditText) autoIncLayout
-                                            .findViewById(R.id.auto_inc_from);
-                                    EditText toNumber = (EditText) autoIncLayout
-                                            .findViewById(R.id.auto_inc_to);
-                                    EditText repeatNumber = (EditText) autoIncLayout
-                                            .findViewById(R.id.auto_inc_repeat);
-
-                                    fromNumber.addTextChangedListener(new GenericTextWatcher(fromNumber, question));
-                                    toNumber.addTextChangedListener(new GenericTextWatcher(toNumber, question));
-                                    repeatNumber.addTextChangedListener(new GenericTextWatcher(repeatNumber, question));
-
-                                    if (null != mSelectedOptions.get(question) && !mSelectedOptions.get(question).getSelectedValue().equals("Tap To Select Answer")) {
-                                        fromNumber.setTag("Wait");
-                                        toNumber.setTag("Wait");
-                                        repeatNumber.setTag("Wait");
-                                        fromNumber.setText(mSelectedOptions.get(question).getRangeFrom());
-                                        toNumber.setText(mSelectedOptions.get(question).getRangeTo());
-                                        repeatNumber.setText(mSelectedOptions.get(question).getRangeRepeat());
-                                        fromNumber.setTag(null);
-                                        toNumber.setTag(null);
-                                        repeatNumber.setTag(null);
-                                    }
-                                    checkMeasurementButton();
-
-                                    break;
-                                case 2:
-                                    EditText scannedValue = (EditText) scanLayout
-                                            .findViewById(R.id.scanned_input_edit_text);
-                                    Button scanButton = (Button) scanLayout.findViewById(R.id.scan_button);
-                                    scanButton.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            Intent intent = new Intent(mContext, CaptureActivity.class);
-                                            intent.setAction("com.google.zxing.client.android.SCAN");
-                                            // this stops saving ur barcode in barcode scanner app's history
-                                            intent.putExtra("SAVE_HISTORY", false);
-                                            ((QuestionsList) mContext).startActivityForResult(intent, groupPosition);
-                                        }
-                                    });
-                                    userEnteredLayout.setVisibility(View.GONE);
-                                    scanLayout.setVisibility(View.VISIBLE);
-                                    autoIncLayout.setVisibility(View.GONE);
-                                    selectedOption.setOptionType(2);
-                                    CheckBox remember2 = (CheckBox) mainLayout.findViewById(R.id.remember_check_box);
-                                    remember2.setVisibility(View.VISIBLE);
-
-
-                                    scannedValue.addTextChangedListener(new TextWatcher() {
-                                        @Override
-                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                        }
-
-                                        @Override
-                                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                        }
-
-                                        @Override
-                                        public void afterTextChanged(Editable s) {
-                                            SelectedOptions so = mSelectedOptions.get(question);
-                                            so.setSelectedValue(s.toString());
-
-                                            ExpandableListView explist = (ExpandableListView) mainLayout.getParent();
-                                            LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(groupPosition);
-                                            if (null != ll2) {
-                                                TextView selectedAnswer = (TextView) ll2.findViewById(R.id.tv_header_subtitle);
-                                                selectedAnswer.setText(s.toString());
-                                                checkMeasurementButton();
-
-                                                final int sdk = android.os.Build.VERSION.SDK_INT;
-                                                if (s.length() > 0) {
-                                                    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                                        ll2.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.green_light));
-                                                    } else {
-                                                        ll2.setBackground(mContext.getResources().getDrawable(R.color.green_light));
-                                                    }
-                                                } else {
-                                                    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                                                        ll2.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.gray_light));
-                                                    } else {
-                                                        ll2.setBackground(mContext.getResources().getDrawable(R.color.gray_light));
-                                                    }
-                                                }
-                                            }
-
-
-                                        }
-                                    });
-                                    if (selectedOption.isReset()) {
-                                        scannedValue.setText("");
-                                        selectedOption.setReset(false);
-                                    } else {
-                                        if (null != mSelectedOptions.get(question) && !mSelectedOptions.get(question).getSelectedValue().equals("Tap To Select Answer")) {
-                                            scannedValue.setText(mSelectedOptions.get(question).getSelectedValue());
-                                        }
-                                    }
-                                    break;
-                                default:
-                                    userEnteredLayout.setVisibility(View.VISIBLE);
-                                    scanLayout.setVisibility(View.GONE);
-                                    autoIncLayout.setVisibility(View.GONE);
-                                    selectedOption.setOptionType(0);
-                                    break;
-
-                            }
-
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-
-                        }
-                    });
-
-
-                    CheckBox remember = (CheckBox) convertView.findViewById(R.id.remember_check_box);
-
-                    SelectedOptions so = mSelectedOptions.get(question);
-
-                    if (so.isRemember()) {
-                        remember.setChecked(true);
-                    } else {
-                        remember.setChecked(false);
-                    }
-
-                    optionType.setSelection(so.getOptionType());
-
-                    remember.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (((CheckBox) v).isChecked()) {
-                                SelectedOptions so = mSelectedOptions.get(question);
-                                so.setRemember(true);
-                            } else {
-                                SelectedOptions so = mSelectedOptions.get(question);
-                                so.setRemember(false);
-                            }
-
-                        }
-                    });
-
-
-                    return convertView;
-
+                    return inflateUserDefined(question, groupPosition);
                 case Question.PROJECT_DEFINED:
                     return inflateProjectDefined(question, groupPosition);
                 case Question.PHOTO_TYPE_DEFINED:
@@ -354,6 +122,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
     }
+
 
 
     @Override
@@ -472,6 +241,320 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 //    }
 
 
+    public View inflateProjectDefined(final Question question, final int groupPosition) {
+        View convertView = mLayoutInflater.inflate(R.layout.project_defined_option, null);
+        CheckBox chkRemember = (CheckBox) convertView.findViewById(R.id.remember_check_box);
+        SelectedOptions currentOption = mSelectedOptions.get(question);
+        chkRemember.setChecked(currentOption != null && currentOption.isRemember());
+
+        if (currentOption == null) {
+            currentOption = new SelectedOptions();
+            currentOption.setOptionType(Question.PROJECT_DEFINED);
+        }
+
+        chkRemember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSelectedOptions.get(question).setRemember(((CheckBox) v).isChecked());
+            }
+        });
+
+        LinearLayout currentLayout = null;
+        for (int i = 0; i < question.getOptions().size(); i++) {
+            TextView tv;
+            if (i % 2 == 0) {
+                currentLayout = (LinearLayout) mLayoutInflater.inflate(R.layout.user_answer_text_row, null);
+                ((LinearLayout) convertView).addView(currentLayout);
+                tv = (TextView) currentLayout.findViewById(R.id.view_left);
+            } else {
+                tv = (TextView) currentLayout.findViewById(R.id.view_right);
+            }
+
+            final String option = question.getOptions().get(i);
+            tv.setText(option);
+
+            float size = mContext.getResources().getDimensionPixelSize(R.dimen.text_large);
+
+            if (option.length() > 6) {
+                size = mContext.getResources().getDimensionPixelSize(R.dimen.text_medium);
+            }
+
+            if (option.length() > 20) {
+                size = mContext.getResources().getDimensionPixelSize(R.dimen.text_small);
+            }
+
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+            tv.setTag(new OnClickArgs(question, groupPosition, option));
+            tv.setOnClickListener(mOptionSelectedListener);
+        }
+        return convertView;
+    }
+
+    private View inflatePhotoDefined(final Question question, int groupPosition) {
+
+        View convertView = mLayoutInflater.inflate(R.layout.image_options, null);
+        SelectedOptions currentOption = mSelectedOptions.get(question);
+
+        CheckBox chkRemember = (CheckBox) convertView.findViewById(R.id.remember_check_box);
+        chkRemember.setChecked(currentOption != null && currentOption.isRemember());
+        chkRemember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSelectedOptions.get(question).setRemember(((CheckBox) v).isChecked());
+            }
+        });
+
+        RelativeLayout currentLayout = null;
+        for (int i = 0; i < question.getOptions().size(); i++) {
+            TextView tv;
+            ImageView iv;
+            if (i % 2 == 0) {
+                currentLayout = (RelativeLayout) mLayoutInflater.inflate(R.layout.user_answer_text_image_row, null);
+                ((LinearLayout) convertView).addView(currentLayout);
+                tv = (TextView) currentLayout.findViewById(R.id.view_left);
+                iv = (ImageView) currentLayout.findViewById(R.id.iv_left);
+            } else {
+                tv = (TextView) currentLayout.findViewById(R.id.view_right);
+                iv = (ImageView) currentLayout.findViewById(R.id.iv_right);
+            }
+
+            final String option = question.getOptions().get(i);
+            String[] parts = option.split(",");
+
+            if (parts.length != 2) {
+                continue;
+            }
+
+            tv.setText(parts[0]);
+            Picasso.with(mContext)
+                    .load(parts[1])
+                    .placeholder(R.drawable.ic_launcher1)
+                    .error(R.drawable.ic_launcher1)
+                    .into(iv);
+
+            OnClickArgs args = new OnClickArgs(question, groupPosition, option);
+
+            iv.setTag(args);
+            tv.setTag(args);
+
+            iv.setOnClickListener(mOptionSelectedListener);
+            tv.setOnClickListener(mOptionSelectedListener);
+        }
+
+        return convertView;
+
+
+
+    }
+
+    private View inflateUserDefined(final Question question, int groupPosition) {
+        View convertView = mLayoutInflater.inflate(R.layout.user_selected_main_layout, null);
+        SelectedOptions currentOption = mSelectedOptions.get(question);
+
+        CheckBox chkRemember = (CheckBox) convertView.findViewById(R.id.remember_check_box);
+        chkRemember.setChecked(currentOption != null && currentOption.isRemember());
+        chkRemember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSelectedOptions.get(question).setRemember(((CheckBox) v).isChecked());
+            }
+        });
+
+        String value = currentOption.getSelectedValue() == null ? "" : currentOption.getSelectedValue();
+        Spinner optionType = (Spinner) convertView.findViewById(R.id.option_type);
+        optionType.setTag(new OnClickArgs(question, groupPosition, value));
+        optionType.setOnItemSelectedListener(mOptionTypeListener);
+
+        return convertView;
+    }
+
+    private final AdapterView.OnItemSelectedListener mOptionTypeListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            final OnClickArgs args = (OnClickArgs) parent.getTag();
+
+            final Question question = args.mQuestion;
+            final int groupPosition = args.mGroupPosition;
+
+            final LinearLayout mainLayout = (LinearLayout) (parent.getParent().getParent());
+
+            LinearLayout userEnteredLayout = (LinearLayout) mainLayout.findViewById(R.id.layout_user_entered);
+            LinearLayout scanLayout = (LinearLayout) mainLayout.findViewById(R.id.layout_scan_code);
+            LinearLayout autoIncLayout = (LinearLayout) mainLayout.findViewById(R.id.layout_auto_inc);
+            CheckBox chkRemember = (CheckBox) mainLayout.findViewById(R.id.remember_check_box);
+
+            final SelectedOptions selectedOption = mSelectedOptions.get(question);
+
+            switch (position) {
+                case 0:
+                    userEnteredLayout.setVisibility(View.VISIBLE);
+                    scanLayout.setVisibility(View.GONE);
+                    autoIncLayout.setVisibility(View.GONE);
+                    selectedOption.setOptionType(0);
+                    EditText txtListChild = (EditText) userEnteredLayout
+                            .findViewById(R.id.user_input_edit_text);
+                    chkRemember.setVisibility(View.VISIBLE);
+
+                    txtListChild.addTextChangedListener(new TextWatcher() {
+
+                        private String mCache = "";
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            selectedOption.setSelectedValue(s.toString());
+                            checkMeasurementButton();
+
+                            // TODO adapt parent view manually without notifydatasetchanged, or trigger at end when user enters the data
+                            if(!mCache.equals(s.toString())){
+                                mCache = s.toString();
+                            }
+                            //notifyDataSetChanged();
+                        }
+                    });
+                    if (selectedOption.isReset()) {
+                        txtListChild.setText("");
+                        selectedOption.setReset(false);
+
+                    } else {
+                        if (null != mSelectedOptions.get(question) && !mSelectedOptions.get(question).getSelectedValue().equals(SelectedOptions.TAP_TO_SELECT_ANSWER)) {
+                            txtListChild.setText(mSelectedOptions.get(question).getSelectedValue());
+                        }
+                    }
+                    /*
+                    if (txtListChild.requestFocus()) {
+                        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(txtListChild, InputMethodManager.SHOW_IMPLICIT);
+                        //((QuestionsList)mContext).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                    }
+                    */
+
+                    break;
+                case 1:
+                    userEnteredLayout.setVisibility(View.GONE);
+                    scanLayout.setVisibility(View.GONE);
+                    autoIncLayout.setVisibility(View.VISIBLE);
+                    selectedOption.setOptionType(1);
+                    selectedOption.setRemember(true);
+                    chkRemember.setVisibility(View.GONE);
+
+                    EditText fromNumber = (EditText) autoIncLayout
+                            .findViewById(R.id.auto_inc_from);
+                    EditText toNumber = (EditText) autoIncLayout
+                            .findViewById(R.id.auto_inc_to);
+                    EditText repeatNumber = (EditText) autoIncLayout
+                            .findViewById(R.id.auto_inc_repeat);
+
+                    fromNumber.addTextChangedListener(new GenericTextWatcher(fromNumber, question));
+                    toNumber.addTextChangedListener(new GenericTextWatcher(toNumber, question));
+                    repeatNumber.addTextChangedListener(new GenericTextWatcher(repeatNumber, question));
+
+                    if (null != mSelectedOptions.get(question) && !mSelectedOptions.get(question).getSelectedValue().equals("Tap To Select Answer")) {
+                        fromNumber.setTag("Wait");
+                        toNumber.setTag("Wait");
+                        repeatNumber.setTag("Wait");
+                        fromNumber.setText(mSelectedOptions.get(question).getRangeFrom());
+                        toNumber.setText(mSelectedOptions.get(question).getRangeTo());
+                        repeatNumber.setText(mSelectedOptions.get(question).getRangeRepeat());
+                        fromNumber.setTag(null);
+                        toNumber.setTag(null);
+                        repeatNumber.setTag(null);
+                    }
+                    checkMeasurementButton();
+                    break;
+                case 2:
+                    EditText scannedValue = (EditText) scanLayout
+                            .findViewById(R.id.scanned_input_edit_text);
+                    Button scanButton = (Button) scanLayout.findViewById(R.id.scan_button);
+                    scanButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(mContext, CaptureActivity.class);
+                            intent.setAction("com.google.zxing.client.android.SCAN");
+                            // this stops saving ur barcode in barcode scanner app's history
+                            intent.putExtra("SAVE_HISTORY", false);
+                            ((QuestionsList) mContext).startActivityForResult(intent, groupPosition);
+                        }
+                    });
+                    userEnteredLayout.setVisibility(View.GONE);
+                    scanLayout.setVisibility(View.VISIBLE);
+                    autoIncLayout.setVisibility(View.GONE);
+                    selectedOption.setOptionType(2);
+                    chkRemember.setVisibility(View.VISIBLE);
+
+
+                    scannedValue.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            mSelectedOptions.get(question).setSelectedValue(s.toString());
+                            //notifyDataSetChanged();
+                        }
+                    });
+
+                    if (selectedOption.isReset()) {
+                        scannedValue.setText("");
+                        selectedOption.setReset(false);
+                    } else {
+                        if (null != mSelectedOptions.get(question) && !mSelectedOptions.get(question).getSelectedValue().equals(SelectedOptions.TAP_TO_SELECT_ANSWER)) {
+                            scannedValue.setText(mSelectedOptions.get(question).getSelectedValue());
+                        }
+                    }
+                    break;
+                default:
+                    userEnteredLayout.setVisibility(View.VISIBLE);
+                    scanLayout.setVisibility(View.GONE);
+                    autoIncLayout.setVisibility(View.GONE);
+                    selectedOption.setOptionType(0);
+                    break;
+
+            }
+
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
+
+    private final View.OnClickListener mOptionSelectedListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            OnClickArgs args = (OnClickArgs) v.getTag();
+            notifyDataSetChanged();
+            mSelectedOptions.get(args.mQuestion).setSelectedValue(args.mOption);
+            mExpandableListView.collapseGroup(args.mGroupPosition);
+            checkMeasurementButton();
+        }
+    };
+
+    private static final class OnClickArgs {
+        public final Question mQuestion;
+        public final int mGroupPosition;
+        public final String mOption;
+
+        private OnClickArgs(Question question, int groupPosition, String option) {
+            mQuestion = question;
+            mGroupPosition = groupPosition;
+            mOption = option;
+        }
+    }
+
     private class GenericTextWatcher implements TextWatcher {
 
         private final View mView;
@@ -535,130 +618,78 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             }
 
             checkMeasurementButton();
+            //notifyDataSetChanged();
 
-
-            final int sdk = android.os.Build.VERSION.SDK_INT;
-            if (!selectedOption.getRangeFrom().isEmpty() && !selectedOption.getRangeTo().isEmpty() && !selectedOption.getRangeRepeat().isEmpty()) {
-                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                    headerView.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.green_light));
-                } else {
-                    headerView.setBackground(mContext.getResources().getDrawable(R.color.green_light));
-                }
-            } else {
-                if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                    headerView.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.gray_light));
-                } else {
-                    headerView.setBackground(mContext.getResources().getDrawable(R.color.gray_light));
-                }
-            }
         }
     }
 
-    public View inflateProjectDefined(final Question question, final int groupPosition) {
-        View convertView = mLayoutInflater.inflate(R.layout.project_defined_option, null);
-        CheckBox chkRemember = (CheckBox) convertView.findViewById(R.id.remember_check_box);
-        SelectedOptions currentOption = mSelectedOptions.get(question);
-        chkRemember.setChecked(currentOption != null && currentOption.isRemember());
 
-        if (currentOption == null) {
-            currentOption = new SelectedOptions();
-            currentOption.setOptionType(Question.PROJECT_DEFINED);
-        }
+    /* old handler for createView */
 
-        chkRemember.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSelectedOptions.get(question).setRemember(((CheckBox) v).isChecked());
-            }
-        });
+    /**
+     NoDefaultSpinner projectDefinedOptionsSpinner = (NoDefaultSpinner) convertView
+     .findViewById(R.id.project_defined_options_spinner);
 
-        LinearLayout currentLayout = null;
-        for (int i = 0; i < question.getOptions().size(); i++) {
-            TextView tv;
-            if (i % 2 == 0) {
-                currentLayout = (LinearLayout) mLayoutInflater.inflate(R.layout.user_answer_text_row, null);
-                ((LinearLayout) convertView).addView(currentLayout);
-                tv = (TextView) currentLayout.findViewById(R.id.view_left);
-            } else {
-                tv = (TextView) currentLayout.findViewById(R.id.view_right);
-            }
+     List<String> list = getGroup(groupPosition).getOptions();
+     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(convertView.getContext(),
+     R.layout.simple_spinner_item, list);
 
-            final String option = question.getOptions().get(i);
-            tv.setText(option);
+     dataAdapter.setDropDownViewResource(R.layout.spinner_text);
+     projectDefinedOptionsSpinner.setAdapter(dataAdapter);
+     projectDefinedOptionsSpinner.setTag(groupPosition + "-" + childPosition);
+     projectDefinedOptionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    @Override public void onItemSelected(AdapterView<?> parent, View mView, int position, long id) {
+    String[] ids = ((String) parent.getTag()).split("-");
+    int questionNumber = Integer.parseInt(ids[0]);
+    //int questionNumber = (int)parent.getTag();
+    SelectedOptions so = mSelectedOptions.get(questionNumber);
+    so.setSelectedValue(parent.getItemAtPosition(position).toString());
+    mSelectedOptions.set(questionNumber, so);
 
-            float size = mContext.getResources().getDimensionPixelSize(R.dimen.text_large);
+    LinearLayout ll = (LinearLayout) parent.getParent();
+    ExpandableListView explist = (ExpandableListView) ll.getParent();
 
-            if (option.length() > 6) {
-                size = mContext.getResources().getDimensionPixelSize(R.dimen.text_medium);
-            }
+    LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(questionNumber);
+    if (null != ll2) {
+    TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
+    selectedAnswer.setText(parent.getItemAtPosition(position).toString());
 
-            if (option.length() > 20) {
-                size = mContext.getResources().getDimensionPixelSize(R.dimen.text_small);
-            }
-
-            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
-            tv.setTag(new OnClickArgs(question, groupPosition, option));
-            tv.setOnClickListener(mProjectDefinedOptionOnClickListener);
-        }
-        return convertView;
+    final int sdk = android.os.Build.VERSION.SDK_INT;
+    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+    ll2.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.green_light));
+    } else {
+    ll2.setBackground(mContext.getResources().getDrawable(R.color.green_light));
+    }
+    }
+    checkMeasurementButton();
+    if (collapse[0]) {
+    mExpandableListView.collapseGroup(groupPosition);
+    } else {
+    collapse[0] = true;
     }
 
-    private View inflatePhotoDefined(final Question question, int groupPosition) {
+    }
 
-        View convertView = mLayoutInflater.inflate(R.layout.image_options, null);
-        CheckBox chkRemember = (CheckBox) convertView.findViewById(R.id.remember_check_box);
-        SelectedOptions currentOption = mSelectedOptions.get(question);
-        chkRemember.setChecked(currentOption != null && currentOption.isRemember());
-        chkRemember.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSelectedOptions.get(question).setRemember(((CheckBox) v).isChecked());
-            }
-        });
+    @Override public void onNothingSelected(AdapterView<?> parent) {
 
-        RelativeLayout currentLayout = null;
-        for (int i = 0; i < question.getOptions().size(); i++) {
-            TextView tv;
-            ImageView iv;
-            if (i % 2 == 0) {
-                currentLayout = (RelativeLayout) mLayoutInflater.inflate(R.layout.user_answer_text_image_row, null);
-                ((LinearLayout) convertView).addView(currentLayout);
-                tv = (TextView) currentLayout.findViewById(R.id.view_left);
-                iv = (ImageView) currentLayout.findViewById(R.id.iv_left);
-            } else {
-                tv = (TextView) currentLayout.findViewById(R.id.view_right);
-                iv = (ImageView) currentLayout.findViewById(R.id.iv_right);
-            }
+    }
+    });
 
-            final String option = question.getOptions().get(i);
-            String[] parts = option.split(",");
+     if (so1.isReset()) {
+     projectDefinedOptionsSpinner.setSelection(-1);
+     so1.setReset(false);
+     mSelectedOptions.set(groupPosition, so1);
 
-            if (parts.length != 2) {
-                continue;
-            }
-
-            tv.setText(parts[0]);
-            Picasso.with(mContext)
-                    .load(parts[1])
-                    .placeholder(R.drawable.ic_launcher1)
-                    .error(R.drawable.ic_launcher1)
-                    .into(iv);
-
-            OnClickArgs args = new OnClickArgs(question, groupPosition, option);
-
-            iv.setTag(args);
-            tv.setTag(args);
-
-            iv.setOnClickListener(mImageOptionOnClickListener);
-            tv.setOnClickListener(mImageOptionOnClickListener);
-        }
-
-        return convertView;
+     } else {
+     projectDefinedOptionsSpinner.setSelection(dataAdapter.getPosition(mSelectedOptions.get(groupPosition).getSelectedValue()));
+     collapse[0] = false;
+     }
+     **/
 
 
+    /* old image option code */
 
-
-/*
+/**
 
         NoDefaultSpinner photoDefinedOptionsSpinner = (NoDefaultSpinner) convertView
                 .findViewById(R.id.image_options_spinner);
@@ -733,112 +764,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 //                    txtListChild3.setText("Please handle me 3");
         return convertView;
 
-           */
-    }
-
-    private final View.OnClickListener mImageOptionOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            OnClickArgs args = (OnClickArgs) v.getTag();
-            notifyDataSetChanged();
-            mSelectedOptions.get(args.mQuestion).setSelectedValue(args.mOption);
-            mExpandableListView.collapseGroup(args.mGroupPosition);
-            checkMeasurementButton();
-        }
-    };
-
-    private final View.OnClickListener mProjectDefinedOptionOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            OnClickArgs args = (OnClickArgs) v.getTag();
-            notifyDataSetChanged();
-            mSelectedOptions.get(args.mQuestion).setSelectedValue(args.mOption);
-            mExpandableListView.collapseGroup(args.mGroupPosition);
-            checkMeasurementButton();
-        }
-    };
-
-    private final View.OnClickListener mUserDefinedOptionOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
-
-    private static final class OnClickArgs {
-        public final Question mQuestion;
-        public final int mGroupPosition;
-        public final String mOption;
-
-        private OnClickArgs(Question question, int groupPosition, String option) {
-            mQuestion = question;
-            mGroupPosition = groupPosition;
-            mOption = option;
-        }
-    }
-
-
-    /* old handler for createView */
-
-    /**
-     NoDefaultSpinner projectDefinedOptionsSpinner = (NoDefaultSpinner) convertView
-     .findViewById(R.id.project_defined_options_spinner);
-
-     List<String> list = getGroup(groupPosition).getOptions();
-     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(convertView.getContext(),
-     R.layout.simple_spinner_item, list);
-
-     dataAdapter.setDropDownViewResource(R.layout.spinner_text);
-     projectDefinedOptionsSpinner.setAdapter(dataAdapter);
-     projectDefinedOptionsSpinner.setTag(groupPosition + "-" + childPosition);
-     projectDefinedOptionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-    @Override public void onItemSelected(AdapterView<?> parent, View mView, int position, long id) {
-    String[] ids = ((String) parent.getTag()).split("-");
-    int questionNumber = Integer.parseInt(ids[0]);
-    //int questionNumber = (int)parent.getTag();
-    SelectedOptions so = mSelectedOptions.get(questionNumber);
-    so.setSelectedValue(parent.getItemAtPosition(position).toString());
-    mSelectedOptions.set(questionNumber, so);
-
-    LinearLayout ll = (LinearLayout) parent.getParent();
-    ExpandableListView explist = (ExpandableListView) ll.getParent();
-
-    LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(questionNumber);
-    if (null != ll2) {
-    TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
-    selectedAnswer.setText(parent.getItemAtPosition(position).toString());
-
-    final int sdk = android.os.Build.VERSION.SDK_INT;
-    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-    ll2.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.green_light));
-    } else {
-    ll2.setBackground(mContext.getResources().getDrawable(R.color.green_light));
-    }
-    }
-    checkMeasurementButton();
-    if (collapse[0]) {
-    mExpandableListView.collapseGroup(groupPosition);
-    } else {
-    collapse[0] = true;
-    }
-
-    }
-
-    @Override public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-    });
-
-     if (so1.isReset()) {
-     projectDefinedOptionsSpinner.setSelection(-1);
-     so1.setReset(false);
-     mSelectedOptions.set(groupPosition, so1);
-
-     } else {
-     projectDefinedOptionsSpinner.setSelection(dataAdapter.getPosition(mSelectedOptions.get(groupPosition).getSelectedValue()));
-     collapse[0] = false;
-     }
-     **/
+           **/
 
 
 }
