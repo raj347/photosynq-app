@@ -7,36 +7,12 @@
 
     <TextView
         android:id="@+id/view_left"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_weight="1"
-        android:background="@color/gray"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:padding="15dp"
-        android:textColor="@color/abc_primary_text_material_light"
-        android:textSize="30sp"
-        tools:text="left"/>
+        tools:text="left"
+        style="@style/option_text"/>
 
     <TextView
         android:id="@+id/view_right"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_weight="1"
-        android:background="@color/gray"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:padding="15dp"
-        android:textColor="@color/abc_primary_text_material_light"
-        android:textSize="30sp"
+        style="@style/option_text"
         tools:text="right"/>
 
 </LinearLayout>

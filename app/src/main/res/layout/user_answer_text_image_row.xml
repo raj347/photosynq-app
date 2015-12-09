@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingTop="8dp">
+
+    <Space
+        android:id="@+id/center"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:layout_centerInParent="true"/>
+
+    <ImageView
+        android:id="@+id/iv_left"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/center"
+        android:adjustViewBounds="true"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_launcher1"
+        />
+
+    <ImageView
+        android:id="@+id/iv_right"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/center"
+        android:adjustViewBounds="true"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_launcher1"
+        />
+
+    <TextView
+        android:id="@+id/view_left"
+        style="@style/option_text"
+        android:textSize="15sp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/iv_left"
+        android:layout_toLeftOf="@id/center"
+        android:background="@null"
+        tools:text="left"/>
+
+    <TextView
+        android:id="@+id/view_right"
+        style="@style/option_text"
+        android:textSize="15sp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/iv_right"
+        android:layout_toRightOf="@id/center"
+        android:background="@null"
+        tools:text="right"/>
+
+</RelativeLayout>

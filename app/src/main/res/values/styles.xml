@@ -77,4 +77,20 @@
         <item name="android:textSize">17sp</item>
         <item name="android:textColor">@color/black</item>
     </style>
+
+    <style name="option_text">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginBottom">15dp</item>
+        <item name="android:layout_marginLeft">15dp</item>
+        <item name="android:layout_marginRight">15dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@color/gray</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">15dp</item>
+        <item name="android:textColor">@color/abc_primary_text_material_light</item>
+        <item name="android:textSize">30sp</item>
+    </style>
 </resources>
