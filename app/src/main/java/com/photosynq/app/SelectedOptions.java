@@ -53,7 +53,7 @@ public class SelectedOptions {
     }
 
     public void setSelectedValue(String selectedValue) {
-        this.selectedValue = selectedValue;
+        this.selectedValue = selectedValue.trim();
     }
 
     public String getUrlValue() {
