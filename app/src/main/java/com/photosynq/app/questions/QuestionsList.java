@@ -16,8 +16,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -39,7 +37,6 @@ import com.photosynq.app.model.BluetoothMessage;
 import com.photosynq.app.model.Macro;
 import com.photosynq.app.model.Protocol;
 import com.photosynq.app.model.Question;
-import com.photosynq.app.model.RememberAnswers;
 import com.photosynq.app.model.ResearchProject;
 import com.photosynq.app.utils.BluetoothService;
 import com.photosynq.app.utils.CommonUtils;
@@ -56,7 +53,7 @@ import java.util.Map;
 
 public class QuestionsList extends ActionBarActivity implements SelectDeviceDialogDelegate {
 
-    ExpandableListAdapter listAdapter;
+    ExpandableListAdapter mListAdapter;
     ExpandableListView expListView;
     private int lastExpandedPosition = -1;
     private Handler mHandler;
@@ -70,9 +67,19 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     private BluetoothAdapter mBluetoothAdapter = null;
     private TextView outputTextView;
 
+    public enum UiState{
+        STATE_ANSWERING_QUESTIONS,
+        STATE_IN_MEASUREMENT,
+        STATE_ALL_QUESTIONS_ANSWERED
+    }
+
+    private volatile UiState mUiState = UiState.STATE_ANSWERING_QUESTIONS;
+
 
     private String mConnectedDeviceName;
     private String projectId;
+
+    private Button mBtTakeMeasurement = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +102,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
         expListView = (ExpandableListView) findViewById(R.id.queExpandableList);
         expListView.setGroupIndicator(null);
 
-        listAdapter = new ExpandableListAdapter(this, questions, expListView);
+        mListAdapter = new ExpandableListAdapter(this, questions, expListView);
 
         expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
@@ -120,58 +127,54 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 }
             }
         });
-        expListView.setAdapter(listAdapter);
+        expListView.setAdapter(mListAdapter);
 
 
-        final Button btnTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
-        btnTakeMeasurement.setText("+ Take Measurement");
-        btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
+        mBtTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
+        mBtTakeMeasurement.setText("+ Take Measurement");
+        mBtTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
 
-        btnTakeMeasurement.setOnClickListener(new View.OnClickListener() {
+        mBtTakeMeasurement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 bluetoothMessage = new BluetoothMessage();
 
-                if (btnTakeMeasurement.getText().equals("+ Take Measurement")) {
-                    mIsCancelMeasureBtnClicked = false;
-                    mIsMeasureBtnClicked = true;
-                    //??
-//                    if (mBluetoothService == null) {
-//                        mBluetoothService = BluetoothService.getInstance(ProjectMeasurmentActivity.this, mHandler);
-//                    }
+                switch(mUiState){
+                    case STATE_ANSWERING_QUESTIONS:
+                        mListAdapter.selectNextQuestion();
+                        break;
+                    case STATE_IN_MEASUREMENT:
+                        mIsCancelMeasureBtnClicked = true;
+                        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_CONNECTED, 0, bluetoothMessage).sendToTarget();
+                        //btnTakeMeasurement.setText("+ Take Measurement");
+                        mBtTakeMeasurement.setEnabled(false);
+                        mBtTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_gray_light);
+                        mUiState = UiState.STATE_IN_MEASUREMENT;
+                        break;
+                    case STATE_ALL_QUESTIONS_ANSWERED:
+                        mIsCancelMeasureBtnClicked = false;
+                        mIsMeasureBtnClicked = true;
+                        BluetoothService mBluetoothService = BluetoothService.getInstance(bluetoothMessage, mHandler);
+                        if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
+                            // Get the BLuetoothDevice object
+                            if (mBluetoothAdapter == null)
+                                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-                    BluetoothService mBluetoothService = BluetoothService.getInstance(bluetoothMessage, mHandler);
-                    if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
-                        // Get the BLuetoothDevice object
-                        if (mBluetoothAdapter == null)
-                            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-                        deviceAddress = CommonUtils.getDeviceAddress(QuestionsList.this);
-                        if (null == deviceAddress) {
-                            Toast.makeText(QuestionsList.this, "Measurement device not configured, Please configure measurement device (bluetooth).", Toast.LENGTH_SHORT).show();
-                            selectDevice();
-                            return;
+                            deviceAddress = CommonUtils.getDeviceAddress(QuestionsList.this);
+                            if (null == deviceAddress) {
+                                Toast.makeText(QuestionsList.this, "Measurement device not configured, Please configure measurement device (bluetooth).", Toast.LENGTH_SHORT).show();
+                                selectDevice();
+                                return;
+                            } else {
+                                BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceAddress);
+                                mBluetoothService.connect(device);
+                            }
                         } else {
-                            BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(deviceAddress);
-                            mBluetoothService.connect(device);
+                            mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_CONNECTED, 1, bluetoothMessage).sendToTarget();
                         }
-                    } else {
-                        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_CONNECTED, 1, bluetoothMessage).sendToTarget();
-                    }
-                    btnTakeMeasurement.setText("Cancel");
-                    btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_red);
-                } else if (btnTakeMeasurement.getText().equals("Cancel")) {
-                    mIsCancelMeasureBtnClicked = true;
-                    mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, BluetoothService.STATE_CONNECTED, 0, bluetoothMessage).sendToTarget();
-                    //btnTakeMeasurement.setText("+ Take Measurement");
-                    btnTakeMeasurement.setEnabled(false);
-                    btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_gray_light);
-
-                    //??
-//                    if (null != timer)
-//                        timer.cancel(); // Cancel count down timer.
-
+                        mBtTakeMeasurement.setText("Cancel");
+                        mBtTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_red);
+                        break;
                 }
             }
         });
@@ -206,6 +209,18 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
         });
     }
 
+    public void invalidateMeasurementButton(boolean active){
+        if(active){
+            if(mUiState != UiState.STATE_IN_MEASUREMENT){
+                mUiState = UiState.STATE_ALL_QUESTIONS_ANSWERED;
+                mBtTakeMeasurement.setText("+ Take Measurement");
+            }
+        }else{
+            mUiState = UiState.STATE_ANSWERING_QUESTIONS;
+            mBtTakeMeasurement.setText("Next");
+        }
+    }
+
     private synchronized void createHandler() {
         mHandler = null;
         mHandler = new Handler(Looper.getMainLooper()) {
@@ -214,7 +229,6 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                 TextView mtvStatusMessage = (TextView) findViewById(R.id.tv_status_message);
                 ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-                Button btnTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
 
                 switch (msg.what) {
                     case Constants.MESSAGE_STREAM:
@@ -335,10 +349,12 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                                 mtvStatusMessage.setText("No protocol defined for this project.");
                                                 Toast.makeText(QuestionsList.this, "No protocol defined for this project.", Toast.LENGTH_LONG).show();
 
-                                                if (btnTakeMeasurement != null) {
-                                                    if (btnTakeMeasurement.getText().equals("Cancel")) {
-                                                        btnTakeMeasurement.setText("+ Take Measurement");
-                                                        btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
+                                                if (mBtTakeMeasurement != null) {
+                                                    mUiState = UiState.STATE_ANSWERING_QUESTIONS;
+                                                    if (mBtTakeMeasurement.getText().equals("Cancel")) {
+                                                        mBtTakeMeasurement.setEnabled(true);
+                                                        mBtTakeMeasurement.setText("+ Take Measurement");
+                                                        mBtTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
                                                     }
                                                 }
                                             }
@@ -346,10 +362,12 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                                             mtvStatusMessage.setText("No protocol defined for this project.");
                                             Toast.makeText(QuestionsList.this, "No protocol defined for this project.", Toast.LENGTH_LONG).show();
-                                            if (btnTakeMeasurement != null) {
-                                                if (btnTakeMeasurement.getText().equals("Cancel")) {
-                                                    btnTakeMeasurement.setText("+ Take Measurement");
-                                                    btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
+                                            if (mBtTakeMeasurement != null) {
+                                                mUiState = UiState.STATE_ANSWERING_QUESTIONS;
+                                                if (mBtTakeMeasurement.getText().equals("Cancel")) {
+                                                    mBtTakeMeasurement.setEnabled(true);
+                                                    mBtTakeMeasurement.setText("+ Take Measurement");
+                                                    mBtTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
                                                 }
                                             }
                                             break;
@@ -447,10 +465,10 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                 //options.append("\"user_answers\": [");
 
 
-                                HashMap<Question, SelectedOptions> allOptions = listAdapter.mSelectedOptions;
+                                HashMap<Question, SelectedOptions> allOptions = mListAdapter.mSelectedOptions;
 
                                 int count = 0;
-                                for (Map.Entry<Question, SelectedOptions> e : listAdapter.mSelectedOptions.entrySet()) {
+                                for (Map.Entry<Question, SelectedOptions> e : mListAdapter.mSelectedOptions.entrySet()) {
                                     options.append('"')
                                             .append(e.getKey().getQuestionId())
                                             .append('"')
@@ -512,15 +530,16 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                             String measurement = bluetoothMessage3.message;
                             //if(measurement.toString().contains("\\r\\n\\r\\n")) {
                             mIsCancelMeasureBtnClicked = false;
-                            if (btnTakeMeasurement != null) {
-                                if (btnTakeMeasurement.getText().equals("Cancel")) {
+                            if (mBtTakeMeasurement != null) {
+                                if (mBtTakeMeasurement.getText().equals("Cancel")) {
                                     mtvStatusMessage.setText("Measurement cancelled");
+                                    mUiState = UiState.STATE_ANSWERING_QUESTIONS;
 //                                    TextView txtOutput = (TextView) findViewById(R.id.tvOutput);
 //                                    txtOutput.setText("");
 //                                    txtOutput.invalidate();
-                                    btnTakeMeasurement.setEnabled(true);
-                                    btnTakeMeasurement.setText("+ Take Measurement");
-                                    btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
+                                    mBtTakeMeasurement.setEnabled(true);
+                                    mBtTakeMeasurement.setText("+ Take Measurement");
+                                    mBtTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
                                 }
                             }
                             //}
@@ -542,10 +561,12 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                         }
                         mIsMeasureBtnClicked = false;
                         mIsCancelMeasureBtnClicked = false;
-                        if (btnTakeMeasurement != null) {
-                            if (btnTakeMeasurement.getText().equals("Cancel")) {
-                                btnTakeMeasurement.setText("+ Take Measurement");
-                                btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
+                        if (mBtTakeMeasurement != null) {
+                            if (mBtTakeMeasurement.getText().equals("Cancel")) {
+                                mBtTakeMeasurement.setEnabled(true);
+                                mUiState = UiState.STATE_ANSWERING_QUESTIONS;
+                                mBtTakeMeasurement.setText("+ Take Measurement");
+                                mBtTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
                             }
                         }
                         break;
@@ -629,7 +650,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
             btnTakeMeasurement.setText("+ Take Measurement");
             btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
 
-            HashMap<Question, SelectedOptions> options = listAdapter.getSelectedOptions();
+            HashMap<Question, SelectedOptions> options = mListAdapter.getSelectedOptions();
             for (Map.Entry<Question, SelectedOptions> e : options.entrySet()) {
                 SelectedOptions option = e.getValue();
                 if (option.isRemember()) {
@@ -671,13 +692,13 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                 }
             }
-            listAdapter.notifyDataSetChanged();
+            mListAdapter.notifyDataSetChanged();
             mIsMeasureBtnClicked = false;
             mIsCancelMeasureBtnClicked = false;
         }
         scanMode = false;
 
-        int count = listAdapter.getGroupCount();
+        int count = mListAdapter.getGroupCount();
         for (int i = 0; i < count; i++) {
             expListView.collapseGroup(i);
         }
@@ -774,11 +795,11 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 String contents = intent.getStringExtra("SCAN_RESULT");
 
                 Toast.makeText(this, contents + " " + requestCode, Toast.LENGTH_SHORT).show();
-                HashMap<Question, SelectedOptions> options = listAdapter.getSelectedOptions();
-                Question question = listAdapter.getGroup(requestCode);
+                HashMap<Question, SelectedOptions> options = mListAdapter.getSelectedOptions();
+                Question question = mListAdapter.getGroup(requestCode);
                 options.get(question).setSelectedValue(contents);
                 expListView.setSelectedGroup(requestCode);
-                listAdapter.notifyDataSetChanged();
+                mListAdapter.notifyDataSetChanged();
 
                 // TODO we need to mark this not with the IDX of the list but with a reference to the
                 // HashMap created
@@ -787,8 +808,8 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 SelectedOptions so = options.get(requestCode);
                 so.setSelectedValue(contents);
                 options.set(requestCode, so);
-                listAdapter.setSelectedOptions(options);
-                listAdapter.notifyDataSetChanged();
+                mListAdapter.setSelectedOptions(options);
+                mListAdapter.notifyDataSetChanged();
 
                  **/
 

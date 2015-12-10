@@ -9,9 +9,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
@@ -25,11 +23,9 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.android.gms.games.quest.Quest;
 import com.google.zxing.client.android.CaptureActivity;
 import com.photosynq.app.R;
 import com.photosynq.app.SelectedOptions;
-import com.photosynq.app.model.Option;
 import com.photosynq.app.model.Question;
 import com.squareup.picasso.Picasso;
 
@@ -45,7 +41,7 @@ import static com.photosynq.app.utils.NxDebugEngine.log;
  */
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
-    private Context mContext;
+    private QuestionsList mQuestionListActivity;
     private final List<Question> mQuestionList;
     public final HashMap<Question, SelectedOptions> mSelectedOptions = new HashMap<>();
     private final ExpandableListView mExpandableListView;
@@ -56,9 +52,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return mSelectedOptions;
     }
 
-    public ExpandableListAdapter(Context context, List<Question> questionList, ExpandableListView exp) {
-        mContext = context;
-        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public ExpandableListAdapter(QuestionsList questionListActivity, List<Question> questionList, ExpandableListView exp) {
+        mQuestionListActivity = questionListActivity;
+        mLayoutInflater = (LayoutInflater) questionListActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mExpandableListView = exp;
         mQuestionList = questionList;
 
@@ -99,7 +95,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     return inflatePhotoDefined(question, groupPosition);
                 default:
                     if (convertView == null) {
-                        LayoutInflater infalInflater = (LayoutInflater) this.mContext
+                        LayoutInflater infalInflater = (LayoutInflater) this.mQuestionListActivity
                                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         convertView = infalInflater.inflate(R.layout.exp_question_list_item, null);
                     }
@@ -171,7 +167,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if (question.getQuestionType() == Question.PHOTO_TYPE_DEFINED) {
             if (answerSelected) {
                 String[] splitOptionText = so.getSelectedValue().split(",");
-                Picasso.with(mContext)
+                Picasso.with(mQuestionListActivity)
                         .load(splitOptionText[1])
                         .placeholder(R.drawable.ic_launcher1)
                         .resize(60, 60)
@@ -195,7 +191,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         if (answerSelected) {
-            int color = mContext.getResources().getColor(R.color.green_light);
+            int color = mQuestionListActivity.getResources().getColor(R.color.green_light);
             convertView.setBackgroundColor(color);
         }
         mExpandableListView.setDividerHeight(20);
@@ -203,29 +199,29 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    private void checkMeasurementButton() {
-
-        ViewParent v = mExpandableListView.getParent().getParent();
-        Button btnTakeMeasurement = (Button) ((RelativeLayout) v).findViewById(R.id.btn_take_measurement);
-        boolean flag = false;
-        for (SelectedOptions option : mSelectedOptions.values()) {
-            if (option.getSelectedValue().equals(SelectedOptions.TAP_TO_SELECT_ANSWER) || option.getSelectedValue().isEmpty()) {
-                flag = true;
+    public void selectNextQuestion(){
+        for (int i = 0; i < mQuestionList.size(); i++) {
+            String val = mSelectedOptions.get(mQuestionList.get(i)).getSelectedValue();
+            if(val.equals(SelectedOptions.TAP_TO_SELECT_ANSWER) || val.trim().isEmpty()){
+                mExpandableListView.expandGroup(i);
+                mExpandableListView.smoothScrollToPositionFromTop(i, 0);
                 break;
             }
         }
 
-        if (flag) {
-            btnTakeMeasurement.setText("Answer All Questions");
-            btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_gray_light);
-        } else {
-            if (!btnTakeMeasurement.getText().equals("Cancel")) {
-                btnTakeMeasurement.setText("+ Take Measurement");
-                btnTakeMeasurement.setBackgroundResource(R.drawable.btn_layout_orange);
-            }
+    }
 
+    private void checkMeasurementButton() {
+
+        boolean allAnswered = true;
+        for (SelectedOptions option : mSelectedOptions.values()) {
+            if (option.getSelectedValue().equals(SelectedOptions.TAP_TO_SELECT_ANSWER) || option.getSelectedValue().isEmpty()) {
+                allAnswered = false;
+                break;
+            }
         }
 
+        mQuestionListActivity.invalidateMeasurementButton(allAnswered);
     }
 
     @Override
@@ -275,14 +271,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             final String option = question.getOptions().get(i);
             tv.setText(option);
 
-            float size = mContext.getResources().getDimensionPixelSize(R.dimen.text_large);
+            float size = mQuestionListActivity.getResources().getDimensionPixelSize(R.dimen.text_large);
 
             if (option.length() > 6) {
-                size = mContext.getResources().getDimensionPixelSize(R.dimen.text_medium);
+                size = mQuestionListActivity.getResources().getDimensionPixelSize(R.dimen.text_medium);
             }
 
             if (option.length() > 20) {
-                size = mContext.getResources().getDimensionPixelSize(R.dimen.text_small);
+                size = mQuestionListActivity.getResources().getDimensionPixelSize(R.dimen.text_small);
             }
 
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
@@ -328,7 +324,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             }
 
             tv.setText(parts[0]);
-            Picasso.with(mContext)
+            Picasso.with(mQuestionListActivity)
                     .load(parts[1])
                     .placeholder(R.drawable.ic_launcher1)
                     .error(R.drawable.ic_launcher1)
@@ -363,7 +359,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         String value = currentOption.getSelectedValue() == null ? "" : currentOption.getSelectedValue();
         Spinner optionType = (Spinner) convertView.findViewById(R.id.option_type);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mContext, R.array.option_type, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(mQuestionListActivity, R.array.option_type, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         optionType.setAdapter(adapter);
@@ -426,9 +422,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     }
                     /*
                     if (txtListChild.requestFocus()) {
-                        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) mQuestionListActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.showSoftInput(txtListChild, InputMethodManager.SHOW_IMPLICIT);
-                        //((QuestionsList)mContext).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                        //((QuestionsList)mQuestionListActivity).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
                     }
                     */
 
@@ -465,16 +461,36 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                     selectedOption.setAutoIncIndex(0);
                                     notifyDataSetChanged();
                                 }
-                                return true;
-                            } else {
-                                return false;
+                            }
+                            return false; // turns out to be really important as the keyboard stays open returning true
+                        }
+                    };
+
+                    final View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
+                        @Override
+                        public void onFocusChange(View v, boolean hasFocus) {
+                            TextView tv = (TextView) v;
+                            log("has focus %s, tooltip %s", hasFocus+"", tv.getHint());
+                            if(!hasFocus){
+                                if (v.getId() == R.id.auto_inc_from) {
+                                    selectedOption.setRangeFrom(tv.getText().toString());
+                                } else if (v.getId() == R.id.auto_inc_to) {
+                                    selectedOption.setRangeTo(tv.getText().toString());
+                                }
                             }
                         }
                     };
 
                     fromNumber.setOnEditorActionListener(listener);
+                    fromNumber.setOnFocusChangeListener(focusChangeListener);
+
                     toNumber.setOnEditorActionListener(listener);
+                    toNumber.setOnFocusChangeListener(focusChangeListener);
+
                     repeatNumber.setOnEditorActionListener(listener);
+                    repeatNumber.setOnFocusChangeListener(focusChangeListener);
+
+
                     //fromNumber.addTextChangedListener(new GenericTextWatcher(fromNumber, question));
                     //toNumber.addTextChangedListener(new GenericTextWatcher(toNumber, question));
                     //repeatNumber.addTextChangedListener(new GenericTextWatcher(repeatNumber, question));
@@ -575,152 +591,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private void startCodeScan(int groupPosition) {
-        Intent intent = new Intent(mContext, CaptureActivity.class);
+        Intent intent = new Intent(mQuestionListActivity, CaptureActivity.class);
         intent.setAction("com.google.zxing.client.android.SCAN");
         // this stops saving ur barcode in barcode scanner app's history
         intent.putExtra("SAVE_HISTORY", false);
-        ((QuestionsList) mContext).startActivityForResult(intent, groupPosition);
+        ((QuestionsList) mQuestionListActivity).startActivityForResult(intent, groupPosition);
     }
-
-    /* old handler for createView */
-
-    /**
-     NoDefaultSpinner projectDefinedOptionsSpinner = (NoDefaultSpinner) convertView
-     .findViewById(R.id.project_defined_options_spinner);
-
-     List<String> list = getGroup(groupPosition).getOptions();
-     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(convertView.getContext(),
-     R.layout.simple_spinner_item, list);
-
-     dataAdapter.setDropDownViewResource(R.layout.spinner_text);
-     projectDefinedOptionsSpinner.setAdapter(dataAdapter);
-     projectDefinedOptionsSpinner.setTag(groupPosition + "-" + childPosition);
-     projectDefinedOptionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-    @Override public void onItemSelected(AdapterView<?> parent, View mView, int position, long id) {
-    String[] ids = ((String) parent.getTag()).split("-");
-    int questionNumber = Integer.parseInt(ids[0]);
-    //int questionNumber = (int)parent.getTag();
-    SelectedOptions so = mSelectedOptions.get(questionNumber);
-    so.setSelectedValue(parent.getItemAtPosition(position).toString());
-    mSelectedOptions.set(questionNumber, so);
-
-    LinearLayout ll = (LinearLayout) parent.getParent();
-    ExpandableListView explist = (ExpandableListView) ll.getParent();
-
-    LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(questionNumber);
-    if (null != ll2) {
-    TextView selectedAnswer = (TextView) ll2.findViewById(R.id.selectedAnswer);
-    selectedAnswer.setText(parent.getItemAtPosition(position).toString());
-
-    final int sdk = android.os.Build.VERSION.SDK_INT;
-    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-    ll2.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.green_light));
-    } else {
-    ll2.setBackground(mContext.getResources().getDrawable(R.color.green_light));
-    }
-    }
-    checkMeasurementButton();
-    if (collapse[0]) {
-    mExpandableListView.collapseGroup(groupPosition);
-    } else {
-    collapse[0] = true;
-    }
-
-    }
-
-    @Override public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-    });
-
-     if (so1.isReset()) {
-     projectDefinedOptionsSpinner.setSelection(-1);
-     so1.setReset(false);
-     mSelectedOptions.set(groupPosition, so1);
-
-     } else {
-     projectDefinedOptionsSpinner.setSelection(dataAdapter.getPosition(mSelectedOptions.get(groupPosition).getSelectedValue()));
-     collapse[0] = false;
-     }
-     **/
-
-
-    /* old image option code */
-
-/**
-
- NoDefaultSpinner photoDefinedOptionsSpinner = (NoDefaultSpinner) convertView
- .findViewById(R.id.image_options_spinner);
- List<String> list1 = getGroup(groupPosition).getOptions();
- ImageSpinnerAdapter dataAdapter1 = new ImageSpinnerAdapter(convertView.getContext(),
- R.layout.spinner_image_text, list1);
-
- dataAdapter1.setDropDownViewResource(R.layout.spinner_image_text);
-
- final SelectedOptions selectedOption = mSelectedOptions.get(question);
-
- photoDefinedOptionsSpinner.setAdapter(dataAdapter1);
- photoDefinedOptionsSpinner.setTag(groupPosition + "-" + childPosition);
- photoDefinedOptionsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-@Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-String[] ids = ((String) parent.getTag()).split("-");
-int questionNumber = Integer.parseInt(ids[0]);
-selectedOption.setSelectedValue(parent.getItemAtPosition(position).toString());
-
-//                            mSelectedOptions.set(questionNumber, parent.getItemAtPosition(position).toString());
-LinearLayout ll = (LinearLayout) parent.getParent();
-ExpandableListView explist = (ExpandableListView) ll.getParent();
-
-LinearLayout ll2 = (LinearLayout) explist.findViewWithTag(questionNumber);
-if (null != ll2) {
-ImageView lblListHeader_image = (ImageView) ll2.findViewById(R.id.iv_header_thumb);
-TextView selectedAnswer = (TextView) ll2.findViewById(R.id.tv_header_subtitle);
-selectedAnswer.setText("");
-
-String[] splitOptionText = mSelectedOptions.get(question).getSelectedValue().toString().split(",");
-Picasso.with(mContext)
-.load(splitOptionText[1])
-.placeholder(R.drawable.ic_launcher1)
-.resize(60, 60)
-.error(R.drawable.ic_launcher1)
-.into(lblListHeader_image);
-
-final int sdk = android.os.Build.VERSION.SDK_INT;
-if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-ll2.setBackgroundDrawable(mContext.getResources().getDrawable(R.color.green_light));
-} else {
-ll2.setBackground(mContext.getResources().getDrawable(R.color.green_light));
-}
-}
-checkMeasurementButton();
-if (collapse1[0]) {
-mExpandableListView.collapseGroup(groupPosition);
-} else {
-collapse1[0] = true;
-}
-
-}
-
-@Override public void onNothingSelected(AdapterView<?> parent) {
-
-}
-});
- if (so2.isReset()) {
- photoDefinedOptionsSpinner.setSelection(-1);
- so2.setReset(false);
- } else {
- photoDefinedOptionsSpinner.setSelection(dataAdapter1.getPosition(mSelectedOptions.get(question).getSelectedValue()));
- collapse1[0] = false;
- }
-
-
- //                    TextView txtListChild3 = (TextView) convertView
- //                            .findViewById(R.id.lblListItem);
- //
- //                    txtListChild3.setText("Please handle me 3");
- return convertView;
-
- **/
-
 
 }
