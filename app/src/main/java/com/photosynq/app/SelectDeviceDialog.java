@@ -5,7 +5,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
@@ -20,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -235,7 +235,7 @@ public class SelectDeviceDialog extends DialogFragment {
 
                 System.out.println("\nBluetooth is enabled...");
 
-                new AlertDialog.Builder(getActivity())
+                new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setMessage("Please make sure the device is turned on, and press ok to begin search")
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {

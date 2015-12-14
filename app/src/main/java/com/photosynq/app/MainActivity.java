@@ -1,36 +1,24 @@
 package com.photosynq.app;
 
-import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.MatrixCursor;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.FragmentManager;
-import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.support.v4.widget.DrawerLayout;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.photosynq.app.utils.Constants;
 import com.photosynq.app.utils.PrefUtils;
@@ -133,7 +121,7 @@ public class MainActivity extends ActionBarActivity
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Handle the back button
         if(keyCode == KeyEvent.KEYCODE_BACK) {
-            new AlertDialog.Builder(this)
+            new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Quit")
                     .setMessage("Do you want to close the application")

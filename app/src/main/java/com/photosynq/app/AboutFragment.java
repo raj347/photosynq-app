@@ -326,19 +326,20 @@ public class AboutFragment extends Fragment implements SelectDeviceDialogDelegat
                 case Constants.MESSAGE_DEVICE_NAME:
                     // save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    Toast.makeText(getActivity(), "Connected to "
+                    Toast.makeText(PhotoSyncApplication.sApplication, "Connected to "
                             + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
 
                     break;
                 case Constants.MESSAGE_TOAST:
                     if(!msg.getData().getString(Constants.TOAST).trim().isEmpty()) {
-                        Toast.makeText(getActivity().getApplicationContext(), msg.getData().getString(Constants.TOAST),
+                        Toast.makeText(PhotoSyncApplication.sApplication, msg.getData().getString(Constants.TOAST),
                                 Toast.LENGTH_SHORT).show();
                     }
 
                     break;
                 case Constants.MESSAGE_STOP:
-                    Toast.makeText(getActivity(), msg.getData().getString(Constants.TOAST),
+
+                    Toast.makeText(PhotoSyncApplication.sApplication, msg.getData().getString(Constants.TOAST),
                             Toast.LENGTH_SHORT).show();
                     progress.dismiss();
                     //??mBluetoothService.stop();

@@ -85,6 +85,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_questions_list);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -800,9 +801,6 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                 options.get(question).setSelectedValue(contents);
                 expListView.setSelectedGroup(requestCode);
                 mListAdapter.notifyDataSetChanged();
-
-                // TODO we need to mark this not with the IDX of the list but with a reference to the
-                // HashMap created
 
                 /**
                 SelectedOptions so = options.get(requestCode);

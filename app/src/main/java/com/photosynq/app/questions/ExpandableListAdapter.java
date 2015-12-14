@@ -194,7 +194,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             int color = mQuestionListActivity.getResources().getColor(R.color.green_light);
             convertView.setBackgroundColor(color);
         }
-        mExpandableListView.setDividerHeight(20);
+        mExpandableListView.setDividerHeight(5);
         checkMeasurementButton();
         return convertView;
     }
@@ -403,11 +403,19 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                             if ((actionId & EditorInfo.IME_MASK_ACTION) != 0) {
                                 selectedOption.setSelectedValue(v.getText().toString());
+                                mExpandableListView.collapseGroup(groupPosition);
                                 checkMeasurementButton();
                                 notifyDataSetChanged();
-                                return true;
-                            } else {
-                                return false;
+                            }
+                            return false;
+                        }
+                    });
+
+                    txtListChild.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                        @Override
+                        public void onFocusChange(View v, boolean hasFocus) {
+                            if(!hasFocus){
+                                log("focus is lost");
                             }
                         }
                     });
@@ -459,6 +467,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                                     selectedOption.setRangeRepeat(v.getText().toString());
                                     selectedOption.setSelectedValue(selectedOption.getRangeFrom() == null ? "" : selectedOption.getRangeFrom());
                                     selectedOption.setAutoIncIndex(0);
+                                    mExpandableListView.collapseGroup(groupPosition);
                                     notifyDataSetChanged();
                                 }
                             }
@@ -556,7 +565,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                     autoIncLayout.setVisibility(View.GONE);
                     selectedOption.setOptionType(0);
                     break;
-
             }
 
         }
