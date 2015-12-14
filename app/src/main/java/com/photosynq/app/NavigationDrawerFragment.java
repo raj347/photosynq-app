@@ -125,7 +125,7 @@ public class NavigationDrawerFragment extends Fragment {
         tvUserName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(5);
+                selectItem(6);
             }
         });
 
@@ -138,7 +138,7 @@ public class NavigationDrawerFragment extends Fragment {
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(5);
+                selectItem(6);
             }
         });
 
