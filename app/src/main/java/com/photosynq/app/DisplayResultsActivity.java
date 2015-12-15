@@ -1,6 +1,5 @@
 package com.photosynq.app;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,6 +16,7 @@ import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -249,7 +249,7 @@ public class DisplayResultsActivity extends ActionBarActivity implements
                                 public void run() {
                                     if (!isFinishing()) {
 
-                                        new AlertDialog.Builder(DisplayResultsActivity.this)
+                                        new AlertDialog.Builder(DisplayResultsActivity.this, R.style.AppCompatAlertDialogStyle)
                                                 .setIcon(android.R.drawable.ic_dialog_alert)
                                                 .setMessage("Your location is temporarily not available\n\n" +
                                                         "Check if GPS is turned on.")

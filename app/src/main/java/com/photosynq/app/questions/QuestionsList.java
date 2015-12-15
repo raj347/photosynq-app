@@ -51,6 +51,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.photosynq.app.utils.NxDebugEngine.log;
+
 public class QuestionsList extends ActionBarActivity implements SelectDeviceDialogDelegate {
 
     ExpandableListAdapter mListAdapter;
@@ -470,12 +472,21 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                                 int count = 0;
                                 for (Map.Entry<Question, SelectedOptions> e : mListAdapter.mSelectedOptions.entrySet()) {
+                                    String value = e.getValue().getSelectedValue();
+                                    log("answer value is: %s", value);
+                                    if(e.getKey().getQuestionType() == Question.PHOTO_TYPE_DEFINED){
+                                        int idx = value.lastIndexOf(",");
+                                        if(idx > 0){
+                                            value = value.substring(0, idx);
+                                            log("detected photo answer, value is now %s", value);
+                                        }
+                                    }
                                     options.append('"')
                                             .append(e.getKey().getQuestionId())
                                             .append('"')
                                             .append(':')
                                             .append('"')
-                                            .append(e.getValue().getSelectedValue())
+                                            .append(value)
                                             .append('"');
                                     if (count < allOptions.size() - 1)
                                         options.append(",");
