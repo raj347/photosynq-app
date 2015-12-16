@@ -228,13 +228,13 @@ public class MainActivity extends ActionBarActivity
 //                }
 
                 break;
-            case 7:
+            case 6:
                 // Open Profile
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, ProfileFragment.newInstance(position), ProfileFragment.class.getName())
                         .commit();
                 break;
-            case 6:
+            case 7:
                 // Open select device
                 SelectDeviceDialog selectDeviceDialog = new SelectDeviceDialog();
                 selectDeviceDialog.show(fragmentManager, "Select Measurement Device");
