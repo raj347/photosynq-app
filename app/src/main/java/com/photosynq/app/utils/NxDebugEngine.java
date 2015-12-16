@@ -2,7 +2,6 @@ package com.photosynq.app.utils;
 
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.photosynq.app.PhotoSyncApplication;
 
@@ -16,6 +15,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -31,6 +32,7 @@ public class NxDebugEngine {
     public static final SimpleDateFormat FMT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault());
 
     public static final long MAX_FILE_SIZE = 1000000; // limit to 1M files
+    public static final int MAX_FILES = 15; // limit to 15 Files per category
     public static final File STORAGE = Environment.getExternalStorageDirectory();
     public static final File DIR = new File(STORAGE, "photosynq-dbg");
 
@@ -86,12 +88,60 @@ public class NxDebugEngine {
             }
         }
 
+        if (num > MAX_FILES) {
+            rotate(fileName);
+            num = MAX_FILES;
+        }
+
         File out = new File(DIR, String.format("%s-%03d.txt", fileName, num));
         if (out.length() + buffer.length() > MAX_FILE_SIZE) {
             out = new File(DIR, String.format("%s-%03d.txt", fileName, num + 1));
         }
 
         return out;
+    }
+
+    public void rotate(String fileName) {
+
+        final ArrayList<String> files = new ArrayList<>();
+        for (String s : DIR.list()) {
+            if (s.matches(String.format("^%s-[0-9]{3}.txt$", fileName))) {
+                files.add(s);
+            }
+        }
+
+        if (files.size() <= MAX_FILES) {
+            return;
+        }
+
+        Collections.sort(files);
+
+
+
+        log("exceeded max files for debug %s", fileName);
+
+        for (int i = 0; i < MAX_FILES; i++) {
+            String saveFile = files.get(files.size() - 1 - i);
+            File origFile = new File(DIR, saveFile);
+            File tmpFile = new File(DIR, String.format("%s-%03d.txt.save", fileName, MAX_FILES - i));
+            origFile.renameTo(tmpFile);
+        }
+
+        for (String s : DIR.list()) {
+            if (s.matches(String.format("^%s-[0-9]{3}.txt$", fileName))) {
+                new File(DIR, s).delete();
+            }
+        }
+
+        for (String s : DIR.list()) {
+            if (s.matches(String.format("^%s-[0-9]{3}.txt.save$", fileName))) {
+                File renamed = new File(DIR, s.substring(0, s.length() - 5));
+                new File(DIR, s).renameTo(renamed);
+                log("renamed %s to %s", s, renamed.getName());
+            }
+        }
+
+
     }
 
     public void createZip(String inputFolderPath, String outZipPath) throws IOException {
@@ -120,7 +170,7 @@ public class NxDebugEngine {
         zos.close();
     }
 
-    public void collectLogcat(){
+    public void collectLogcat() {
         try {
             Process proc = Runtime.getRuntime().exec("logcat -v time -d -f" + new File(DIR, "logcat.txt").getAbsolutePath());
             proc.waitFor();
@@ -191,9 +241,9 @@ public class NxDebugEngine {
         dbg("received %s from http endpoint", res);
         urlConn.getInputStream().close();
 
-        if(res.equals("OK")){
-            for(File f : DIR.listFiles()){
-                if(f.getName().endsWith(".txt")){
+        if (res.equals("OK")) {
+            for (File f : DIR.listFiles()) {
+                if (f.getName().endsWith(".txt")) {
                     f.delete();
                 }
             }
