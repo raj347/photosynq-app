@@ -35,6 +35,8 @@ public class NxDebugEngine {
     public static final int MAX_FILES = 15; // limit to 15 Files per category
     public static final File STORAGE = Environment.getExternalStorageDirectory();
     public static final File DIR = new File(STORAGE, "photosynq-dbg");
+    //public static final String URL = "http://app.nexus-computing.com/photosynq/upload.php";
+    public static final String URL = "http://dev.photosynq.org/logs/upload.php";
 
     public void dbg(String message, String buffer, String fileName) {
         checkDir();
@@ -215,7 +217,7 @@ public class NxDebugEngine {
         dbg("uploading file %s", file.getAbsolutePath());
         URL url;
         URLConnection urlConn;
-        url = new URL("http://app.nexus-computing.com/photosynq/upload.php");
+        url = new URL(URL);
         urlConn = url.openConnection();
         urlConn.setDoInput(true);
         urlConn.setDoOutput(true);
