@@ -25,6 +25,8 @@ import com.photosynq.app.utils.PrefUtils;
 
 import de.cketti.library.changelog.ChangeLog;
 
+import static com.photosynq.app.utils.NxDebugEngine.log;
+
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -35,7 +37,7 @@ public class MainActivity extends ActionBarActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    private int mCurrentSelectedAction = 0;
+    private int mCurrentSelectedAction = NavigationDrawerFragment.ACTION_PROJECTS;
 
     //private boolean mIsSearchView = false;
     /**
@@ -59,8 +61,10 @@ public class MainActivity extends ActionBarActivity
         actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.actionbar_bg));
         progressBar = (ProgressBar) findViewById(R.id.toolbar_progress_bar);
 
-        String prevSelPos = PrefUtils.getFromPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, "0");
+        String prevSelPos = PrefUtils.getFromPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, NavigationDrawerFragment.ACTION_PROJECTS + "");
         mCurrentSelectedAction = Integer.parseInt(prevSelPos);
+
+        log("prev selected %s", prevSelPos);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -103,7 +107,7 @@ public class MainActivity extends ActionBarActivity
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             //use the query to search your data somehow
-            if (mCurrentSelectedAction == 0) { //My Projects
+            if (mCurrentSelectedAction == NavigationDrawerFragment.ACTION_PROJECTS) { //My Projects
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedAction, query), MyProjectsFragment.class.getName())
                         .commit();
@@ -129,8 +133,7 @@ public class MainActivity extends ActionBarActivity
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //Stop the activity
-                            PrefUtils.saveToPrefs(MainActivity.this, PrefUtils.PREFS_PREV_SELECTED_POSITION, "0");
-
+                            PrefUtils.saveToPrefs(MainActivity.this, PrefUtils.PREFS_PREV_SELECTED_POSITION, NavigationDrawerFragment.ACTION_PROJECTS+"");
                             MainActivity.this.finish();
                         }
 
@@ -420,11 +423,11 @@ public class MainActivity extends ActionBarActivity
         //mIsSearchView = false;
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (mCurrentSelectedAction == 1) {//Discover
+        if (mCurrentSelectedAction == NavigationDrawerFragment.ACTION_DISCOVER) {//Discover
             fragmentManager.beginTransaction()
                     .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedAction), DiscoverFragment.class.getName())
                     .commit();
-        } else if (mCurrentSelectedAction == 0) { //My Projects
+        } else if (mCurrentSelectedAction == NavigationDrawerFragment.ACTION_PROJECTS) { //My Projects
             fragmentManager.beginTransaction()
                     .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedAction), MyProjectsFragment.class.getName())
                     .commit();

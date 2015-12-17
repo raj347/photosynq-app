@@ -86,7 +86,7 @@ public class NavigationDrawerFragment extends Fragment {
     private NavigationDrawerAdapter mNavigationAdapter;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedAction = 0;
+    private int mCurrentSelectedAction = ACTION_PROJECTS;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
