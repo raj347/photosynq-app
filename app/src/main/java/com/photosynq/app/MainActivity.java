@@ -35,7 +35,7 @@ public class MainActivity extends ActionBarActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    private int mCurrentSelectedPosition = 0;
+    private int mCurrentSelectedAction = 0;
 
     //private boolean mIsSearchView = false;
     /**
@@ -49,7 +49,7 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ((PhotoSyncApplication)getApplicationContext()).registerActivity(this);
+        ((PhotoSyncApplication) getApplicationContext()).registerActivity(this);
 
         setContentView(R.layout.activity_main);
 
@@ -60,7 +60,7 @@ public class MainActivity extends ActionBarActivity
         progressBar = (ProgressBar) findViewById(R.id.toolbar_progress_bar);
 
         String prevSelPos = PrefUtils.getFromPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, "0");
-        mCurrentSelectedPosition = Integer.parseInt(prevSelPos);
+        mCurrentSelectedAction = Integer.parseInt(prevSelPos);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -71,7 +71,7 @@ public class MainActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        //??onNavigationDrawerItemSelected(mCurrentSelectedPosition);
+        //??onNavigationDrawerItemSelected(mCurrentSelectedAction);
         ChangeLog cl = new ChangeLog(this);
         if (cl.isFirstRun()) {
             cl.getLogDialog().show();
@@ -86,7 +86,7 @@ public class MainActivity extends ActionBarActivity
         handleIntent(intent);
     }
 
-    public void openDrawer(){
+    public void openDrawer() {
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
         if (mNavigationDrawerFragment != null) {
@@ -103,13 +103,13 @@ public class MainActivity extends ActionBarActivity
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             //use the query to search your data somehow
-            if(mCurrentSelectedPosition == 0) { //My Projects
+            if (mCurrentSelectedAction == 0) { //My Projects
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedPosition, query), MyProjectsFragment.class.getName())
+                        .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedAction, query), MyProjectsFragment.class.getName())
                         .commit();
-            }else{
+            } else {
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedPosition, query), DiscoverFragment.class.getName())
+                        .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedAction, query), DiscoverFragment.class.getName())
                         .commit();
             }
 
@@ -120,7 +120,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //Handle the back button
-        if(keyCode == KeyEvent.KEYCODE_BACK) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Quit")
@@ -139,52 +139,52 @@ public class MainActivity extends ActionBarActivity
                     .show();
 
             return true;
-        }
-        else {
+        } else {
             return super.onKeyDown(keyCode, event);
         }
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void onNavigationDrawerItemSelected(int action) {
         // update the main content by replacing fragments
-        if(position != 6) // Do not keep selection of Select measurement device option
-            mCurrentSelectedPosition = position;
+        if (action != NavigationDrawerFragment.ACTION_DEVICE) // Do not keep selection of Select measurement device option
+            mCurrentSelectedAction = action;
+
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        switch (position){
-            case 0:
+        switch (action) {
+            case NavigationDrawerFragment.ACTION_PROJECTS:
                 // Open MyProjects
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, MyProjectsFragment.newInstance(position), MyProjectsFragment.class.getName())
+                        .replace(R.id.container, MyProjectsFragment.newInstance(action), MyProjectsFragment.class.getName())
                         .commit();
 
                 break;
-            case 1:
+            case NavigationDrawerFragment.ACTION_DISCOVER:
                 // Open Discover
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, DiscoverFragment.newInstance(position), DiscoverFragment.class.getName())
+                        .replace(R.id.container, DiscoverFragment.newInstance(action), DiscoverFragment.class.getName())
                         .commit();
 
                 break;
-            case 2:
+            case NavigationDrawerFragment.ACTION_QUICK_MEASUREMENT:
                 // Open Quick Measurement
-                QuickModeFragment quickModeFragment = QuickModeFragment.newInstance(position);
+                QuickModeFragment quickModeFragment = QuickModeFragment.newInstance(action);
 
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, quickModeFragment, QuickModeFragment.class.getName())
                         .commit();
                 break;
-            case 3:
+            case NavigationDrawerFragment.ACTION_SYNC_SETTINGS:
                 // Sync Settings
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, SyncFragment.newInstance(position), SyncFragment.class.getName())
+                        .replace(R.id.container, SyncFragment.newInstance(action), SyncFragment.class.getName())
                         .commit();
                 break;
-            case 4:
+            case NavigationDrawerFragment.ACTION_ABOUT:
                 // About
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, AboutFragment.newInstance(position), AboutFragment.class.getName())
+                        .replace(R.id.container, AboutFragment.newInstance(action), AboutFragment.class.getName())
                         .commit();
 //                try {
 //
@@ -228,13 +228,13 @@ public class MainActivity extends ActionBarActivity
 //                }
 
                 break;
-            case 6:
+            case NavigationDrawerFragment.ACTION_PROFILE:
                 // Open Profile
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProfileFragment.newInstance(position), ProfileFragment.class.getName())
+                        .replace(R.id.container, ProfileFragment.newInstance(action), ProfileFragment.class.getName())
                         .commit();
                 break;
-            case 7:
+            case NavigationDrawerFragment.ACTION_DEVICE:
                 // Open select device
                 SelectDeviceDialog selectDeviceDialog = new SelectDeviceDialog();
                 selectDeviceDialog.show(fragmentManager, "Select Measurement Device");
@@ -247,39 +247,39 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(Constants.STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+        outState.putInt(Constants.STATE_SELECTED_POSITION, mCurrentSelectedAction);
         super.onSaveInstanceState(outState);
 
-        PrefUtils.saveToPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, mCurrentSelectedPosition + "");
+        PrefUtils.saveToPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, mCurrentSelectedAction + "");
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
-        ((PhotoSyncApplication)getApplicationContext()).unRegisterActivity();
+        ((PhotoSyncApplication) getApplicationContext()).unRegisterActivity();
 
         //??PrefUtils.saveToPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, "0");
 
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 0:
+    public void onSectionAttached(int action) {
+        switch (action) {
+            case NavigationDrawerFragment.ACTION_PROJECTS:
                 mTitle = getString(R.string.my_projects_title);
                 break;
-            case 1:
+            case NavigationDrawerFragment.ACTION_DISCOVER:
                 mTitle = getString(R.string.discover_title);
                 break;
-            case 2:
+            case NavigationDrawerFragment.ACTION_QUICK_MEASUREMENT:
                 mTitle = "Select Measurement";
                 break;
-            case 3:
+            case NavigationDrawerFragment.ACTION_SYNC_SETTINGS:
                 mTitle = getString(R.string.sync_settings_title);
                 break;
-            case 4:
+            case NavigationDrawerFragment.ACTION_ABOUT:
                 mTitle = getString(R.string.about);
                 break;
-            case 5:
+            case NavigationDrawerFragment.ACTION_PROFILE:
                 mTitle = getString(R.string.profile_title);
                 break;
         }
@@ -304,13 +304,13 @@ public class MainActivity extends ActionBarActivity
         } else if (mTitle.equals(getString(R.string.my_projects_title))) {
             inflater.inflate(R.menu.menu_my_projects, menu);
             isSearchableView = true;
-        }else if (mTitle.equals(getString(R.string.about))) {
+        } else if (mTitle.equals(getString(R.string.about))) {
             inflater.inflate(R.menu.about_menu, menu);
             //isSearchableView = true;
         }
 
 
-        if(isSearchableView) {
+        if (isSearchableView) {
 
             MenuItem searchItem = menu.findItem(R.id.action_search);
             final SearchView searchView = (SearchView) searchItem.getActionView();
@@ -368,9 +368,6 @@ public class MainActivity extends ActionBarActivity
 //            }
 
 
-
-
-
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String s) {
@@ -380,7 +377,7 @@ public class MainActivity extends ActionBarActivity
 
                 @Override
                 public boolean onQueryTextChange(String s) {
-                    System.out.println("String-"+s);
+                    System.out.println("String-" + s);
                     return false;
                 }
             });
@@ -399,10 +396,10 @@ public class MainActivity extends ActionBarActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.refreshmenu) {
-            if(mCurrentSelectedPosition == 4) { //About
+            if (mCurrentSelectedAction == 4) { //About
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, AboutFragment.newInstance(mCurrentSelectedPosition), AboutFragment.class.getName())
+                        .replace(R.id.container, AboutFragment.newInstance(mCurrentSelectedAction), AboutFragment.class.getName())
                         .commit();
             }
 
@@ -419,17 +416,17 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void closeSearchView(){
+    private void closeSearchView() {
         //mIsSearchView = false;
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if(mCurrentSelectedPosition == 1) {//Discover
+        if (mCurrentSelectedAction == 1) {//Discover
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedPosition), DiscoverFragment.class.getName())
+                    .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedAction), DiscoverFragment.class.getName())
                     .commit();
-        }else if(mCurrentSelectedPosition == 0) { //My Projects
+        } else if (mCurrentSelectedAction == 0) { //My Projects
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedPosition), MyProjectsFragment.class.getName())
+                    .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedAction), MyProjectsFragment.class.getName())
                     .commit();
         }
 
@@ -445,17 +442,17 @@ public class MainActivity extends ActionBarActivity
 
     public void setProgressBarVisibility(int visible) {
 
-        if(View.VISIBLE == visible){
+        if (View.VISIBLE == visible) {
             progressRefCount++;
 
-            if(null != progressBar){
+            if (null != progressBar) {
                 progressBar.setVisibility(visible);
             }
-        }else if(View.INVISIBLE == visible){
+        } else if (View.INVISIBLE == visible) {
             progressRefCount--;
 
-            if(progressRefCount == 0){
-                if(null != progressBar){
+            if (progressRefCount == 0) {
+                if (null != progressBar) {
                     progressBar.setVisibility(visible);
                 }
             }

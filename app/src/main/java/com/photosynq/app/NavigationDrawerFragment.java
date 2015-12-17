@@ -35,15 +35,15 @@ import android.widget.Toast;
 
 import com.photosynq.app.db.DatabaseHelper;
 import com.photosynq.app.model.AppSettings;
-import com.photosynq.app.model.ProjectResult;
 import com.photosynq.app.utils.CommonUtils;
 import com.photosynq.app.utils.Constants;
 import com.photosynq.app.utils.PrefUtils;
 import com.photosynq.app.utils.SyncHandler;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
 import java.util.Set;
+
+import static com.photosynq.app.utils.NxDebugEngine.log;
 
 //import tourguide.tourguide.TourGuide;
 
@@ -53,6 +53,17 @@ import java.util.Set;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
+
+    public static final int ACTION_PROFILE = 0;
+    public static final int ACTION_PROJECTS = 1;
+    public static final int ACTION_DISCOVER = 2;
+    public static final int ACTION_QUICK_MEASUREMENT = 3;
+    public static final int ACTION_SYNC_SETTINGS = 4;
+    public static final int ACTION_ABOUT = 5;
+    public static final int ACTION_SEND_DEBUG = 6;
+    public static final int ACTION_SYNC_DATA = 7;
+    public static final int ACTION_CACHED = 8;
+    public static final int ACTION_DEVICE = 9;
 
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
@@ -75,7 +86,7 @@ public class NavigationDrawerFragment extends Fragment {
     private NavigationDrawerAdapter mNavigationAdapter;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 0;
+    private int mCurrentSelectedAction = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -98,12 +109,12 @@ public class NavigationDrawerFragment extends Fragment {
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(Constants.STATE_SELECTED_POSITION);
+            mCurrentSelectedAction = savedInstanceState.getInt(Constants.STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
 
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+        selectItem(mCurrentSelectedAction);
     }
 
     @Override
@@ -125,7 +136,7 @@ public class NavigationDrawerFragment extends Fragment {
         tvUserName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(6);
+                selectItem(ACTION_PROFILE);
             }
         });
 
@@ -138,7 +149,7 @@ public class NavigationDrawerFragment extends Fragment {
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(6);
+                selectItem(ACTION_PROFILE);
             }
         });
 
@@ -147,7 +158,7 @@ public class NavigationDrawerFragment extends Fragment {
         tvDeviceName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(6);
+                selectItem(ACTION_DEVICE);
                 //mTourGuideHandler.cleanUp();
             }
         });
@@ -157,7 +168,7 @@ public class NavigationDrawerFragment extends Fragment {
         tvDeviceAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(6);
+                selectItem(ACTION_DEVICE);
             }
         });
 
@@ -172,13 +183,13 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int recordCount = db.getAllUnuploadedResultsCount(null);
-                if(recordCount == 0) {
+                if (recordCount == 0) {
                     Toast.makeText(getActivity(), "No cached data point", Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     Intent intent = new Intent(getActivity(), DisplayCachedDataPoints.class);
                     startActivity(intent);
                 }
-                selectItem(7);
+                selectItem(ACTION_CACHED);
             }
         });
 
@@ -192,7 +203,7 @@ public class NavigationDrawerFragment extends Fragment {
 
                 Toast.makeText(getActivity(), "Sync started!", Toast.LENGTH_LONG).show();
 
-                selectItem(7);
+                selectItem(ACTION_SYNC_DATA);
             }
         });
 
@@ -200,7 +211,31 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+                int action = ACTION_ABOUT;
+                log("pos is %d", position);
+                switch (position) {
+                    case 0:
+                        action = ACTION_PROJECTS;
+                        break;
+                    case 1:
+                        action = ACTION_DISCOVER;
+                        break;
+                    case 2:
+                        action = ACTION_QUICK_MEASUREMENT;
+                        break;
+                    case 3:
+                        action = ACTION_SYNC_SETTINGS;
+                        break;
+                    case 4:
+                        action = ACTION_ABOUT;
+                        break;
+                    case 5:
+                        action = ACTION_SEND_DEBUG;
+                        break;
+                    default:
+                        break;
+                }
+                selectItem(action);
             }
         });
         mNavigationAdapter = new NavigationDrawerAdapter(
@@ -215,7 +250,7 @@ public class NavigationDrawerFragment extends Fragment {
                         "Send Debug",
                 });
         mDrawerListView.setAdapter(mNavigationAdapter);
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        mDrawerListView.setItemChecked(mCurrentSelectedAction, true);
 
         return linearLayout;
     }
@@ -239,7 +274,7 @@ public class NavigationDrawerFragment extends Fragment {
         // set up the drawer's list view with items and click listener
 
         ActionBar actionBar = getActionBar();
-        if(null != actionBar) {
+        if (null != actionBar) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }
@@ -269,14 +304,13 @@ public class NavigationDrawerFragment extends Fragment {
 
                 DatabaseHelper databaseHelper = DatabaseHelper.getHelper(getActivity());
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                if(null == bluetoothAdapter)
+                if (null == bluetoothAdapter)
                     return;
-                Set<BluetoothDevice> btDevices =  bluetoothAdapter.getBondedDevices();
+                Set<BluetoothDevice> btDevices = bluetoothAdapter.getBondedDevices();
                 String userId = PrefUtils.getFromPrefs(getActivity(), PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
                 AppSettings appSettings = databaseHelper.getSettings(userId);
                 for (BluetoothDevice device : btDevices) {
-                    if(null != appSettings.getConnectionId() && appSettings.getConnectionId().equals(device.getAddress()))
-                    {
+                    if (null != appSettings.getConnectionId() && appSettings.getConnectionId().equals(device.getAddress())) {
                         setDeviceConnected(device.getName(), appSettings.getConnectionId());
                     }
                 }
@@ -284,7 +318,7 @@ public class NavigationDrawerFragment extends Fragment {
                 //final List<ProjectResult> listRecords = db.getAllUnUploadedResults();
                 int recordCount = db.getAllUnuploadedResultsCount(null);
                 totalDataPointsBtn.setText("" + recordCount);
-                if(appSettings.getConnectionId() == null){
+                if (appSettings.getConnectionId() == null) {
                     ((MainActivity) getActivity()).setDeviceConnected("Tap to connect device", "");
                 }
 
@@ -361,7 +395,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    public void openDrawer(){
+    public void openDrawer() {
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
         if (mDrawerLayout != null) {
@@ -369,32 +403,45 @@ public class NavigationDrawerFragment extends Fragment {
         }
     }
 
-    public void closeDrawer(){
+    public void closeDrawer() {
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
     }
 
-    private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
-        if(position < 5) {
-            if (mDrawerListView != null) {
-                mDrawerListView.setItemChecked(position, true);
-                mNavigationAdapter.setItemSelected(position);
-            }
-        }
+    private void selectItem(int action) {
+        mCurrentSelectedAction = action;
+        log("action selected %d", action);
 
-        Log.d(">==< NX >==<", "position "+position);
-        if(position == 5){
-            PhotoSyncApplication.sApplication.log("debug button pressed", "this is buffer content", "ui-operations");
-            PhotoSyncApplication.sApplication.uploadLog();
+        switch (action) {
+            case ACTION_PROFILE:
+            case ACTION_PROJECTS:
+            case ACTION_DISCOVER:
+            case ACTION_QUICK_MEASUREMENT:
+            case ACTION_SYNC_SETTINGS:
+            case ACTION_ABOUT:
+                if (mDrawerListView != null) {
+                    mDrawerListView.setItemChecked(action - 1, true);
+                    mNavigationAdapter.setItemSelected(action - 1);//this is a bit nasty, we probably should map actions to positions
+                }
+                break;
+            case ACTION_SEND_DEBUG:
+                PhotoSyncApplication.sApplication.log("debug button pressed", "this is buffer content", "ui-operations");
+                PhotoSyncApplication.sApplication.uploadLog();
+                break;
+            case ACTION_SYNC_DATA:
+            case ACTION_CACHED:
+            case ACTION_DEVICE:
+                break;
+            default:
+                break;
         }
 
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            mCallbacks.onNavigationDrawerItemSelected(action);
         }
     }
 
@@ -417,7 +464,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(Constants.STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+        outState.putInt(Constants.STATE_SELECTED_POSITION, mCurrentSelectedAction);
     }
 
     @Override
@@ -490,8 +537,7 @@ public class NavigationDrawerFragment extends Fragment {
         private String[] items;
         private int mSelectedPosition;
 
-        public NavigationDrawerAdapter(Context context, int resourceId , String[] list )
-        {
+        public NavigationDrawerAdapter(Context context, int resourceId, String[] list) {
             super(context, resourceId, list);
             mContext = context;
             id = resourceId;
@@ -499,26 +545,24 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         @Override
-        public View getView(int position, View v, ViewGroup parent)
-        {
-            View mView = v ;
-            if(mView == null){
-                LayoutInflater vi = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        public View getView(int position, View v, ViewGroup parent) {
+            View mView = v;
+            if (mView == null) {
+                LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 mView = vi.inflate(id, null);
             }
 
             TextView text = (TextView) mView.findViewById(R.id.tvNavigationItem);
 
-            if(items[position] != null )
-            {
+            if (items[position] != null) {
                 text.setTextColor(Color.WHITE);
                 text.setText(items[position]);
                 text.setTypeface(CommonUtils.getInstance(mContext).getFontRobotoLight());
 
-                if(position == mSelectedPosition)
-                    ((View)text.getParent()).setBackgroundColor(mContext.getResources().getColor( R.color.green));
+                if (position == mSelectedPosition)
+                    ((View) text.getParent()).setBackgroundColor(mContext.getResources().getColor(R.color.green));
                 else
-                    ((View)text.getParent()).setBackgroundColor(mContext.getResources().getColor( R.color.transparent));
+                    ((View) text.getParent()).setBackgroundColor(mContext.getResources().getColor(R.color.transparent));
 
             }
 
