@@ -398,11 +398,10 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
         @Override
         protected String doInBackground(Object... uri) {
             HttpClient httpclient = new DefaultHttpClient();
-            Context context = (Context)uri[0];
             HttpResponse response = null;
             HttpGet getRequest;
             String responseString = null;
-            if(!CommonUtils.isConnected(context))
+            if(!CommonUtils.isConnected(PhotoSyncApplication.sApplication))
             {
                 return Constants.SERVER_NOT_ACCESSIBLE;
             }
@@ -422,7 +421,7 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
                             out.close();
                             responseString = out.toString();
 
-                            processResult(context, responseString);
+                            processResult(PhotoSyncApplication.sApplication, responseString);
 
                         } else {
                             //Closes the connection.
