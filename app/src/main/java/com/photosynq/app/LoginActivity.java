@@ -109,8 +109,8 @@ public class LoginActivity extends Activity implements PhotosynqResponse {
 
         setContentView(R.layout.activity_welcome);
 
-        Typeface robotoLightFace = CommonUtils.getInstance(this).getFontRobotoLight();
-        Typeface robotoMediumFace = CommonUtils.getInstance(this).getFontRobotoMedium();
+        Typeface robotoLightFace = CommonUtils.getInstance().getFontRobotoLight();
+        Typeface robotoMediumFace = CommonUtils.getInstance().getFontRobotoMedium();
 
         setShadeToAppName();
 
@@ -146,8 +146,8 @@ public class LoginActivity extends Activity implements PhotosynqResponse {
 
         setShadeToAppName();
 
-        Typeface robotoRegularFace = CommonUtils.getInstance(this).getFontRobotoRegular();
-        Typeface robotoMediumFace = CommonUtils.getInstance(this).getFontRobotoMedium();
+        Typeface robotoRegularFace = CommonUtils.getInstance().getFontRobotoRegular();
+        Typeface robotoMediumFace = CommonUtils.getInstance().getFontRobotoMedium();
 
 
         // Set up the login form.
@@ -191,8 +191,8 @@ public class LoginActivity extends Activity implements PhotosynqResponse {
 
     private void setShadeToAppName() {
 
-        Typeface uifontFace = CommonUtils.getInstance(this).getFontUiFontSolid();
-        Typeface openSansLightFace = CommonUtils.getInstance(this).getFontOpenSansLight();
+        Typeface uifontFace = CommonUtils.getInstance().getFontUiFontSolid();
+        Typeface openSansLightFace = CommonUtils.getInstance().getFontOpenSansLight();
 
 //        TextView tvIcon = (TextView) findViewById(R.id.txtAppIcon);
 //        tvIcon.setTypeface(uifontFace);

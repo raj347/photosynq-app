@@ -216,9 +216,9 @@ public class DiscoverFragment extends Fragment {
                 holder = new ViewHolder();
                 holder.imageview = (ImageView) view.findViewById(R.id.im_projectImage);
                 holder.tvProjectName = (TextView) view.findViewById(R.id.tv_project_name);
-                holder.tvProjectName.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+                holder.tvProjectName.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
                 holder.tvProjectBy = (TextView) view.findViewById(R.id.tv_project_by);
-                holder.tvProjectBy.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+                holder.tvProjectBy.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
                 view.setTag(holder);
             } else {
                 holder = (ViewHolder) view.getTag();
@@ -266,7 +266,7 @@ public class DiscoverFragment extends Fragment {
             HttpResponse response = null;
             HttpGet getRequest;
             String responseString = null;
-            if (!CommonUtils.isConnected(context)) {
+            if (!CommonUtils.getInstance().isConnected()) {
                 return Constants.SERVER_NOT_ACCESSIBLE;
             }
             Log.d("PHTTPC", "in async task");

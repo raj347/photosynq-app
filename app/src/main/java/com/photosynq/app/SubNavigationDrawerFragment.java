@@ -118,7 +118,7 @@ public class SubNavigationDrawerFragment extends Fragment {
                 R.layout.fragment_sub_navigation_drawer, container, false);
 
         TextView tvUserName = (TextView) linearLayout.findViewById(R.id.tvUserName);
-        tvUserName.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoLight());
+        tvUserName.setTypeface(CommonUtils.getInstance().getFontRobotoLight());
         tvUserName.setText(PrefUtils.getFromPrefs(getActivity(), PrefUtils.PREFS_NAME_KEY, ""));
         tvUserName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,7 +141,7 @@ public class SubNavigationDrawerFragment extends Fragment {
         });
 
         tvDeviceName = (TextView) linearLayout.findViewById(R.id.tvDeviceName);
-        tvDeviceName.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+        tvDeviceName.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
         tvDeviceName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,7 +151,7 @@ public class SubNavigationDrawerFragment extends Fragment {
         });
 
         tvDeviceAddress = (TextView) linearLayout.findViewById(R.id.tvDeviceAddress);
-        tvDeviceAddress.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+        tvDeviceAddress.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
         tvDeviceAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -503,7 +503,7 @@ public class SubNavigationDrawerFragment extends Fragment {
             {
                 text.setTextColor(Color.WHITE);
                 text.setText(items[position]);
-                text.setTypeface(CommonUtils.getInstance(mContext).getFontRobotoLight());
+                text.setTypeface(CommonUtils.getInstance().getFontRobotoLight());
 
                 if(position == mSelectedPosition)
                     ((View)text.getParent()).setBackgroundColor(mContext.getResources().getColor( R.color.green));

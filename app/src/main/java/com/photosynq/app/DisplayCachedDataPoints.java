@@ -144,7 +144,7 @@ public class DisplayCachedDataPoints extends ActionBarActivity {
         public View getView(int position, View view, ViewGroup parent) {
             view = LayoutInflater.from(context).inflate(R.layout.cached_data_point_item, parent, false);
             TextView tv = (TextView)view.findViewById(R.id.cacheddatapoint);
-            tv.setTypeface(CommonUtils.getInstance(getApplicationContext()).getFontRobotoRegular());
+            tv.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
             tv.setText(getItem(position).getReading());
             return view;
         }

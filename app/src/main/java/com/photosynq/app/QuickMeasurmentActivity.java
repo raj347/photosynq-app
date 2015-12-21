@@ -67,7 +67,7 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
 
         dbHelper = DatabaseHelper.getHelper(this);
 
-        deviceAddress = CommonUtils.getDeviceAddress(this);
+        deviceAddress = CommonUtils.getInstance().getDeviceAddress();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (null != mBluetoothAdapter && !mBluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -82,7 +82,7 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
         final BluetoothService mBluetoothService = BluetoothService.getInstance(bluetoothMessage, mHandler);
 
         btnTakeMeasurement = (Button) findViewById(R.id.btn_take_measurement);
-        btnTakeMeasurement.setTypeface(CommonUtils.getInstance(this).getFontRobotoMedium());
+        btnTakeMeasurement.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -96,7 +96,7 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
             if (isCalledFromResults != null && isCalledFromResults.equals("TRUE")) {
                 if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
                     // Get the BLuetoothDevice object
-                    deviceAddress = CommonUtils.getDeviceAddress(QuickMeasurmentActivity.this);
+                    deviceAddress = CommonUtils.getInstance().getDeviceAddress();
                     if(null == deviceAddress)
                     {
                         Toast.makeText(QuickMeasurmentActivity.this, "Measurement device not configured, Please configure measurement device (bluetooth).", Toast.LENGTH_SHORT).show();
@@ -116,15 +116,15 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
         }
 
         TextView tvProtocolName = (TextView) findViewById(R.id.tv_protocol_name);
-        tvProtocolName.setTypeface(CommonUtils.getInstance(this).getFontRobotoRegular());
+        tvProtocolName.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
         tvProtocolName.setText(mProtocolName);
 
         TextView tvProtocolDesc = (TextView) findViewById(R.id.tv_protocol_desc);
-        tvProtocolDesc.setTypeface(CommonUtils.getInstance(this).getFontRobotoRegular());
+        tvProtocolDesc.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
         tvProtocolDesc.setText(mProtocolDescription);
 
         mtvStatusMessage = (TextView) findViewById(R.id.tv_status_message);
-        mtvStatusMessage.setTypeface(CommonUtils.getInstance(this).getFontRobotoRegular());
+        mtvStatusMessage.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
 
         btnTakeMeasurement.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,7 +182,7 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
 
     private void selectDevice() {
 
-        deviceAddress = CommonUtils.getDeviceAddress(this);
+        deviceAddress = CommonUtils.getInstance().getDeviceAddress();
         if (null == deviceAddress) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             SelectDeviceDialog selectDeviceDialog = new SelectDeviceDialog();
@@ -290,7 +290,7 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
                                                 break;
                                             }
                                         }
-                                        CommonUtils.writeStringToFile(getApplicationContext(), "macros.js", dataStringMacro.toString());
+                                        CommonUtils.getInstance().writeStringToFile("macros.js", dataStringMacro.toString());
                                     }
                                 }
 
@@ -329,7 +329,7 @@ public class QuickMeasurmentActivity extends ActionBarActivity implements Select
                         }
 
                         System.out.println("###### writing data.js :" + dataString);
-                        CommonUtils.writeStringToFile(getApplicationContext(), "data.js", dataString);
+                        CommonUtils.getInstance().writeStringToFile("data.js", dataString);
 
                         Intent intent = new Intent(getApplicationContext(), DisplayResultsActivity.class);
                         intent.putExtra(Constants.APP_MODE, Constants.APP_MODE_QUICK_MEASURE);

@@ -91,20 +91,20 @@ public class SyncFragment extends Fragment implements PhotosynqResponse {
         timer = new Timer();
 
         TextView tvAutoSyncInterval = (TextView) rootView.findViewById(R.id.tv_auto_sync_interval);
-        tvAutoSyncInterval.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+        tvAutoSyncInterval.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
         TextView tvAutoSyncWifiRange = (TextView) rootView.findViewById(R.id.tv_auto_sync_wifi);
-        tvAutoSyncWifiRange.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+        tvAutoSyncWifiRange.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
         TextView tvAutoSyncCachedData = (TextView) rootView.findViewById(R.id.tv_cached_data_points);
-        tvAutoSyncCachedData.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+        tvAutoSyncCachedData.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
 
         TextView tvAutoSyncDesc = (TextView) rootView.findViewById(R.id.tv_auto_sync_interval_desc);
-        tvAutoSyncDesc.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+        tvAutoSyncDesc.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
         TextView tvAutoSyncWifiDesc = (TextView) rootView.findViewById(R.id.tv_auto_sync_wifi_desc);
-        tvAutoSyncWifiDesc.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+        tvAutoSyncWifiDesc.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
         TextView tvAutoSyncCachedDataDesc = (TextView) rootView.findViewById(R.id.tv_cached_data_points_desc);
-        tvAutoSyncCachedDataDesc.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+        tvAutoSyncCachedDataDesc.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
         TextView tvSyncBtnMsg = (TextView) rootView.findViewById(R.id.tv_sync_btn_message);
-        tvSyncBtnMsg.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+        tvSyncBtnMsg.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
 
         cbAutoSyncWifiOnly = (CheckBox) rootView.findViewById(R.id.auto_sync_wifi_checkbox);
         String isCheckedWifiSync = PrefUtils.getFromPrefs(getActivity(), PrefUtils.PREFS_SYNC_WIFI_ON, PrefUtils.PREFS_DEFAULT_VAL);
@@ -114,7 +114,7 @@ public class SyncFragment extends Fragment implements PhotosynqResponse {
             cbAutoSyncWifiOnly.setChecked(false);
         }
         tvAutoSyncCachedDataPtValue = (TextView) rootView.findViewById(R.id.tv_data_points_value);
-        tvAutoSyncCachedDataPtValue.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+        tvAutoSyncCachedDataPtValue.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
         final DatabaseHelper db = DatabaseHelper.getHelper(getActivity());
         //List<ProjectResult> listRecords = db.getAllUnUploadedResults();
         int recordCount = db.getAllUnuploadedResultsCount(null);
@@ -222,7 +222,7 @@ public class SyncFragment extends Fragment implements PhotosynqResponse {
         });
 
         Button syncBtn = (Button) rootView.findViewById(R.id.btn_sync_data);
-        syncBtn.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+        syncBtn.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
 
         syncBtn.setOnClickListener(new View.OnClickListener() {
             @Override

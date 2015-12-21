@@ -6,14 +6,12 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -22,9 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.photosynq.app.db.DatabaseHelper;
-import com.photosynq.app.http.PhotosynqResponse;
-import com.photosynq.app.model.AppSettings;
-import com.photosynq.app.model.Data;
 import com.photosynq.app.model.Macro;
 import com.photosynq.app.model.Option;
 import com.photosynq.app.model.Protocol;
@@ -50,10 +45,8 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 
@@ -64,7 +57,7 @@ public class ProjectDetailsActivity extends ActionBarActivity {
     private boolean myprojectssearchmode = false;
     private boolean save_locally = false;
     private ProgressDialog progress;
-    private final static String JOIN_PORJECT="+ Join Project";
+    private final static String JOIN_PORJECT = "+ Join Project";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,16 +83,12 @@ public class ProjectDetailsActivity extends ActionBarActivity {
             myprojectssearchmode = extras.getBoolean(MyProjectsFragment.MYPROJECTSEARCHMODE);
             ResearchProject project = databaseHelper.getResearchProject(projectID);
 
-            if( !discovermode && !myprojectssearchmode) {
+            if (!discovermode && !myprojectssearchmode) {
+                loaddetails(project);
+            } else {
+                if (null != project) {
                     loaddetails(project);
-            }
-            else
-            {
-                if(null!=project )
-                {
-                    loaddetails(project);
-                }
-                else {
+                } else {
                     String authToken = PrefUtils.getFromPrefs(getApplicationContext(), PrefUtils.PREFS_AUTH_TOKEN_KEY, PrefUtils.PREFS_DEFAULT_VAL);
                     String email = PrefUtils.getFromPrefs(getApplicationContext(), PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
                     new DownloadProjectDetails().execute(getApplicationContext(), Constants.PHOTOSYNQ_PROJECT_DETAILS_URL
@@ -107,15 +96,14 @@ public class ProjectDetailsActivity extends ActionBarActivity {
                             + "?user_email=" + email + "&user_token="
                             + authToken);
 
-                    Button takeMeasurementbtn = (Button)findViewById(R.id.btn_take_measurement);
+                    Button takeMeasurementbtn = (Button) findViewById(R.id.btn_take_measurement);
                     takeMeasurementbtn.setText(JOIN_PORJECT);
                 }
             }
         }
     }
 
-    private void loaddetails(ResearchProject project )
-    {
+    private void loaddetails(ResearchProject project) {
 
 
         SimpleDateFormat outputDate = new SimpleDateFormat("dd-MMM-yyyy", Locale.US);
@@ -133,8 +121,8 @@ public class ProjectDetailsActivity extends ActionBarActivity {
                 .error(R.drawable.ic_launcher1)
                 .into(profileImage);
 
-        Typeface tfRobotoRegular = CommonUtils.getInstance(this).getFontRobotoRegular();
-        Typeface tfRobotoMedium = CommonUtils.getInstance(this).getFontRobotoMedium();
+        Typeface tfRobotoRegular = CommonUtils.getInstance().getFontRobotoRegular();
+        Typeface tfRobotoMedium = CommonUtils.getInstance().getFontRobotoMedium();
 
         TextView tvProjetTitle = (TextView) findViewById(R.id.tv_project_name);
         tvProjetTitle.setTypeface(tfRobotoRegular);
@@ -146,16 +134,15 @@ public class ProjectDetailsActivity extends ActionBarActivity {
         TextView tvBeta = (TextView) findViewById(R.id.tv_beta);
         tvBeta.setTypeface(tfRobotoMedium);
         String isBeta = project.getBeta();
-        if(!"null".equals(isBeta))
-        {
-            if("true".equals(isBeta)) {
+        if (!"null".equals(isBeta)) {
+            if ("true".equals(isBeta)) {
                 tvBeta.setVisibility(View.VISIBLE);
                 tvBeta.setText("BETA");
-            }else{
+            } else {
                 tvBeta.setVisibility(View.INVISIBLE);
                 tvBeta.setText("");
             }
-        }else{
+        } else {
             tvBeta.setVisibility(View.INVISIBLE);
             tvBeta.setText("");
         }
@@ -173,10 +160,10 @@ public class ProjectDetailsActivity extends ActionBarActivity {
         tvShowHideOverview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if("Read More".equals(tvShowHideOverview.getText())) {
+                if ("Read More".equals(tvShowHideOverview.getText())) {
                     tvShowHideOverview.setText("Less");
                     tvOverviewText.setMaxLines(Integer.MAX_VALUE);
-                }else{
+                } else {
                     tvShowHideOverview.setText("Read More");
                     tvOverviewText.setLines(2);
                 }
@@ -195,10 +182,10 @@ public class ProjectDetailsActivity extends ActionBarActivity {
         tvShowHideInstructions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if("Read More".equals(tvShowHideInstructions.getText())) {
+                if ("Read More".equals(tvShowHideInstructions.getText())) {
                     tvShowHideInstructions.setText("Less");
                     tvInstructionsText.setMaxLines(Integer.MAX_VALUE);
-                }else{
+                } else {
                     tvShowHideInstructions.setText("Read More");
                     tvInstructionsText.setMaxLines(5);
                 }
@@ -206,19 +193,17 @@ public class ProjectDetailsActivity extends ActionBarActivity {
         });
     }
 
-    public void take_measurement_click(View view){
-        String btnLabel = ((Button)view).getText().toString();
-        if(btnLabel.equals(JOIN_PORJECT))
-        {
+    public void take_measurement_click(View view) {
+        String btnLabel = ((Button) view).getText().toString();
+        if (btnLabel.equals(JOIN_PORJECT)) {
             String authToken = PrefUtils.getFromPrefs(getApplicationContext(), PrefUtils.PREFS_AUTH_TOKEN_KEY, PrefUtils.PREFS_DEFAULT_VAL);
             String email = PrefUtils.getFromPrefs(getApplicationContext(), PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
             new JoinProject().execute(getApplicationContext(), Constants.PHOTOSYNQ_PROJECT_DETAILS_URL
                     + projectID + "/join.json/"
                     + "?user_email=" + email + "&user_token="
                     + authToken);
-            progress = ProgressDialog.show(ProjectDetailsActivity.this, "Please wait . . .","", true);
-        }
-        else {
+            progress = ProgressDialog.show(ProjectDetailsActivity.this, "Please wait . . .", "", true);
+        } else {
 //            String userId = PrefUtils.getFromPrefs(this, PrefUtils.PREFS_LOGIN_USERNAME_KEY, PrefUtils.PREFS_DEFAULT_VAL);
 //            DatabaseHelper databaseHelper = DatabaseHelper.getHelper(this);
             //TODO shekhar check if appsettings are needed anymore
@@ -276,7 +261,7 @@ public class ProjectDetailsActivity extends ActionBarActivity {
             HttpGet getRequest;
             ResearchProject rp = new ResearchProject();
             String responseString = null;
-            if (!CommonUtils.isConnected(context)) {
+            if (!CommonUtils.getInstance().isConnected()) {
                 return new ResearchProject();
             }
             Log.d("PHTTPC", "in async task");
@@ -316,10 +301,9 @@ public class ProjectDetailsActivity extends ActionBarActivity {
         protected void onPostExecute(ResearchProject rp) {
             super.onPostExecute(rp);
             loaddetails(rp);
-            if(save_locally)
-            {
-                save_locally=false;
-                Button takeMeasurementbtn = (Button)findViewById(R.id.btn_take_measurement);
+            if (save_locally) {
+                save_locally = false;
+                Button takeMeasurementbtn = (Button) findViewById(R.id.btn_take_measurement);
                 takeMeasurementbtn.setText(R.string.btn_take_measurement);
                 Intent intent = new Intent(getApplicationContext(), QuestionsList.class);
                 intent.putExtra(DatabaseHelper.C_PROJECT_ID, projectID);
@@ -406,9 +390,8 @@ public class ProjectDetailsActivity extends ActionBarActivity {
                                 String protocol_ids = "";
 
                                 for (int proto = 0; proto < protocols.length(); proto++) {
-                                    if (!protocol_ids.isEmpty())
-                                    {
-                                        protocol_ids = protocol_ids +",";
+                                    if (!protocol_ids.isEmpty()) {
+                                        protocol_ids = protocol_ids + ",";
                                     }
                                     JSONObject protocolobj = protocols.getJSONObject(proto);
                                     String id = protocolobj.getString("id");
@@ -452,30 +435,30 @@ public class ProjectDetailsActivity extends ActionBarActivity {
 
     }
 
-    private class JoinProject extends AsyncTask<Object, Object, String>{
+    private class JoinProject extends AsyncTask<Object, Object, String> {
         private StringEntity input = null;
 
-        public JoinProject() {}
+        public JoinProject() {
+        }
+
         @Override
         protected String doInBackground(Object... uri) {
             HttpClient httpclient = new DefaultHttpClient();
-            Context context = (Context)uri[0];
+            Context context = (Context) uri[0];
             HttpResponse response = null;
-            String responseString= null;
+            String responseString = null;
             HttpPost postRequest;
-            if(!CommonUtils.isConnected(context))
-            {
+            if (!CommonUtils.getInstance().isConnected()) {
                 return Constants.SERVER_NOT_ACCESSIBLE;
             }
             try {
-                Log.d("join project", "$$$$ URI"+uri[1]);
-                        postRequest = new HttpPost((String)uri[1]);
-                    if(null!=input)
-                    {
-                        postRequest.setEntity(input);
-                    }
-                    Log.d("join project", "$$$$ Executing POST request");
-                    response = httpclient.execute(postRequest);
+                Log.d("join project", "$$$$ URI" + uri[1]);
+                postRequest = new HttpPost((String) uri[1]);
+                if (null != input) {
+                    postRequest.setEntity(input);
+                }
+                Log.d("join project", "$$$$ Executing POST request");
+                response = httpclient.execute(postRequest);
 
                 if (null != response) {
                     try {
@@ -505,12 +488,10 @@ public class ProjectDetailsActivity extends ActionBarActivity {
 
             super.onPostExecute(result);
             progress.dismiss();
-            if (null == result)
-            {
-                Toast.makeText(getApplicationContext(),"There was a problem joining this project, please try again!",Toast.LENGTH_LONG).show();
-                Log.d("PHTTPC","No results returned");
-            }
-            else {
+            if (null == result) {
+                Toast.makeText(getApplicationContext(), "There was a problem joining this project, please try again!", Toast.LENGTH_LONG).show();
+                Log.d("PHTTPC", "No results returned");
+            } else {
                 try {
                     JSONObject jobj = new JSONObject(result);
 
@@ -527,10 +508,9 @@ public class ProjectDetailsActivity extends ActionBarActivity {
                         Log.d("PHTTPC", "Project joining failed.");
 
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                    catch(JSONException e){
-                        e.printStackTrace();
-                    }
 
             }
 

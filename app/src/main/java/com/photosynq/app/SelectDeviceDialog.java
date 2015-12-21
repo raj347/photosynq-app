@@ -71,7 +71,7 @@ public class SelectDeviceDialog extends DialogFragment {
 
         TextView tvTitle = (TextView) dialog.findViewById(R.id.tv_dialog_title);
         if(tvTitle != null){
-            tvTitle.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+            tvTitle.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
             //tvTitle.setTextSize(16);
         }
 
@@ -81,7 +81,7 @@ public class SelectDeviceDialog extends DialogFragment {
         bluetoothStatus = rootView.findViewById(R.id.btooth_status);
         bluetoothStatusMsg = (TextView) rootView.findViewById(R.id.bluetooth_status_msg);
         searchNewBtn = (Button) rootView.findViewById(R.id.btn_Search_New_Device);
-        searchNewBtn.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+        searchNewBtn.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
         searchNewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,12 +94,12 @@ public class SelectDeviceDialog extends DialogFragment {
         });
 
         Button closeBtn = (Button) rootView.findViewById(R.id.btn_close);
-        closeBtn.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+        closeBtn.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
         closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String deviceAddress = CommonUtils.getDeviceAddress(getActivity());
+                String deviceAddress = CommonUtils.getInstance().getDeviceAddress();
                 if (mSelectDeviceDialogDelegate != null){
                     mSelectDeviceDialogDelegate.onDeviceSelected( deviceAddress);
                 }
@@ -398,11 +398,11 @@ public class SelectDeviceDialog extends DialogFragment {
                 convertView = activity.getLayoutInflater().inflate(R.layout.bluetooth_device_list_item, null);
             db = DatabaseHelper.getHelper(convertView.getContext());
             TextView tvDeviceName = (TextView) convertView.findViewById(R.id.device_name);
-            tvDeviceName.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+            tvDeviceName.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
             TextView tvDeviceAddress = (TextView) convertView.findViewById(R.id.device_address);
-            tvDeviceAddress.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+            tvDeviceAddress.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
             TextView tvDevicePaired = (TextView) convertView.findViewById(R.id.device_paired);
-            tvDevicePaired.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+            tvDevicePaired.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
             TextView pairDeviceBtn = (TextView) convertView.findViewById(R.id.pair_bluetooth_device);
             RadioButton radiobtn = (RadioButton)convertView.findViewById(R.id.blue_conn_radio);
             radiobtn.setVisibility(View.VISIBLE);

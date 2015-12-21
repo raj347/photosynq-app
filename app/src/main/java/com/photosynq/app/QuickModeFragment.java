@@ -98,7 +98,7 @@ public class QuickModeFragment extends Fragment implements PhotosynqResponse, Sw
         }
 
         final Button showAllProtocolsBtn = (Button) rootView.findViewById(R.id.show_all_protocol_btn);
-        showAllProtocolsBtn.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoMedium());
+        showAllProtocolsBtn.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
         showAllProtocolsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,7 +135,7 @@ public class QuickModeFragment extends Fragment implements PhotosynqResponse, Sw
 
                     //	System.out.println("###### writing macros_variable.js :"+dataString);
                     System.out.println("###### writing macros_variable.js :......");
-                    CommonUtils.writeStringToFile(getActivity(), "macros_variable.js", dataString.toString());
+                    CommonUtils.getInstance().writeStringToFile("macros_variable.js", dataString.toString());
 
                 } catch (JSONException e) {
 
@@ -194,7 +194,7 @@ public class QuickModeFragment extends Fragment implements PhotosynqResponse, Sw
             HttpResponse response = null;
             HttpGet getRequest;
             String responseString = null;
-            if(!CommonUtils.isConnected(context))
+            if(!CommonUtils.getInstance().isConnected())
             {
                 return Constants.SERVER_NOT_ACCESSIBLE;
             }
@@ -374,7 +374,7 @@ public class QuickModeFragment extends Fragment implements PhotosynqResponse, Sw
                 convertView = mInflater.inflate(R.layout.protocol_list_item, null);
 
             TextView tvProtocolName = (TextView) convertView.findViewById(R.id.tv_protocol_name);
-            tvProtocolName.setTypeface(CommonUtils.getInstance(getActivity()).getFontRobotoRegular());
+            tvProtocolName.setTypeface(CommonUtils.getInstance().getFontRobotoRegular());
             Protocol protocol = getItem(position);
             if (null != protocol) {
                 try {

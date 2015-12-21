@@ -103,7 +103,7 @@ public class AboutFragment extends Fragment implements SelectDeviceDialogDelegat
         View view = inflater.inflate(R.layout.fragment_about, container, false);
         runnable.run();
 
-        deviceAddress = CommonUtils.getDeviceAddress(getActivity());
+        deviceAddress = CommonUtils.getInstance().getDeviceAddress();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (null != mBluetoothAdapter && !mBluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -118,7 +118,7 @@ public class AboutFragment extends Fragment implements SelectDeviceDialogDelegat
         try {
             if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
                 // Get the BLuetoothDevice object
-                deviceAddress = CommonUtils.getDeviceAddress(getActivity());
+                deviceAddress = CommonUtils.getInstance().getDeviceAddress();
                 if(null == deviceAddress)
                 {
                     Toast.makeText(getActivity(), "Measurement device not configured, Please configure measurement device (bluetooth).", Toast.LENGTH_SHORT).show();
@@ -209,7 +209,7 @@ public class AboutFragment extends Fragment implements SelectDeviceDialogDelegat
 
     private void selectDevice() {
 
-        deviceAddress = CommonUtils.getDeviceAddress(getActivity());
+        deviceAddress = CommonUtils.getInstance().getDeviceAddress();
         if (null == deviceAddress) {
             FragmentManager fragmentManager = getFragmentManager();
             SelectDeviceDialog selectDeviceDialog = new SelectDeviceDialog();

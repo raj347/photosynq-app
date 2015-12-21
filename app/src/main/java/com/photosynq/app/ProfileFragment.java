@@ -91,7 +91,7 @@ public class ProfileFragment extends Fragment {
 
 
         Button signOut = (Button) rootView.findViewById(R.id.sign_out_btn);
-        signOut.setTypeface(CommonUtils.getInstance(context).getFontRobotoMedium());
+        signOut.setTypeface(CommonUtils.getInstance().getFontRobotoMedium());
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,7 +144,7 @@ public class ProfileFragment extends Fragment {
             HttpResponse response = null;
             HttpGet getRequest;
             String responseString = null;
-            if (!CommonUtils.isConnected(context)) {
+            if (!CommonUtils.getInstance().isConnected()) {
                 return Constants.SERVER_NOT_ACCESSIBLE;
             }
             Log.d("PHTTPC", "in async task");

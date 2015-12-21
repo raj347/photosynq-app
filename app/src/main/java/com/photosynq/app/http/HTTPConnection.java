@@ -73,7 +73,7 @@ public class HTTPConnection extends AsyncTask<Object, Object, String>{
         HttpPost postRequest;
         HttpGet getRequest;
         String responseString = null;
-        if(!CommonUtils.isConnected(context))
+        if(!CommonUtils.getInstance().isConnected())
         {
             return Constants.SERVER_NOT_ACCESSIBLE;
         }

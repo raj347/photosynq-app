@@ -107,8 +107,8 @@ public class SyncHandler {
 
             PrefUtils.saveToPrefs(context, PrefUtils.PREFS_CURRENT_LOCATION, null);
             // Upload all unuploaded results
-            if(CommonUtils.isConnected(context)) {
-                CommonUtils.uploadResults(context, -1);
+            if(CommonUtils.getInstance().isConnected()) {
+                CommonUtils.getInstance().uploadResults(-1);
             }
 
         }

@@ -163,7 +163,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                             if (mBluetoothAdapter == null)
                                 mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-                            deviceAddress = CommonUtils.getDeviceAddress(QuestionsList.this);
+                            deviceAddress = CommonUtils.getInstance().getDeviceAddress();
                             if (null == deviceAddress) {
                                 Toast.makeText(QuestionsList.this, "Measurement device not configured, Please configure measurement device (bluetooth).", Toast.LENGTH_SHORT).show();
                                 selectDevice();
@@ -321,7 +321,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                                             }
 
-                                            CommonUtils.writeStringToFile(QuestionsList.this, "macros.js", dataStringMacro.toString());
+                                            CommonUtils.getInstance().writeStringToFile("macros.js", dataStringMacro.toString());
 
                                             protocol_total *= protocol_measurements;
 
@@ -336,7 +336,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
                                                 // Writing macros_variable.js file with protocol and macro relations
                                                 System.out.println("######Writing macros_variable.js file:" + data);
-                                                CommonUtils.writeStringToFile(QuestionsList.this, "macros_variable.js", data);
+                                                CommonUtils.getInstance().writeStringToFile("macros_variable.js", data);
 
                                                 //protocolJson = "[" + protocolJson.substring(0, protocolJson.length() - 1) + "]"; // remove last comma and add suqare brackets and start and end.
 
@@ -513,7 +513,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
                                     }
                                 }
                                 System.out.println("###### writing data.js :" + dataString);
-                                CommonUtils.writeStringToFile(QuestionsList.this, "data.js", dataString);
+                                CommonUtils.getInstance().writeStringToFile("data.js", dataString);
 
                                 final String reading = measurement.replaceAll("\\r\\n", "").replaceFirst("\\{", "{" + options);
                                 outputTextView.setText("");
@@ -766,7 +766,7 @@ public class QuestionsList extends ActionBarActivity implements SelectDeviceDial
 
     private void selectDevice() {
 
-        deviceAddress = CommonUtils.getDeviceAddress(this);
+        deviceAddress = CommonUtils.getInstance().getDeviceAddress();
         if (null == deviceAddress) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             SelectDeviceDialog selectDeviceDialog = new SelectDeviceDialog();
