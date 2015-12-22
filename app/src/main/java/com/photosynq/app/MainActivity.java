@@ -37,7 +37,7 @@ public class MainActivity extends ActionBarActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    private int mCurrentSelectedAction = NavigationDrawerFragment.ACTION_PROJECTS;
+    private NavigationItem mCurrentSelectedAction = NavigationItem.PROJECTS;
 
     //private boolean mIsSearchView = false;
     /**
@@ -61,8 +61,8 @@ public class MainActivity extends ActionBarActivity
         actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.actionbar_bg));
         progressBar = (ProgressBar) findViewById(R.id.toolbar_progress_bar);
 
-        String prevSelPos = PrefUtils.getFromPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, NavigationDrawerFragment.ACTION_PROJECTS + "");
-        mCurrentSelectedAction = Integer.parseInt(prevSelPos);
+        String prevSelPos = PrefUtils.getFromPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, NavigationItem.PROJECTS.getPosition() + "");
+        mCurrentSelectedAction = NavigationItem.fromPos(Integer.valueOf(prevSelPos));
 
         log("prev selected %s", prevSelPos);
 
@@ -107,13 +107,13 @@ public class MainActivity extends ActionBarActivity
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             //use the query to search your data somehow
-            if (mCurrentSelectedAction == NavigationDrawerFragment.ACTION_PROJECTS) { //My Projects
+            if (mCurrentSelectedAction == NavigationItem.PROJECTS) { //My Projects
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedAction, query), MyProjectsFragment.class.getName())
+                        .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedAction.getPosition(), query), MyProjectsFragment.class.getName())
                         .commit();
             } else {
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedAction, query), DiscoverFragment.class.getName())
+                        .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedAction.getPosition(), query), DiscoverFragment.class.getName())
                         .commit();
             }
 
@@ -133,7 +133,7 @@ public class MainActivity extends ActionBarActivity
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //Stop the activity
-                            PrefUtils.saveToPrefs(MainActivity.this, PrefUtils.PREFS_PREV_SELECTED_POSITION, NavigationDrawerFragment.ACTION_PROJECTS+"");
+                            PrefUtils.saveToPrefs(MainActivity.this, PrefUtils.PREFS_PREV_SELECTED_POSITION, NavigationItem.PROJECTS.getPosition() + "");
                             MainActivity.this.finish();
                         }
 
@@ -148,97 +148,53 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int action) {
+    public void onNavigationDrawerItemSelected(NavigationItem navigationItem) {
         // update the main content by replacing fragments
-        if (action != NavigationDrawerFragment.ACTION_DEVICE) // Do not keep selection of Select measurement device option
-            mCurrentSelectedAction = action;
+        if (navigationItem != NavigationItem.DEVICE) // Do not keep selection of Select measurement device option
+            mCurrentSelectedAction = navigationItem;
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        switch (action) {
-            case NavigationDrawerFragment.ACTION_PROJECTS:
-                // Open MyProjects
+        switch (navigationItem) {
+            case PROFILE:
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, MyProjectsFragment.newInstance(action), MyProjectsFragment.class.getName())
+                        .replace(R.id.container, ProfileFragment.newInstance(navigationItem.getPosition()), ProfileFragment.class.getName())
                         .commit();
-
                 break;
-            case NavigationDrawerFragment.ACTION_DISCOVER:
-                // Open Discover
+            case PROJECTS:
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, DiscoverFragment.newInstance(action), DiscoverFragment.class.getName())
+                        .replace(R.id.container, MyProjectsFragment.newInstance(navigationItem.getPosition()), MyProjectsFragment.class.getName())
                         .commit();
-
                 break;
-            case NavigationDrawerFragment.ACTION_QUICK_MEASUREMENT:
-                // Open Quick Measurement
-                QuickModeFragment quickModeFragment = QuickModeFragment.newInstance(action);
+            case DISCOVER:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, DiscoverFragment.newInstance(navigationItem.getPosition()), DiscoverFragment.class.getName())
+                        .commit();
+                break;
+            case QUICK_MEASUREMENT:
+                QuickModeFragment quickModeFragment = QuickModeFragment.newInstance(navigationItem.getPosition());
 
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, quickModeFragment, QuickModeFragment.class.getName())
                         .commit();
                 break;
-            case NavigationDrawerFragment.ACTION_SYNC_SETTINGS:
-                // Sync Settings
+            case SYNC_SETTINGS:
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, SyncFragment.newInstance(action), SyncFragment.class.getName())
+                        .replace(R.id.container, SyncFragment.newInstance(navigationItem.getPosition()), SyncFragment.class.getName())
                         .commit();
                 break;
-            case NavigationDrawerFragment.ACTION_ABOUT:
-                // About
+            case ABOUT:
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, AboutFragment.newInstance(action), AboutFragment.class.getName())
-                        .commit();
-//                try {
-//
-//                    String appName = getString(R.string.app_name);
-//                    String versionName = this.getPackageManager()
-//                            .getPackageInfo(this.getPackageName(), 0).versionName;
-//
-//                    String messageStr = appName + "\n\n" +
-//                            "Version " + versionName + "\n" +
-//                            Constants.SERVER_URL;
-//
-//                    final SpannableString s =
-//                            new SpannableString(messageStr);
-//                    Linkify.addLinks(s, Linkify.WEB_URLS);
-//                    final TextView message = new TextView(this);
-//                    message.setPadding(25,25,25,25);
-//                    message.setGravity(Gravity.CENTER);
-//                    message.setText(s);
-//                    message.setMovementMethod(LinkMovementMethod.getInstance());
-//
-//                    System.out.println(versionName);
-//
-//                    new AlertDialog.Builder(this)
-//                            .setIcon(R.drawable.ic_launcher1)
-//                            .setTitle("About")
-//                            .setView(message)
-//                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialogInterface, int which) {
-//
-//
-//                                        }
-//
-//                                    }
-//
-//                            )
-//                            .show();
-//
-//                } catch (PackageManager.NameNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-
-                break;
-            case NavigationDrawerFragment.ACTION_PROFILE:
-                // Open Profile
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, ProfileFragment.newInstance(action), ProfileFragment.class.getName())
+                        .replace(R.id.container, AboutFragment.newInstance(navigationItem.getPosition()), AboutFragment.class.getName())
                         .commit();
                 break;
-            case NavigationDrawerFragment.ACTION_DEVICE:
-                // Open select device
+            case SEND_DEBUG:
+                break;
+            case SYNC_DATA:
+                break;
+            case SHOW_CACHED:
+                break;
+            case DEVICE:
                 SelectDeviceDialog selectDeviceDialog = new SelectDeviceDialog();
                 selectDeviceDialog.show(fragmentManager, "Select Measurement Device");
                 break;
@@ -250,7 +206,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(Constants.STATE_SELECTED_POSITION, mCurrentSelectedAction);
+        outState.putInt(Constants.STATE_SELECTED_POSITION, mCurrentSelectedAction.getPosition());
         super.onSaveInstanceState(outState);
 
         PrefUtils.saveToPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, mCurrentSelectedAction + "");
@@ -265,25 +221,16 @@ public class MainActivity extends ActionBarActivity
 
     }
 
-    public void onSectionAttached(int action) {
-        switch (action) {
-            case NavigationDrawerFragment.ACTION_PROJECTS:
-                mTitle = getString(R.string.my_projects_title);
-                break;
-            case NavigationDrawerFragment.ACTION_DISCOVER:
-                mTitle = getString(R.string.discover_title);
-                break;
-            case NavigationDrawerFragment.ACTION_QUICK_MEASUREMENT:
-                mTitle = "Select Measurement";
-                break;
-            case NavigationDrawerFragment.ACTION_SYNC_SETTINGS:
-                mTitle = getString(R.string.sync_settings_title);
-                break;
-            case NavigationDrawerFragment.ACTION_ABOUT:
-                mTitle = getString(R.string.about);
-                break;
-            case NavigationDrawerFragment.ACTION_PROFILE:
-                mTitle = getString(R.string.profile_title);
+    public void onSectionAttached(int position) {
+        NavigationItem navigationItem = NavigationItem.fromPos(position);
+        switch (navigationItem) {
+            case PROJECTS:
+            case DISCOVER:
+            case QUICK_MEASUREMENT:
+            case SYNC_SETTINGS:
+            case ABOUT:
+            case PROFILE:
+                mTitle = navigationItem.getTitle();
                 break;
         }
     }
@@ -399,10 +346,10 @@ public class MainActivity extends ActionBarActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.refreshmenu) {
-            if (mCurrentSelectedAction == 4) { //About
+            if (mCurrentSelectedAction == NavigationItem.ABOUT) { //About
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, AboutFragment.newInstance(mCurrentSelectedAction), AboutFragment.class.getName())
+                        .replace(R.id.container, AboutFragment.newInstance(mCurrentSelectedAction.getPosition()), AboutFragment.class.getName())
                         .commit();
             }
 
@@ -423,13 +370,13 @@ public class MainActivity extends ActionBarActivity
         //mIsSearchView = false;
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (mCurrentSelectedAction == NavigationDrawerFragment.ACTION_DISCOVER) {//Discover
+        if (mCurrentSelectedAction == NavigationItem.DISCOVER) {//Discover
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedAction), DiscoverFragment.class.getName())
+                    .replace(R.id.container, DiscoverFragment.newInstance(mCurrentSelectedAction.getPosition()), DiscoverFragment.class.getName())
                     .commit();
-        } else if (mCurrentSelectedAction == NavigationDrawerFragment.ACTION_PROJECTS) { //My Projects
+        } else if (mCurrentSelectedAction == NavigationItem.PROJECTS) { //My Projects
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedAction), MyProjectsFragment.class.getName())
+                    .replace(R.id.container, MyProjectsFragment.newInstance(mCurrentSelectedAction.getPosition()), MyProjectsFragment.class.getName())
                     .commit();
         }
 

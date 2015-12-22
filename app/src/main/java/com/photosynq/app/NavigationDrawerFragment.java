@@ -1,22 +1,21 @@
 package com.photosynq.app;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.v7.app.ActionBarActivity;
-import android.app.Activity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,18 +51,7 @@ import static com.photosynq.app.utils.NxDebugEngine.log;
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class NavigationDrawerFragment extends Fragment {
-
-    public static final int ACTION_PROFILE = 0;
-    public static final int ACTION_PROJECTS = 1;
-    public static final int ACTION_DISCOVER = 2;
-    public static final int ACTION_QUICK_MEASUREMENT = 3;
-    public static final int ACTION_SYNC_SETTINGS = 4;
-    public static final int ACTION_ABOUT = 5;
-    public static final int ACTION_SEND_DEBUG = 6;
-    public static final int ACTION_SYNC_DATA = 7;
-    public static final int ACTION_CACHED = 8;
-    public static final int ACTION_DEVICE = 9;
+public final class NavigationDrawerFragment extends Fragment {
 
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
@@ -86,7 +74,7 @@ public class NavigationDrawerFragment extends Fragment {
     private NavigationDrawerAdapter mNavigationAdapter;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedAction = ACTION_PROJECTS;
+    private NavigationItem mCurrentSelectedAction = NavigationItem.PROJECTS;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -109,7 +97,7 @@ public class NavigationDrawerFragment extends Fragment {
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
-            mCurrentSelectedAction = savedInstanceState.getInt(Constants.STATE_SELECTED_POSITION);
+            mCurrentSelectedAction = NavigationItem.fromPos(savedInstanceState.getInt(Constants.STATE_SELECTED_POSITION));
             mFromSavedInstanceState = true;
         }
 
@@ -136,7 +124,7 @@ public class NavigationDrawerFragment extends Fragment {
         tvUserName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(ACTION_PROFILE);
+                selectItem(NavigationItem.PROFILE);
             }
         });
 
@@ -149,7 +137,7 @@ public class NavigationDrawerFragment extends Fragment {
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(ACTION_PROFILE);
+                selectItem(NavigationItem.PROFILE);
             }
         });
 
@@ -158,7 +146,7 @@ public class NavigationDrawerFragment extends Fragment {
         tvDeviceName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(ACTION_DEVICE);
+                selectItem(NavigationItem.DEVICE);
                 //mTourGuideHandler.cleanUp();
             }
         });
@@ -168,7 +156,7 @@ public class NavigationDrawerFragment extends Fragment {
         tvDeviceAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                selectItem(ACTION_DEVICE);
+                selectItem(NavigationItem.DEVICE);
             }
         });
 
@@ -189,7 +177,7 @@ public class NavigationDrawerFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), DisplayCachedDataPoints.class);
                     startActivity(intent);
                 }
-                selectItem(ACTION_CACHED);
+                selectItem(NavigationItem.SHOW_CACHED);
             }
         });
 
@@ -200,10 +188,8 @@ public class NavigationDrawerFragment extends Fragment {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 SyncHandler syncHandler = new SyncHandler(mainActivity, MainActivity.getProgressBar());
                 syncHandler.DoSync();
-
                 Toast.makeText(getActivity(), "Sync started!", Toast.LENGTH_LONG).show();
-
-                selectItem(ACTION_SYNC_DATA);
+                selectItem(NavigationItem.SYNC_DATA);
             }
         });
 
@@ -211,30 +197,8 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int action = ACTION_ABOUT;
+                NavigationItem action = NavigationItem.fromPos(position);
                 log("pos is %d", position);
-                switch (position) {
-                    case 0:
-                        action = ACTION_PROJECTS;
-                        break;
-                    case 1:
-                        action = ACTION_DISCOVER;
-                        break;
-                    case 2:
-                        action = ACTION_QUICK_MEASUREMENT;
-                        break;
-                    case 3:
-                        action = ACTION_SYNC_SETTINGS;
-                        break;
-                    case 4:
-                        action = ACTION_ABOUT;
-                        break;
-                    case 5:
-                        action = ACTION_SEND_DEBUG;
-                        break;
-                    default:
-                        break;
-                }
                 selectItem(action);
             }
         });
@@ -250,7 +214,7 @@ public class NavigationDrawerFragment extends Fragment {
                         "Send Debug",
                 });
         mDrawerListView.setAdapter(mNavigationAdapter);
-        mDrawerListView.setItemChecked(mCurrentSelectedAction, true);
+        mDrawerListView.setItemChecked(mCurrentSelectedAction.getPosition(), true);
 
         return linearLayout;
     }
@@ -409,39 +373,41 @@ public class NavigationDrawerFragment extends Fragment {
         }
     }
 
-    private void selectItem(int action) {
-        mCurrentSelectedAction = action;
-        log("action selected %d", action);
+    private void selectItem(NavigationItem navigationItem) {
+        mCurrentSelectedAction = navigationItem;
+        log("action selected %d: %s", navigationItem.getPosition(), navigationItem);
 
-        switch (action) {
-            case ACTION_PROFILE:
-            case ACTION_PROJECTS:
-            case ACTION_DISCOVER:
-            case ACTION_QUICK_MEASUREMENT:
-            case ACTION_SYNC_SETTINGS:
-            case ACTION_ABOUT:
+        switch (navigationItem) {
+            case PROFILE:
+            case PROJECTS:
+            case DISCOVER:
+            case QUICK_MEASUREMENT:
+            case SYNC_SETTINGS:
+            case ABOUT:
                 if (mDrawerListView != null) {
-                    mDrawerListView.setItemChecked(action - 1, true);
-                    mNavigationAdapter.setItemSelected(action - 1);//this is a bit nasty, we probably should map actions to positions
+                    mDrawerListView.setItemChecked(navigationItem.getPosition(), true);
+                    mNavigationAdapter.setItemSelected(navigationItem.getPosition());
                 }
+
                 break;
-            case ACTION_SEND_DEBUG:
+            case SEND_DEBUG:
                 PhotoSyncApplication.sApplication.log("debug button pressed", "this is buffer content", "ui-operations");
                 PhotoSyncApplication.sApplication.uploadLog();
                 break;
-            case ACTION_SYNC_DATA:
-            case ACTION_CACHED:
-            case ACTION_DEVICE:
+            case SYNC_DATA:
+                break;
+            case SHOW_CACHED:
+                break;
+            case DEVICE:
                 break;
             default:
                 break;
         }
-
-        if (mDrawerLayout != null) {
+        if (mDrawerLayout!= null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(action);
+            mCallbacks.onNavigationDrawerItemSelected(navigationItem);
         }
     }
 
@@ -464,7 +430,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(Constants.STATE_SELECTED_POSITION, mCurrentSelectedAction);
+        outState.putInt(Constants.STATE_SELECTED_POSITION, mCurrentSelectedAction.getPosition());
     }
 
     @Override
@@ -523,11 +489,11 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
-    public static interface NavigationDrawerCallbacks {
+    public interface NavigationDrawerCallbacks {
         /**
          * Called when an item in the navigation drawer is selected.
          */
-        void onNavigationDrawerItemSelected(int position);
+        void onNavigationDrawerItemSelected(NavigationItem navigationItem);
     }
 
     private class NavigationDrawerAdapter extends ArrayAdapter<String> {
