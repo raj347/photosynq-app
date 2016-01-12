@@ -62,7 +62,12 @@ public class MainActivity extends ActionBarActivity
         progressBar = (ProgressBar) findViewById(R.id.toolbar_progress_bar);
 
         String prevSelPos = PrefUtils.getFromPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, NavigationItem.PROJECTS.getPosition() + "");
-        mCurrentSelectedAction = NavigationItem.fromPos(Integer.valueOf(prevSelPos));
+
+        try {
+            mCurrentSelectedAction = NavigationItem.fromPos(Integer.valueOf(prevSelPos));
+        } catch (NumberFormatException e) {
+           mCurrentSelectedAction = NavigationItem.PROJECTS;
+        }
 
         log("prev selected %s", prevSelPos);
 
@@ -209,7 +214,7 @@ public class MainActivity extends ActionBarActivity
         outState.putInt(Constants.STATE_SELECTED_POSITION, mCurrentSelectedAction.getPosition());
         super.onSaveInstanceState(outState);
 
-        PrefUtils.saveToPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, mCurrentSelectedAction + "");
+        PrefUtils.saveToPrefs(this, PrefUtils.PREFS_PREV_SELECTED_POSITION, mCurrentSelectedAction.getPosition() + "");
     }
 
     @Override
@@ -245,6 +250,9 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        log("title and selection are: %s, %s", mTitle, mCurrentSelectedAction);
+
         MenuInflater inflater = getMenuInflater();
 
         boolean isSearchableView = false;
@@ -253,11 +261,17 @@ public class MainActivity extends ActionBarActivity
             isSearchableView = true;
         } else if (mTitle.equals(getString(R.string.my_projects_title))) {
             inflater.inflate(R.menu.menu_my_projects, menu);
-            isSearchableView = true;
+            //isSearchableView = true;
         } else if (mTitle.equals(getString(R.string.about))) {
             inflater.inflate(R.menu.about_menu, menu);
             //isSearchableView = true;
         }
+
+        if(mCurrentSelectedAction == NavigationItem.PROJECTS){
+            inflater.inflate(R.menu.menu_my_projects, menu);
+        }
+
+
 
 
         if (isSearchableView) {
