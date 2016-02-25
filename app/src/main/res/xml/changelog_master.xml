@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog>
-    <release version="3.2" versioncode="27" >
+    <release version="3.3" versioncode="28" >
+    </release>
+    <release version="3.3" versioncode="28" >
+        <change>Added option to send a debug log to the developers</change>
+        <change>Streamlined question / answer UI for easier and quicker data acquisition on large series of measurements</change>
+        <change>Improved stability of application during measurement</change>
     </release>
     <release version="3.2" versioncode="27" >
         <change>App now uses API v3.0</change>
