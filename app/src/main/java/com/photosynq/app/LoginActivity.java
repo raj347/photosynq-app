@@ -8,6 +8,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.res.AssetManager;
@@ -21,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -103,6 +105,20 @@ public class LoginActivity extends Activity implements PhotosynqResponse {
             }
 
         }
+
+        new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Update Available")
+                .setMessage("A new version of the PhotosynQ app is available in the play store, it is still in beta but has many new features added and provides a lot of stability fixes.")
+                .setPositiveButton("Let me see", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse( "market://details?id=org.photosynq.android.photosynq")));
+                    }
+
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void startWelcomeActivity() {

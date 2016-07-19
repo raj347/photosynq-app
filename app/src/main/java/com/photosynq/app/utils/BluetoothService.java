@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import static com.photosynq.app.utils.NxDebugEngine.log;
+
 public class BluetoothService {
     private static final String TAG = "BluetoothService";
     private static final boolean D = true;
@@ -323,7 +325,7 @@ public class BluetoothService {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
                     PhotoSyncApplication.sApplication.log("read from bt stream", bytes + " bytes read", "bt-transfers");
-
+                    log("read buffer: %s", new String(buffer));
 
                     // Send the obtained bytes to the UI Activity
 //					mHandler.obtainMessage(ResultActivity.MESSAGE_READ, bytes,-1, buffer).sendToTarget();
@@ -377,6 +379,8 @@ public class BluetoothService {
          */
         public void write(byte[] buffer) {
             try {
+                log("sending data to multispec %s", new String(buffer));
+                PhotoSyncApplication.sApplication.log("sending data to multispec", new String(buffer), "bt-outgoing");
                 mmOutStream.write(buffer);
 
 //                // Share the sent message back to the UI Activity

@@ -45,6 +45,7 @@ import com.photosynq.app.response.UpdateData;
 import com.photosynq.app.utils.CommonUtils;
 import com.photosynq.app.utils.Constants;
 import com.photosynq.app.utils.LocationUtils;
+import com.photosynq.app.utils.NxDebugEngine;
 import com.photosynq.app.utils.PrefUtils;
 import com.photosynq.app.utils.SyncHandler;
 
@@ -505,6 +506,8 @@ public class DisplayResultsActivity extends ActionBarActivity implements
                 request_data.put("user_email", email);
                 request_data.put("user_token", authToken);
                 request_data.put("data", jo);
+
+                PhotoSyncApplication.sApplication.log("content: for upload", request_data.toString(2), "upload");
                 input = new StringEntity(request_data.toString());
                 input.setContentType("application/json");
             } catch (JSONException e) {

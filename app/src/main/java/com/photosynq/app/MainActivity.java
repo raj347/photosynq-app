@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
@@ -85,6 +86,22 @@ public class MainActivity extends ActionBarActivity
         if (cl.isFirstRun()) {
             cl.getLogDialog().show();
         }
+
+
+        new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Update Available")
+                .setMessage("A new version of the PhotosynQ app is available in the play store, it is still in beta but has many new features added and provides a lot of stability fixes.")
+                .setPositiveButton("Let me see", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse( "market://details?id=org.photosynq.android.photosynq")));
+                    }
+
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+
     }
 
 
