@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -32,6 +33,7 @@ import com.photosynq.app.model.Question;
 import com.photosynq.app.model.ResearchProject;
 import com.photosynq.app.utils.CommonUtils;
 import com.photosynq.app.utils.Constants;
+import com.photosynq.app.utils.NxDebugEngine;
 import com.photosynq.app.utils.PrefUtils;
 import com.photosynq.app.utils.SyncHandler;
 import com.squareup.picasso.Picasso;
@@ -420,7 +422,7 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
                             response.getEntity().writeTo(out);
                             out.close();
                             responseString = out.toString();
-
+                            PhotoSyncApplication.sApplication.log("json answer from server", responseString, "response-webserver");
                             processResult(PhotoSyncApplication.sApplication, responseString);
 
                         } else {
@@ -461,7 +463,10 @@ public class MyProjectsFragment extends Fragment implements PhotosynqResponse, S
             if (null != result) {
 
                 try {
+                    long time = SystemClock.uptimeMillis();
                     JSONObject resultJsonObject = new JSONObject(result);
+                    NxDebugEngine.log("%d [ms]: took for parsing json", SystemClock.uptimeMillis()-time);
+
                     if (resultJsonObject.has("projects")) {
                         jArray = resultJsonObject.getJSONArray("projects");
 
