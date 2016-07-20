@@ -8,7 +8,7 @@ public class Constants {
     public static final String SUCCESS = "SUCCESS";
     public static final String SERVER_NOT_ACCESSIBLE = "SERVER_NOT_ACCESSIBLE";
 
-    public static final String SERVER_URL = "https://staging.photosynq.org/";
+    public static final String SERVER_URL = "https://www.photosynq.org/";
     // public static final String SERVER_URL = "http://staging.photosynq.venturit.net/";
 
 
