@@ -22,7 +22,7 @@ public class Constants {
     public static final String PHOTOSYNQ_PROTOCOLS_LIST_URL = SERVER_URL+API_VER+"protocols.json?";
     public static final String PHOTOSYNQ_MACRO_URL =SERVER_URL+API_VER+ "macros/";
     public static final String PHOTOSYNQ_DATA_URL = SERVER_URL+API_VER+"projects/";
-    public static final String PHOTOSYNQ_USER_INFO = SERVER_URL+API_VER+"users/info.json?";
+    public static final String PHOTOSYNQ_USER_INFO = SERVER_URL+AP$I_VER+"users/info.json?";
     public static final String PHOTOSYNQ_SEARCH_URL = SERVER_URL+API_VER+"projects/search.json?keyword=";
     // Message types sent from the BluetoothService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
